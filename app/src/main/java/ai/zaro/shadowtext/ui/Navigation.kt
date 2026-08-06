@@ -6,6 +6,7 @@ import ai.zaro.shadowtext.ui.screens.HomeScreen
 import ai.zaro.shadowtext.ui.screens.ResultScreen
 import android.content.Intent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -48,8 +49,10 @@ fun ShadowTextNavHost(
         composable(Routes.ENCODE) {
             EncodeScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onEncodeComplete = { result ->
-                    navController.currentBackStackEntry?.savedStateHandle?.set("encodeResult", result)
+                onEncodeComplete = { stegoText ->
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("stegoText", stegoText)
                     navController.navigate("result/encoded")
                 }
             )
@@ -58,8 +61,7 @@ fun ShadowTextNavHost(
         composable(Routes.DECODE) {
             DecodeScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onDecodeComplete = { result ->
-                    navController.currentBackStackEntry?.savedStateHandle?.set("decodeResult", result)
+                onDecodeComplete = { _ ->
                     navController.navigate("result/decoded")
                 }
             )

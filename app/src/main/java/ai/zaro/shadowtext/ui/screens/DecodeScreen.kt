@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalSavedStateHandle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,16 +23,6 @@ fun DecodeScreen(
     viewModel: DecodeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-
-    val savedStateHandle = LocalSavedStateHandle.current
-    val sharedText = savedStateHandle.get<String>("sharedText")
-
-    LaunchedEffect(sharedText) {
-        if (!sharedText.isNullOrBlank()) {
-            viewModel.setInputText(sharedText)
-            savedStateHandle.remove<String>("sharedText")
-        }
-    }
 
     LaunchedEffect(state.result) {
         state.result?.let {
@@ -105,7 +94,7 @@ fun DecodeScreen(
                                 }
                                 if (detection.payloadSizeBytes > 0) {
                                     Text(
-                                        text = "Size: ${formatFileSizeDecode(detection.payloadSizeBytes.toLong())}",
+                                        text = "Size: ${fmtSize(detection.payloadSizeBytes.toLong())}",
                                         style = MaterialTheme.typography.bodySmall,
                                     )
                                 }
@@ -178,7 +167,7 @@ fun DecodeScreen(
     }
 }
 
-private fun formatFileSizeDecode(bytes: Long): String {
+private fun fmtSize(bytes: Long): String {
     return when {
         bytes < 1024 -> "$bytes B"
         bytes < 1024 * 1024 -> "${bytes / 1024} KB"
