@@ -16,17 +16,15 @@ class FileRepository @Inject constructor(
 ) {
 
     fun readUri(uri: Uri): Pair<ByteArray, Pair<String?, String?>> {
-        val fileName: String?
+        var fileName: String? = null
         val mimeType: String?
 
         context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
                 val nameIdx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                 fileName = if (nameIdx >= 0) cursor.getString(nameIdx) else null
-            } else {
-                fileName = null
             }
-        } ?: run { fileName = null }
+        }
 
         mimeType = context.contentResolver.getType(uri)
 

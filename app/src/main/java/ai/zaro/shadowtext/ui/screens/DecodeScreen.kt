@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalSavedStateHandle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +25,7 @@ fun DecodeScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    val savedStateHandle = androidx.lifecycle.compose.LocalSavedStateHandle.current
+    val savedStateHandle = LocalSavedStateHandle.current
     val sharedText = savedStateHandle.get<String>("sharedText")
 
     LaunchedEffect(sharedText) {

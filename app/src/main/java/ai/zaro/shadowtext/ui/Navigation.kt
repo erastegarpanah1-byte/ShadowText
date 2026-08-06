@@ -1,5 +1,9 @@
 package ai.zaro.shadowtext.ui
 
+import ai.zaro.shadowtext.ui.screens.DecodeScreen
+import ai.zaro.shadowtext.ui.screens.EncodeScreen
+import ai.zaro.shadowtext.ui.screens.HomeScreen
+import ai.zaro.shadowtext.ui.screens.ResultScreen
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

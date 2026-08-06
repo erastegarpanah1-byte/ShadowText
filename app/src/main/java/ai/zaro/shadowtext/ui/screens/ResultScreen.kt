@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalSavedStateHandle
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,18 +30,18 @@ fun ResultScreen(
     mode: String,
     onNavigateBack: () -> Unit,
     onNavigateHome: () -> Unit,
-    viewModel: SaveAndShareUseCase = hiltViewModel(),
+    viewModel: ResultViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val savedStateHandle = androidx.lifecycle.compose.LocalSavedStateHandle.current
-    val encodeResult = if (mode == "encoded") {
+    val savedStateHandle = LocalSavedStateHandle.current
+    val encodeResult: EncodeResult? = if (mode == "encoded") {
         savedStateHandle.get<EncodeResult>("encodeResult")
     } else null
-    val decodeResult = if (mode == "decoded") {
+    val decodeResult: DecodeResult? = if (mode == "decoded") {
         savedStateHandle.get<DecodeResult>("decodeResult")
     } else null
 
@@ -67,10 +68,11 @@ fun ResultScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
             if (mode == "encoded" && encodeResult != null) {
+                val result = encodeResult!!
                 EncodedResultContent(
-                    result = encodeResult,
+                    result = result,
                     onCopyText = {
-                        clipboardManager.setText(AnnotatedString(encodeResult.stegoText))
+                        clipboardManager.setText(AnnotatedString(result.stegoText))
                         scope.launch {
                             snackbarHostState.showSnackbar("Stego text copied to clipboard")
                         }
@@ -78,10 +80,7 @@ fun ResultScreen(
                     onShareText = {
                         scope.launch {
                             try {
-                                val intent = viewModel.saveStegoText(
-                                    encodeResult.stegoText,
-                                    "shadowtext_encoded"
-                                )
+                                val intent = viewModel.shareStegoText(result.stegoText)
                                 context.startActivity(
                                     android.content.Intent.createChooser(intent, "Share Stego Text")
                                 )
@@ -94,15 +93,16 @@ fun ResultScreen(
                     },
                 )
             } else if (mode == "decoded" && decodeResult != null) {
+                val result = decodeResult!!
                 DecodedResultContent(
-                    result = decodeResult,
+                    result = result,
                     onSaveFile = {
                         scope.launch {
                             try {
-                                val intent = viewModel(
-                                    decodeResult.payload,
-                                    decodeResult.metadata["filename"],
-                                    decodeResult.metadata["mimeType"],
+                                val intent = viewModel.shareDecodedFile(
+                                    result.payload,
+                                    result.metadata["filename"],
+                                    result.metadata["mimeType"],
                                 )
                                 context.startActivity(
                                     android.content.Intent.createChooser(intent, "Save Decoded File")
@@ -175,7 +175,7 @@ private fun EncodedResultContent(
         Column(modifier = Modifier.padding(16.dp)) {
             StatRow("Visible text", "${result.visibleText.length} chars")
             StatRow("Invisible chars", "${result.invisibleCharCount}")
-            StatRow("Hidden payload", formatFileSizeRes(result.payloadSizeBytes.toLong()))
+            StatRow("Hidden payload", formatFileSize(result.payloadSizeBytes.toLong()))
             StatRow("Encoding", result.encodingScheme)
         }
     }
@@ -283,7 +283,7 @@ private fun DecodedResultContent(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             StatRow("File type", result.payloadTypeLabel)
-            StatRow("Payload size", formatFileSizeRes(result.payload.size.toLong()))
+            StatRow("Payload size", formatFileSize(result.payload.size.toLong()))
             StatRow("Encoding", result.encodingScheme)
 
             result.metadata["filename"]?.let {
@@ -351,7 +351,7 @@ private fun StatRow(label: String, value: String) {
     }
 }
 
-private fun formatFileSizeRes(bytes: Long): String {
+private fun formatFileSize(bytes: Long): String {
     return when {
         bytes < 1024 -> "$bytes B"
         bytes < 1024 * 1024 -> "${bytes / 1024} KB"
