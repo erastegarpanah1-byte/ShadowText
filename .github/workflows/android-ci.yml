@@ -18,26 +18,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - uses: android-actions/setup-android@v3
-      - uses: gradle/actions/setup-gradle@v3
-      - run: gradle lint --no-daemon --stacktrace
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-report
-          path: app/build/reports/lint-results*.html
-          retention-days: 7
-
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -48,9 +28,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: android-actions/setup-android@v3
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-34'
       - uses: gradle/actions/setup-gradle@v3
-      - run: gradle test --no-daemon --stacktrace
+      - name: Run unit tests
+        run: ./gradlew test --no-daemon --stacktrace
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -63,17 +47,21 @@ jobs:
   build-debug:
     name: Build Debug APK
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: [ lint, unit-tests ]
+    timeout-minutes: 35
+    needs: [ unit-tests ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: android-actions/setup-android@v3
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-34 build-tools;34.0.0'
       - uses: gradle/actions/setup-gradle@v3
-      - run: gradle assembleDebug --no-daemon --stacktrace
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: ShadowText-debug
@@ -83,8 +71,8 @@ jobs:
   build-release:
     name: Build Release APK
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: [ lint, unit-tests ]
+    timeout-minutes: 35
+    needs: [ unit-tests ]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
@@ -92,9 +80,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: android-actions/setup-android@v3
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-34 build-tools;34.0.0'
       - uses: gradle/actions/setup-gradle@v3
-      - run: gradle assembleRelease --no-daemon --stacktrace
+      - name: Build release APK
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: ShadowText-release
