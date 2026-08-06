@@ -15,7 +15,7 @@ jobs:
   test-and-build:
     name: Test & Build
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -34,10 +34,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.5'
-          generate-job-summary: false
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - name: Create local.properties
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
       - name: Run unit tests
         run: gradle test --no-daemon --stacktrace
