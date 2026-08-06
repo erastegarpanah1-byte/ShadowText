@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ResultScreen(
     mode: String,
+    stegoText: String,
     onNavigateBack: () -> Unit,
     onNavigateHome: () -> Unit,
     viewModel: ResultViewModel = hiltViewModel(),
@@ -31,9 +32,6 @@ fun ResultScreen(
     val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    val navBackStackEntry = androidx.navigation.compose.currentBackStackEntryAsState()
-    val stegoText = navBackStackEntry.value?.savedStateHandle?.get<String>("stegoText") ?: ""
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -57,37 +55,24 @@ fun ResultScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = null,
+                    Icons.Default.CheckCircle, null,
                     modifier = Modifier.size(72.dp),
                     tint = MaterialTheme.colorScheme.primary,
                 )
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
             Text(
-                text = if (mode == "encoded") "File successfully hidden in text!"
-                       else "Hidden file extracted!",
+                text = if (mode == "encoded") "File successfully hidden in text!" else "Hidden file extracted!",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
-
             if (mode == "encoded" && stegoText.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "Stego Text Preview",
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Medium,
-                        )
+                        Text("Stego Text Preview", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Medium)
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = stegoText.take(500) + if (stegoText.length > 500) "..." else "",
@@ -95,80 +80,44 @@ fun ResultScreen(
                         )
                     }
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Button(
-                        onClick = {
-                            clipboardManager.setText(AnnotatedString(stegoText))
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Stego text copied to clipboard")
-                            }
-                        },
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = null)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(onClick = {
+                        clipboardManager.setText(AnnotatedString(stegoText))
+                        scope.launch { snackbarHostState.showSnackbar("Stego text copied to clipboard") }
+                    }, modifier = Modifier.weight(1f)) {
+                        Icon(Icons.Default.ContentCopy, null)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Copy")
                     }
-                    OutlinedButton(
-                        onClick = {
-                            scope.launch {
-                                try {
-                                    val intent = viewModel.shareStegoText(stegoText)
-                                    context.startActivity(
-                                        android.content.Intent.createChooser(intent, "Share Stego Text")
-                                    )
-                                } catch (e: Exception) {
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar("Share failed: ${e.message}")
-                                    }
-                                }
+                    OutlinedButton(onClick = {
+                        scope.launch {
+                            try {
+                                val intent = viewModel.shareStegoText(stegoText)
+                                context.startActivity(android.content.Intent.createChooser(intent, "Share Stego Text"))
+                            } catch (e: Exception) {
+                                scope.launch { snackbarHostState.showSnackbar("Share failed: ${e.message}") }
                             }
-                        },
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        Icon(Icons.Default.Share, contentDescription = null)
+                        }
+                    }, modifier = Modifier.weight(1f)) {
+                        Icon(Icons.Default.Share, null)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Share")
                     }
                 }
-
                 Spacer(modifier = Modifier.height(12.dp))
-
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
-                    ),
-                ) {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f))) {
                     Row(modifier = Modifier.padding(12.dp)) {
-                        Icon(
-                            Icons.Default.Info,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(20.dp),
-                        )
+                        Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Some apps strip invisible characters. Test your target platform before relying on this.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                        )
+                        Text("Some apps strip invisible characters. Test your target platform before relying on this.",
+                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
-
-            OutlinedButton(
-                onClick = onNavigateHome,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Icon(Icons.Default.Home, contentDescription = null)
+            OutlinedButton(onClick = onNavigateHome, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Default.Home, null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Back to Home")
             }
