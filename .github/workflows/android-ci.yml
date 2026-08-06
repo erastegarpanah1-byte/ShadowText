@@ -37,8 +37,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew lint --no-daemon --stacktrace
+      - uses: gradle/actions/setup-gradle@v3
+      - run: gradle lint --no-daemon --stacktrace
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -56,8 +56,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew test --no-daemon --stacktrace
+      - uses: gradle/actions/setup-gradle@v3
+      - run: gradle test --no-daemon --stacktrace
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -78,8 +78,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - uses: gradle/actions/setup-gradle@v3
+      - run: gradle assembleDebug --no-daemon --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: ShadowText-debug
@@ -98,8 +98,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew assembleRelease --no-daemon --stacktrace
+      - uses: gradle/actions/setup-gradle@v3
+      - run: gradle assembleRelease --no-daemon --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: ShadowText-release
