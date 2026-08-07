@@ -25,6 +25,7 @@ data class EncodeUiState(
     val selectedFileMimeType: String? = null,
     val bytesLoaded: Boolean = false,
     val inputText: String = "",
+    val useCarrierText: Boolean = true,
     val result: EncodeResult? = null,
     val error: String? = null,
 )
@@ -44,6 +45,7 @@ class EncodeViewModel @Inject constructor(
 
     fun setMode(mode: EncodeMode) { _state.value = _state.value.copy(mode = mode, error = null) }
     fun setInputText(text: String) { _state.value = _state.value.copy(inputText = text, error = null) }
+    fun toggleCarrierText() { _state.value = _state.value.copy(useCarrierText = !_state.value.useCarrierText) }
 
     fun loadFile(uri: Uri) {
         viewModelScope.launch {
@@ -52,9 +54,7 @@ class EncodeViewModel @Inject constructor(
                 val (bytes, meta) = withContext(Dispatchers.IO) { fileRepository.readUri(uri) }
                 fileBytes = bytes; fileName = meta.first; mimeType = meta.second
                 _state.value = _state.value.copy(isLoading = false, selectedFileName = fileName, selectedFileSize = bytes.size.toLong(), selectedFileMimeType = mimeType, bytesLoaded = true)
-            } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = "Failed to read file: ${e.message}")
-            }
+            } catch (e: Exception) { _state.value = _state.value.copy(isLoading = false, error = "Failed to read file: ${e.message}") }
         }
     }
 
@@ -73,9 +73,7 @@ class EncodeViewModel @Inject constructor(
                     }
                 }
                 _state.value = _state.value.copy(isLoading = false, result = result)
-            } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = "Encoding failed: ${e.message}")
-            }
+            } catch (e: Exception) { _state.value = _state.value.copy(isLoading = false, error = "Encoding failed: ${e.message}") }
         }
     }
 
