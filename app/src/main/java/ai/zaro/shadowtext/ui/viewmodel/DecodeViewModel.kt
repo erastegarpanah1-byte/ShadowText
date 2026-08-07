@@ -2,8 +2,9 @@ package ai.zaro.shadowtext.ui.viewmodel
 
 import ai.zaro.shadowtext.core.engine.DecodeResult
 import ai.zaro.shadowtext.core.engine.DetectionResult
+import ai.zaro.shadowtext.data.repository.FileRepository
 import ai.zaro.shadowtext.domain.usecase.DecodeTextUseCase
-import ai.zaro.shadowtext.domain.usecase.SaveAndShareUseCase
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,9 +16,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+enum class DecodeInputMode { TEXT, FILE }
+
 data class DecodeUiState(
     val isLoading: Boolean = false,
+    val inputMode: DecodeInputMode = DecodeInputMode.TEXT,
     val inputText: String = "",
+    val selectedFileName: String? = null,
     val detection: DetectionResult? = null,
     val result: DecodeResult? = null,
     val error: String? = null,
@@ -26,69 +31,44 @@ data class DecodeUiState(
 @HiltViewModel
 class DecodeViewModel @Inject constructor(
     private val decodeTextUseCase: DecodeTextUseCase,
-    private val saveAndShareUseCase: SaveAndShareUseCase,
+    private val fileRepository: FileRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DecodeUiState())
     val state: StateFlow<DecodeUiState> = _state.asStateFlow()
+    private var fileBytes: ByteArray? = null
 
-    fun setInputText(text: String) {
-        _state.value = _state.value.copy(inputText = text, error = null)
+    fun setInputMode(mode: DecodeInputMode) { _state.value = _state.value.copy(inputMode = mode, error = null) }
+    fun setInputText(text: String) { _state.value = _state.value.copy(inputText = text, error = null); if (text.isNotBlank()) detect(text) else _state.value = _state.value.copy(detection = null) }
 
-        if (text.isNotBlank()) {
-            detect(text)
-        } else {
-            _state.value = _state.value.copy(detection = null)
+    fun loadFileForDecode(uri: Uri) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true, error = null)
+            try {
+                val (bytes, meta) = withContext(Dispatchers.IO) { fileRepository.readUri(uri) }
+                fileBytes = bytes; val text = String(bytes, Charsets.UTF_8)
+                _state.value = _state.value.copy(isLoading = false, selectedFileName = meta.first, inputText = text)
+                detect(text)
+            } catch (e: Exception) { _state.value = _state.value.copy(isLoading = false, error = "Failed to read file: ${e.message}") }
         }
     }
 
     private fun detect(text: String) {
-        viewModelScope.launch {
-            try {
-                val detection = withContext(Dispatchers.Default) {
-                    decodeTextUseCase.detect(text)
-                }
-                _state.value = _state.value.copy(detection = detection)
-            } catch (_: Exception) {
-            }
-        }
+        viewModelScope.launch { try { _state.value = _state.value.copy(detection = withContext(Dispatchers.Default) { decodeTextUseCase.detect(text) }) } catch (_: Exception) {} }
     }
 
     fun decode() {
-        val text = _state.value.inputText.ifBlank {
-            _state.value = _state.value.copy(error = "No text to decode")
-            return
+        val text = when (_state.value.inputMode) {
+            DecodeInputMode.TEXT -> _state.value.inputText.ifBlank { _state.value = _state.value.copy(error = "No text to decode"); return }
+            DecodeInputMode.FILE -> if (fileBytes != null) String(fileBytes!!, Charsets.UTF_8) else { _state.value = _state.value.copy(error = "No file loaded"); return }
         }
-
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
-
-            try {
-                val result = withContext(Dispatchers.Default) {
-                    decodeTextUseCase(text)
-                }
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    result = result,
-                )
-            } catch (e: Exception) {
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    error = "Decoding failed: ${e.message}",
-                )
-            }
+            try { _state.value = _state.value.copy(isLoading = false, result = withContext(Dispatchers.Default) { decodeTextUseCase(text) }) }
+            catch (e: Exception) { _state.value = _state.value.copy(isLoading = false, error = "Decoding failed: ${e.message}") }
         }
     }
 
-    fun getShareIntent(): android.content.Intent? {
-        return null
-    }
-
-    fun clearError() {
-        _state.value = _state.value.copy(error = null)
-    }
-
-    fun reset() {
-        _state.value = DecodeUiState()
-    }
+    fun clearError() { _state.value = _state.value.copy(error = null) }
+    fun reset() { fileBytes = null; _state.value = DecodeUiState() }
 }
