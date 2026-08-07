@@ -1,6 +1,7 @@
 package ai.zaro.shadowtext.ui.screens
 
 import ai.zaro.shadowtext.ui.viewmodel.EncodeMode
+import ai.zaro.shadowtext.ui.viewmodel.EncodeUiState
 import ai.zaro.shadowtext.ui.viewmodel.EncodeViewModel
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
