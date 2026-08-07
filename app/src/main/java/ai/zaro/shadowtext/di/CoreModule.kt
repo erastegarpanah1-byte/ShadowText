@@ -31,7 +31,7 @@ object CoreModule {
     @Provides
     @Singleton
     fun provideStegoEncoder(
-        encoders: List<InvisibleEncoder>,
+        encoders: List<@JvmSuppressWildcards InvisibleEncoder>,
         carrierTextProvider: CarrierTextProvider,
     ): StegoEncoder {
         return StegoEncoder(
@@ -43,7 +43,7 @@ object CoreModule {
     @Provides
     @Singleton
     fun provideStegoDecoder(
-        encoders: List<InvisibleEncoder>,
+        encoders: List<@JvmSuppressWildcards InvisibleEncoder>,
     ): StegoDecoder {
         return StegoDecoder(encoders)
     }
