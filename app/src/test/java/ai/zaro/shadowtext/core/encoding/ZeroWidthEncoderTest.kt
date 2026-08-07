@@ -23,7 +23,7 @@ class ZeroWidthEncoderTest {
 
     @Test
     fun `round trip single byte`() {
-        val original = byteArrayOf(0x42)
+        val original = byteArrayOf(0x42.toByte())
         val encoded = encoder.encode(original)
         assertTrue(encoded.isNotEmpty())
         val decoded = encoder.decode(encoded)
@@ -50,10 +50,10 @@ class ZeroWidthEncoderTest {
     @Test
     fun `round trip binary data`() {
         val original = byteArrayOf(
-            0x89, 0x50.toByte(), 0x4E, 0x47,
-            0x0D, 0x0A, 0x1A, 0x0A,
-            0x00, 0x00, 0x00, 0x0D,
-            0x49, 0x48, 0x44, 0x52,
+            0x89.toByte(), 0x50.toByte(), 0x4E.toByte(), 0x47.toByte(),
+            0x0D.toByte(), 0x0A.toByte(), 0x1A.toByte(), 0x0A.toByte(),
+            0x00.toByte(), 0x00.toByte(), 0x00.toByte(), 0x0D.toByte(),
+            0x49.toByte(), 0x48.toByte(), 0x44.toByte(), 0x52.toByte(),
         )
         val encoded = encoder.encode(original)
         val decoded = encoder.decode(encoded)
@@ -70,7 +70,7 @@ class ZeroWidthEncoderTest {
 
     @Test
     fun `decode works on mixed visible and invisible text`() {
-        val original = byteArrayOf(0x01, 0x02, 0x03)
+        val original = byteArrayOf(0x01.toByte(), 0x02.toByte(), 0x03.toByte())
         val invisible = encoder.encode(original)
         val mixed = "Hello world, this is visible text." + invisible + "More visible text."
         val decoded = encoder.decode(mixed)
@@ -79,7 +79,7 @@ class ZeroWidthEncoderTest {
 
     @Test
     fun `extractInvisible isolates invisible characters`() {
-        val invisible = encoder.encode(byteArrayOf(0x7F))
+        val invisible = encoder.encode(byteArrayOf(0x7F.toByte()))
         val mixed = "The quick brown fox.${invisible}End."
         val extracted = encoder.extractInvisible(mixed)
         extracted.forEach { ch ->
@@ -92,7 +92,7 @@ class ZeroWidthEncoderTest {
 
     @Test
     fun `containsEncodedData detects payload`() {
-        val invisible = encoder.encode(byteArrayOf(0x42))
+        val invisible = encoder.encode(byteArrayOf(0x42.toByte()))
         val mixed = "Visible text." + invisible + "More text."
         assertTrue(encoder.containsEncodedData(mixed))
     }
@@ -114,7 +114,7 @@ class ZeroWidthEncoderTest {
 
     @Test
     fun `encode produces only invisible characters`() {
-        val encoded = encoder.encode(byteArrayOf(0x00, 0xFF.toByte()))
+        val encoded = encoder.encode(byteArrayOf(0x00.toByte(), 0xFF.toByte()))
         val visibleChars = encoded.filter { it.code !in listOf(0x200B, 0x200C, 0x200D, 0xFEFF, 0x2063) }
         assertEquals("Should not contain visible chars, but found: '$visibleChars'", 0, visibleChars.length)
     }
