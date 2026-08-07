@@ -30,11 +30,10 @@ class ZeroWidthEncoder : InvisibleEncoder {
 
     override fun decode(encoded: String): ByteArray {
         val invisible = extractInvisible(encoded)
-        if (invisible.length < 8) throw EncodingException("No encoded data found")
-        var idx = 0
+        if (invisible.length < 16) throw EncodingException("No encoded data found")
         val chars = invisible.toCharArray()
-        val len = decodeInt(chars, idx)
-        idx += 8
+        val len = decodeInt(chars, 0)
+        var idx = 16
         if (len < 0 || len > 100_000_000 || idx + len * 4 > chars.size)
             throw EncodingException("Invalid payload length: $len")
         val bytes = ByteArray(len)
@@ -50,8 +49,8 @@ class ZeroWidthEncoder : InvisibleEncoder {
     }
 
     override fun extractInvisible(text: String): String = text.filter { it in ALL_CHARS }
-    override fun containsEncodedData(text: String): Boolean = extractInvisible(text).length >= 8
-    override fun encodedCharCount(byteCount: Int): Int = 8 + byteCount * 4
+    override fun containsEncodedData(text: String): Boolean = extractInvisible(text).length >= 16
+    override fun encodedCharCount(byteCount: Int): Int = 16 + byteCount * 4
 
     private fun encodeInt(sb: StringBuilder, value: Int) {
         for (shift in 24 downTo 0 step 8) {
@@ -66,11 +65,11 @@ class ZeroWidthEncoder : InvisibleEncoder {
     private fun decodeInt(chars: CharArray, offset: Int): Int {
         var result = 0
         for (i in 0 until 4) {
-            val idx = offset + i * 4
-            val b0 = charToBits(chars[idx]) shl 6
-            val b1 = charToBits(chars[idx + 1]) shl 4
-            val b2 = charToBits(chars[idx + 2]) shl 2
-            val b3 = charToBits(chars[idx + 3])
+            val p = offset + i * 4
+            val b0 = charToBits(chars[p]) shl 6
+            val b1 = charToBits(chars[p + 1]) shl 4
+            val b2 = charToBits(chars[p + 2]) shl 2
+            val b3 = charToBits(chars[p + 3])
             result = (result shl 8) or (b0 or b1 or b2 or b3)
         }
         return result
