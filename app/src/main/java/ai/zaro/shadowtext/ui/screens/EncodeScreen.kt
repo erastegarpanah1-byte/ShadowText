@@ -56,7 +56,7 @@ fun EncodeScreen(onNavigateBack: () -> Unit, onEncodeComplete: (String) -> Unit,
                 Spacer(Modifier.height(16.dp))
                 val canEncode = when (state.mode) { EncodeMode.TEXT -> state.inputText.isNotBlank(); EncodeMode.FILE -> state.bytesLoaded }
                 Button(onClick = { viewModel.encode() }, enabled = canEncode && !state.isLoading, modifier = Modifier.fillMaxWidth().height(52.dp), colors = ButtonDefaults.buttonColors(containerColor = TealAccent, contentColor = Color(0xFF00382E)), shape = RoundedCornerShape(14.dp)) {
-                    if (state.isLoading) { CircularProgressIndicator(Modifier.size(22.dp), 2.dp, Color(0xFF00382E)); Spacer(Modifier.width(10.dp)); Text("Encoding...") } else { Icon(Icons.Filled.Lock, null, Modifier.size(20.dp)); Spacer(Modifier.width(10.dp)); Text("Encode Now", fontWeight = FontWeight.Bold) }
+                    if (state.isLoading) { CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp, color = Color(0xFF00382E)); Spacer(Modifier.width(10.dp)); Text("Encoding...") } else { Icon(Icons.Filled.Lock, null, Modifier.size(20.dp)); Spacer(Modifier.width(10.dp)); Text("Encode Now", fontWeight = FontWeight.Bold) }
                 }
                 state.error?.let { Spacer(Modifier.height(14.dp)); ErrorCard(it) }; Spacer(Modifier.height(20.dp))
             }

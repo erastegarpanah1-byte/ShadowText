@@ -7,7 +7,6 @@ import ai.zaro.shadowtext.ui.screens.ResultScreen
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -35,7 +34,6 @@ object Routes {
 }
 
 private val Gold = Color(0xFFD4A574)
-private val TealAccent = Color(0xFF2ED4B4)
 private val NavyBorder = Color(0xFF1E3050)
 private val DimWhite = Color(0xFFC1C6CF)
 
@@ -61,7 +59,7 @@ fun ShadowTextNavHost(modifier: Modifier = Modifier, intent: Intent?) {
                 Box(Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(Color(0xFF0D2238),Color(0xFF0A1628)))).padding(24.dp)) {
                     Column { Icon(Icons.Filled.Shield,null,Modifier.size(38.dp),tint=Gold); Spacer(Modifier.height(12.dp)); Text("SHADOWTEXT",color=Gold,fontWeight=FontWeight.Bold,style=MaterialTheme.typography.titleLarge); Text("Steganography Engine",color=DimWhite.copy(alpha=0.5f),style=MaterialTheme.typography.bodySmall) }
                 }
-                Spacer(Modifier.height(8.dp)); HorizontalDivider(color=NavyBorder,thickness=0.5.dp)
+                Spacer(Modifier.height(8.dp)); Divider(color=NavyBorder,thickness=0.5.dp)
                 menuSections.forEach { section ->
                     Spacer(Modifier.height(8.dp)); Text(section.title.uppercase(),style=MaterialTheme.typography.labelSmall.copy(letterSpacing=1.2.sp),color=NavyBorder,modifier=Modifier.padding(horizontal=24.dp,vertical=4.dp))
                     section.items.forEach { item ->
@@ -79,10 +77,7 @@ fun ShadowTextNavHost(modifier: Modifier = Modifier, intent: Intent?) {
             composable(Routes.HOME){HomeScreen(onMenuClick={scope.launch{drawerState.open()}},onEncodeClick={navController.navigate(Routes.ENCODE)},onDecodeClick={navController.navigate(Routes.DECODE)},incomingIntent=intent,onNavigateToDecode={text->navController.currentBackStackEntry?.savedStateHandle?.set("sharedText",text);navController.navigate(Routes.DECODE)})}
             composable(Routes.ENCODE){EncodeScreen(onNavigateBack={navController.popBackStack()},onEncodeComplete={stegoText->val encoded=java.net.URLEncoder.encode(stegoText,"UTF-8");navController.navigate("result/encoded/$encoded")})}
             composable(Routes.DECODE){DecodeScreen(onNavigateBack={navController.popBackStack()},onDecodeComplete={_->navController.navigate("result/decoded/")})}
-            composable(route=Routes.RESULT,arguments=listOf(navArgument("mode"){type=NavType.StringType},navArgument("stegoText"){type=NavType.StringType;defaultValue=""})){backStackEntry->
-                val mode=backStackEntry.arguments?.getString("mode")?:"encoded";val stegoText=backStackEntry.arguments?.getString("stegoText")?:""
-                ResultScreen(mode=mode,stegoText=stegoText,onNavigateBack={navController.popBackStack(Routes.HOME,inclusive=false)},onNavigateHome={navController.popBackStack(Routes.HOME,inclusive=true)})
-            }
+            composable(route=Routes.RESULT,arguments=listOf(navArgument("mode"){type=NavType.StringType},navArgument("stegoText"){type=NavType.StringType;defaultValue=""})){backStackEntry->val mode=backStackEntry.arguments?.getString("mode")?:"encoded";val stegoText=backStackEntry.arguments?.getString("stegoText")?:"";ResultScreen(mode=mode,stegoText=stegoText,onNavigateBack={navController.popBackStack(Routes.HOME,inclusive=false)},onNavigateHome={navController.popBackStack(Routes.HOME,inclusive=true)})}
         }
     }
 }
