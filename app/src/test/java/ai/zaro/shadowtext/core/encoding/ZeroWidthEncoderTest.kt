@@ -20,12 +20,11 @@ class ZeroWidthEncoderTest {
         val o = ByteArray(10_000) { (it % 256).toByte() }
         assertArrayEquals(o, e.decode(e.encode(o)))
     }
-    @Test fun `decode works on mixed text`() {
+    @Test fun `decode on mixed text`() {
         val o = byteArrayOf(0x01.toByte(), 0x02.toByte(), 0x03.toByte())
-        val m = "Hello" + e.encode(o) + "World"
-        assertArrayEquals(o, e.decode(m))
+        assertArrayEquals(o, e.decode("Hello" + e.encode(o) + "World"))
     }
-    @Test fun `containsEncodedData detects`() {
+    @Test fun `containsEncodedData true`() {
         assertTrue(e.containsEncodedData("x" + e.encode(byteArrayOf(0x42.toByte())) + "y"))
     }
     @Test fun `containsEncodedData false plain`() {
@@ -36,7 +35,10 @@ class ZeroWidthEncoderTest {
         e.decode("No invisible chars.")
     }
     @Test fun `encode only invisible chars`() {
-        val encoded = e.encode(byteArrayOf(0x00.toByte(), 0xFF.toByte()))
-        encoded.forEach { assertTrue(it.code in listOf(0x200B, 0x200C, 0x200D, 0xFEFF)) }
+        val enc = e.encode(byteArrayOf(0x00.toByte(), 0xFF.toByte()))
+        enc.forEach { assertTrue(it.code in listOf(0x200B, 0x200C, 0x200D, 0xFEFF)) }
+    }
+    @Test fun `empty round trip`() {
+        assertEquals("", e.encode(ByteArray(0)))
     }
 }

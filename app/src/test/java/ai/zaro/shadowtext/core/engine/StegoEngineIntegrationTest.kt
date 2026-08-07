@@ -32,7 +32,5 @@ class StegoEngineIntegrationTest {
         assertFalse(dec.detect("Ordinary text.").hasHiddenPayload)
     }
     @Test(expected = StegoException::class)
-    fun `decode throws plain text`() {
-        dec.decode("No data.")
-    }
+    fun `decode throws plain text`() { dec.decode("No data.") }
 }
