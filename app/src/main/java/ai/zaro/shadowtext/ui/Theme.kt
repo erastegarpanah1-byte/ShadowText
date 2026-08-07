@@ -2,6 +2,7 @@ package ai.zaro.shadowtext.ui
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val NavyPetrol = darkColorScheme(
@@ -36,5 +37,8 @@ private val NavyPetrol = darkColorScheme(
 
 @Composable
 fun ShadowTextTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = NavyPetrol, content = content)
+    MaterialTheme(
+        colorScheme = NavyPetrol,
+        content = content,
+    )
 }
