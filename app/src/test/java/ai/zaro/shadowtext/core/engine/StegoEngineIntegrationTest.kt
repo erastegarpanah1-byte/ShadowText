@@ -10,27 +10,26 @@ class StegoEngineIntegrationTest {
     private lateinit var dec: StegoDecoder
     @Before fun setUp() {
         val zw = ZeroWidthEncoder()
-        enc = StegoEncoder(zw, GeneratedCarrierTextProvider(minSentences = 3))
+        enc = StegoEncoder(zw)
         dec = StegoDecoder(listOf(zw))
     }
-    @Test fun `round trip small text`() {
+    @Test fun roundTripText() {
         val p = "Secret.".toByteArray(Charsets.UTF_8)
-        assertArrayEquals(p, dec.decode(enc.encode(p, "text/plain", "s.txt").stegoText).payload)
+        val r = enc.encode(payload = p, mimeType = "text/plain", fileName = "s.txt", carrierText = "Hello world.")
+        assertArrayEquals(p, dec.decode(r.stegoText).payload)
     }
-    @Test fun `round trip binary`() {
+    @Test fun roundTripBinary() {
         val p = ByteArray(256) { (it % 256).toByte() }
-        assertArrayEquals(p, dec.decode(enc.encode(p).stegoText).payload)
+        val r = enc.encode(payload = p, carrierText = "Cover text here.")
+        assertArrayEquals(p, dec.decode(r.stegoText).payload)
     }
-    @Test fun `round trip no metadata`() {
-        val p = byteArrayOf(0xDE.toByte(), 0xAD.toByte(), 0xBE.toByte(), 0xEF.toByte())
-        assertArrayEquals(p, dec.decode(enc.encode(p).stegoText).payload)
+    @Test fun detectFindsPayload() {
+        val r = enc.encode(payload = "x".toByteArray(), carrierText = "Test.")
+        assertTrue(dec.detect(r.stegoText).hasHiddenPayload)
     }
-    @Test fun `detect finds payload`() {
-        assertTrue(dec.detect(enc.encode("x".toByteArray()).stegoText).hasHiddenPayload)
-    }
-    @Test fun `detect false plain`() {
+    @Test fun detectFalsePlain() {
         assertFalse(dec.detect("Ordinary text.").hasHiddenPayload)
     }
     @Test(expected = StegoException::class)
-    fun `decode throws plain text`() { dec.decode("No data.") }
+    fun decodeThrowsPlainText() { dec.decode("No data.") }
 }
