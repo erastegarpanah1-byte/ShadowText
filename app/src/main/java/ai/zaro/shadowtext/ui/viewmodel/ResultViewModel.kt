@@ -10,12 +10,8 @@ import javax.inject.Inject
 class ResultViewModel @Inject constructor(
     private val saveAndShareUseCase: SaveAndShareUseCase,
 ) : ViewModel() {
-
-    suspend fun shareStegoText(content: String, fileName: String? = null): Intent {
-        return saveAndShareUseCase.saveStegoText(content, fileName)
-    }
-
-    suspend fun shareDecodedFile(bytes: ByteArray, fileName: String?, mimeType: String?): Intent {
-        return saveAndShareUseCase(bytes, fileName, mimeType)
-    }
+    suspend fun shareStegoText(content: String, fileName: String? = null): Intent =
+        saveAndShareUseCase.saveStegoText(content, fileName)
+    suspend fun shareDecodedText(bytes: ByteArray, fileName: String?, mimeType: String?): Intent =
+        saveAndShareUseCase(bytes, fileName, mimeType)
 }

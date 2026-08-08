@@ -1,18 +1,19 @@
 package ai.zaro.shadowtext.ui.screens
-
 import android.content.Intent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -25,33 +26,28 @@ import kotlinx.coroutines.launch
 @Composable
 fun DecodeResultScreen(decodedText: String, onBack: () -> Unit, onNew: () -> Unit) {
     val c = MaterialTheme.colorScheme
-    val ctx = LocalContext.current
-    val clip = LocalClipboardManager.current
+    val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
-    val snack = remember { SnackbarHostState() }
-    Scaffold(snackbarHost = { SnackbarHost(snack) }, containerColor = c.background, topBar = { TopAppBar(title = { Text("Decode", fontWeight = FontWeight.SemiBold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, "Back") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background, titleContentColor = c.onBackground)) }) { p ->
-        Column(Modifier.fillMaxSize().padding(p).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(Modifier.height(48.dp))
-            Box(Modifier.size(80.dp).background(c.primary.copy(alpha = 0.15f), RoundedCornerShape(40.dp)), contentAlignment = Alignment.Center) { Icon(Icons.Filled.CheckCircle, null, Modifier.size(48.dp), tint = c.primary) }
+    val snackbar = remember { SnackbarHostState() }
+    Scaffold(snackbarHost={SnackbarHost(snackbar)},containerColor=c.background, topBar={TopAppBar(title={Text("Decode",fontWeight=FontWeight.SemiBold,color=c.onBackground)},navigationIcon={IconButton(onClick=onBack){Icon(Icons.AutoMirrored.Filled.ArrowBack,"Back",tint=c.onBackground)}},colors=TopAppBarDefaults.topAppBarColors(containerColor=c.background))}) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal=24.dp),horizontalAlignment=Alignment.CenterHorizontally) {
+            Spacer(Modifier.height(40.dp))
+            Box(Modifier.size(80.dp).clip(CircleShape).background(c.secondary.copy(alpha=0.15f)),contentAlignment=Alignment.Center){Icon(Icons.Filled.CheckCircle,null,Modifier.size(48.dp),tint=c.secondary)}
             Spacer(Modifier.height(24.dp))
-            Text("Decoded Successfully!", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = c.onBackground)
+            Text("Decoded Successfully!",style=MaterialTheme.typography.headlineSmall.copy(fontWeight=FontWeight.Bold),color=c.onBackground)
             Spacer(Modifier.height(8.dp))
-            Text("Your hidden text has been extracted.", style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant, textAlign = TextAlign.Center)
-            Spacer(Modifier.height(32.dp))
-            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(16.dp)) {
-                Column(Modifier.padding(16.dp)) {
-                    Text("Hidden Text", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Medium, color = c.onSurfaceVariant)
-                    Spacer(Modifier.height(8.dp))
-                    Text(decodedText.ifEmpty { "Your hidden text will appear here..." }, style = MaterialTheme.typography.bodySmall, color = if (decodedText.isNotEmpty()) c.onSurface else c.onSurfaceVariant.copy(alpha = 0.5f))
-                }
-            }
+            Text("Your hidden text has been extracted.",style=MaterialTheme.typography.bodyMedium,color=c.onSurfaceVariant,textAlign=TextAlign.Center)
+            Spacer(Modifier.height(28.dp))
+            Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=c.surfaceVariant),shape=RoundedCornerShape(14.dp)){Column(Modifier.padding(16.dp)){Text("Hidden Text",style=MaterialTheme.typography.labelLarge.copy(fontWeight=FontWeight.Medium),color=c.onSurfaceVariant);Spacer(Modifier.height(8.dp));Text(decodedText.ifEmpty{"Your hidden text will appear here..."},style=MaterialTheme.typography.bodySmall,color=if(decodedText.isNotEmpty())c.onSurface else c.onSurfaceVariant.copy(alpha=0.5f))}}
             Spacer(Modifier.height(24.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick = { clip.setText(AnnotatedString(decodedText)); scope.launch { snack.showSnackbar("Copied!") } }, modifier = Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp), border = ButtonDefaults.outlinedButtonBorder, colors = ButtonDefaults.outlinedButtonColors(contentColor = c.primary), enabled = decodedText.isNotEmpty()) { Icon(Icons.Outlined.ContentCopy, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text("Copy", fontWeight = FontWeight.SemiBold) }
-                Button(onClick = { val i = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, decodedText) }; ctx.startActivity(Intent.createChooser(i, "Share")) }, modifier = Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = c.primary, contentColor = c.onPrimary), enabled = decodedText.isNotEmpty()) { Icon(Icons.Outlined.Share, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text("Share", fontWeight = FontWeight.SemiBold) }
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)){
+                OutlinedButton(onClick={clipboard.setText(AnnotatedString(decodedText));scope.launch{snackbar.showSnackbar("Copied!")}},modifier=Modifier.weight(1f).height(50.dp),shape=RoundedCornerShape(14.dp),colors=ButtonDefaults.outlinedButtonColors(contentColor=c.secondary),enabled=decodedText.isNotEmpty()){Icon(Icons.Outlined.ContentCopy,null,Modifier.size(18.dp));Spacer(Modifier.width(8.dp));Text("Copy",fontWeight=FontWeight.SemiBold)}
+                Button(onClick={val i=Intent(Intent.ACTION_SEND).apply{type="text/plain";putExtra(Intent.EXTRA_TEXT,decodedText)};context.startActivity(Intent.createChooser(i,"Share"))},modifier=Modifier.weight(1f).height(50.dp),shape=RoundedCornerShape(14.dp),colors=ButtonDefaults.buttonColors(containerColor=c.secondary,contentColor=c.onSecondary),enabled=decodedText.isNotEmpty()){Icon(Icons.Outlined.Share,null,Modifier.size(18.dp));Spacer(Modifier.width(8.dp));Text("Share",fontWeight=FontWeight.SemiBold)}
             }
+            Spacer(Modifier.height(28.dp))
+            TextButton(onClick=onNew){Icon(Icons.Filled.Add,null,Modifier.size(16.dp));Spacer(Modifier.width(6.dp));Text("New Decode",color=c.secondary)}
             Spacer(Modifier.height(24.dp))
-            TextButton(onClick = onNew) { Icon(Icons.Filled.Add, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text("New Decode", color = c.primary) }
         }
     }
 }
