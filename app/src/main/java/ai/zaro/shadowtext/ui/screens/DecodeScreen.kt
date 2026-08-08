@@ -38,11 +38,10 @@ private val NavyBorder = Color(0xFF1E3050)
 fun DecodeScreen(onNavigateBack: () -> Unit, onDecodeComplete: (String) -> Unit, viewModel: DecodeViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
     val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let { viewModel.loadFileForDecode(it) } }
-    LaunchedEffect(state.result) { state.result?.let { onDecodeComplete("") } }
-    Scaffold(containerColor = Color.Transparent,
-        topBar = { TopAppBar(title = { Text("Decode", color = DimWhite) }, navigationIcon = { IconButton(onClick = { viewModel.reset(); onNavigateBack() }) { Icon(Icons.Filled.ArrowBack, "Back", tint = TealAccent) } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF070E17))) }) { padding ->
+    Scaffold(containerColor = Color.Transparent, topBar = { TopAppBar(title = { Text("Decode", color = DimWhite) }, navigationIcon = { IconButton(onClick = { viewModel.reset(); onNavigateBack() }) { Icon(Icons.Filled.ArrowBack, "Back", tint = TealAccent) } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF070E17))) }) { padding ->
         Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF070E17), Color(0xFF0D1625), Color(0xFF0A1A2E))))) {
             Column(Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState())) {
+                state.result?.let { result -> DecodeResultCard(result, onDismiss = { viewModel.reset() }); return@Scaffold }
                 Text("How do you want to provide the text?", style = MaterialTheme.typography.titleSmall, color = DimWhite, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(12.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) { ModeCard(Icons.Outlined.EditNote, "Paste Text", "Paste stego text directly", state.inputMode == DecodeInputMode.TEXT, TealAccent, { viewModel.setInputMode(DecodeInputMode.TEXT) }, Modifier.weight(1f)); ModeCard(Icons.Outlined.UploadFile, "Open File", "Load .txt file", state.inputMode == DecodeInputMode.FILE, Gold, { viewModel.setInputMode(DecodeInputMode.FILE) }, Modifier.weight(1f)) }
@@ -58,6 +57,39 @@ fun DecodeScreen(onNavigateBack: () -> Unit, onDecodeComplete: (String) -> Unit,
     }
 }
 
+@Composable
+private fun DecodeResultCard(result: ai.zaro.shadowtext.core.engine.DecodeResult, onDismiss: () -> Unit) {
+    Column(Modifier.fillMaxWidth()) {
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { Icon(Icons.Filled.CheckCircle, null, Modifier.size(72.dp), tint = TealAccent) }
+        Spacer(Modifier.height(16.dp))
+        Text("Hidden Data Extracted!", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = TealAccent)
+        Spacer(Modifier.height(6.dp))
+        Text("Payload Size: ${formatDecodeSize(result.payload.size.toLong())}", style = MaterialTheme.typography.bodyMedium, color = DimWhite.copy(alpha = 0.6f))
+        result.fileName?.let { Text("File: $it", style = MaterialTheme.typography.bodySmall, color = Gold) }
+        Spacer(Modifier.height(16.dp))
+        Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = NavyCard), shape = RoundedCornerShape(12.dp), border = androidx.compose.foundation.BorderStroke(1.dp, TealAccent.copy(alpha = 0.3f))) {
+            Column(Modifier.padding(16.dp)) {
+                Text("Decoded Content", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Medium, color = TealAccent)
+                Spacer(Modifier.height(8.dp))
+                val displayText = try { String(result.payload, Charsets.UTF_8) } catch (_: Exception) { result.payload.joinToString(" ") { java.lang.String.format("%02X", it) } }
+                Text(displayText.take(2000), style = MaterialTheme.typography.bodySmall, color = DimWhite)
+            }
+        }
+        Spacer(Modifier.height(20.dp))
+        if (result.metadata.isNotEmpty()) {
+            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = NavyCard.copy(alpha = 0.5f)), shape = RoundedCornerShape(10.dp)) {
+                Column(Modifier.padding(12.dp)) {
+                    Text("Metadata", style = MaterialTheme.typography.labelMedium, color = DimWhite.copy(alpha = 0.5f))
+                    Spacer(Modifier.height(6.dp))
+                    result.metadata.forEach { (k, v) -> Text("$k: $v", style = MaterialTheme.typography.bodySmall, color = DimWhite.copy(alpha = 0.6f)) }
+                }
+            }
+            Spacer(Modifier.height(20.dp))
+        }
+        OutlinedButton(onClick = onDismiss, Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), border = androidx.compose.foundation.BorderStroke(1.dp, TealAccent.copy(alpha = 0.4f))) { Text("Decode Another", color = TealAccent) }
+    }
+}
+
 @Composable private fun ErrorCard(error: String) { Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF3D1A1A)), shape = RoundedCornerShape(12.dp)) { Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Filled.Warning, null, Modifier.size(20.dp), tint = Color(0xFFFFB4AB)); Spacer(Modifier.width(8.dp)); Text(error, color = Color(0xFFFFDAD4), style = MaterialTheme.typography.bodyMedium) } } }
 
 @Composable private fun DetectionCard(d: ai.zaro.shadowtext.core.engine.DetectionResult) { Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = if (d.hasHiddenPayload) Color(0xFF0F3D2E).copy(alpha = 0.5f) else NavyCard), shape = RoundedCornerShape(12.dp), border = androidx.compose.foundation.BorderStroke(1.dp, if (d.hasHiddenPayload) TealAccent.copy(alpha = 0.35f) else NavyBorder)) { Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) { Icon(if (d.hasHiddenPayload) Icons.Filled.Visibility else Icons.Outlined.VisibilityOff, null, Modifier.size(24.dp), tint = if (d.hasHiddenPayload) TealAccent else DimWhite.copy(alpha = 0.4f)); Spacer(Modifier.width(10.dp)); Column { Text(if (d.hasHiddenPayload) "Hidden data detected!" else "No hidden data detected", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium, color = if (d.hasHiddenPayload) TealAccent else DimWhite); if (d.hasHiddenPayload) { d.payloadSizeBytes.takeIf { it > 0 }?.let { Text("Size: ${formatDecodeSize(it.toLong())}", style = MaterialTheme.typography.bodySmall, color = TealAccent.copy(alpha = 0.7f)) }; d.encodingScheme?.let { Text("Scheme: $it", style = MaterialTheme.typography.bodySmall, color = DimWhite.copy(alpha = 0.5f)) } } } } } }
@@ -68,4 +100,4 @@ fun DecodeScreen(onNavigateBack: () -> Unit, onDecodeComplete: (String) -> Unit,
 
 @Composable private fun FileInputContent(state: DecodeUiState, vm: DecodeViewModel, filePicker: androidx.activity.result.ActivityResultLauncher<Array<String>>) { Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = NavyCard), shape = RoundedCornerShape(16.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Gold.copy(alpha = 0.25f))) { Column(Modifier.padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) { Icon(Icons.Outlined.Description, null, Modifier.size(40.dp), tint = Gold); Spacer(Modifier.height(10.dp)); Text("Select a text file containing stego text", style = MaterialTheme.typography.titleSmall, color = Gold); Spacer(Modifier.height(4.dp)); Text("Supports .txt, .text, .sms, or any plain-text file", style = MaterialTheme.typography.bodySmall, color = DimWhite.copy(alpha = 0.45f)); Spacer(Modifier.height(16.dp)); if (state.selectedFileName != null) { Surface(color = Color(0xFF2A1F10), shape = RoundedCornerShape(10.dp)) { Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Filled.CheckCircle, null, Modifier.size(20.dp), tint = Gold); Spacer(Modifier.width(10.dp)); Text(state.selectedFileName ?: "", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium, color = DimWhite) } }; if (state.inputText.isNotBlank()) { Spacer(Modifier.height(8.dp)); Text(state.inputText.take(200) + if (state.inputText.length > 200) "..." else "", style = MaterialTheme.typography.bodySmall, color = DimWhite.copy(alpha = 0.5f), modifier = Modifier.padding(horizontal = 8.dp)) }; Spacer(Modifier.height(12.dp)); OutlinedButton(onClick = { filePicker.launch(arrayOf("text/*", "application/octet-stream")) }, shape = RoundedCornerShape(12.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Gold.copy(alpha = 0.5f))) { Icon(Icons.Filled.SwapHoriz, null, tint = Gold); Spacer(Modifier.width(8.dp)); Text("Change File", color = Gold) } } else { Button(onClick = { filePicker.launch(arrayOf("text/*", "application/octet-stream")) }, colors = ButtonDefaults.buttonColors(containerColor = Gold, contentColor = Color(0xFF0B1E33)), shape = RoundedCornerShape(12.dp)) { Icon(Icons.Filled.FolderOpen, null); Spacer(Modifier.width(8.dp)); Text("Choose Text File", fontWeight = FontWeight.SemiBold) } } } } }
 
-private fun formatDecodeSize(bytes: Long): String = when { bytes < 1024 -> "$bytes B"; bytes < 1024 * 1024 -> "${bytes / 1024} KB"; else -> "${"%.1f".format(bytes / (1024.0 * 1024.0))} MB" }
+private fun formatDecodeSize(bytes: Long): String = when { bytes < 1024 -> "$bytes B"; bytes < 1024 * 1024 -> "${bytes / 1024} KB"; else -> String.format("%.1f MB", bytes / (1024.0 * 1024.0)) }
