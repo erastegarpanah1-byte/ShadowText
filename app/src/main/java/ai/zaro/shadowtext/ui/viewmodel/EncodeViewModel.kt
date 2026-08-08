@@ -32,7 +32,7 @@ class EncodeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val result = withContext(Dispatchers.Default) {
-                    encodeFileUseCase(secretText.toByteArray(Charsets.UTF_8), "text/plain", "message.txt")
+                    encodeFileUseCase(secretText.toByteArray(Charsets.UTF_8), "text/plain", "message.txt", carrierText = "")
                 }
                 _state.value = _state.value.copy(isLoading = false, result = result, stegoText = result.stegoText)
             } catch (e: Exception) {
