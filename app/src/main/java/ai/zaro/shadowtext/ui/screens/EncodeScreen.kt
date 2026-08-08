@@ -89,18 +89,12 @@ fun EncodeScreen(onNavigateBack: () -> Unit, onEncodeComplete: (String) -> Unit,
                 }
                 Spacer(Modifier.height(16.dp)); SectionLabel("3. Options", Icons.Outlined.Tune); Spacer(Modifier.height(10.dp))
                 Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = ShadoColors.BgCard), shape = RoundedCornerShape(14.dp), border = androidx.compose.foundation.BorderStroke(1.dp, ShadoColors.BorderSubtle)) {
-                    Column(Modifier.padding(16.dp)) {
-                        OptionRow("Encoding Mode", "ZWC", Icons.Outlined.Code)
-                        Divider(color = ShadoColors.BorderSubtle, modifier = Modifier.padding(vertical = 8.dp))
-                        OptionRow("Compression", "Enabled", Icons.Outlined.Compress, ShadoColors.Success)
-                        Divider(color = ShadoColors.BorderSubtle, modifier = Modifier.padding(vertical = 8.dp))
-                        OptionRow("Encrypt (Phase 2)", "Coming Soon", Icons.Outlined.Shield, ShadoColors.TextMuted)
-                    }
+                    Column(Modifier.padding(16.dp)) { OptionRow("Encoding Mode", "ZWC", Icons.Outlined.Code); Divider(color = ShadoColors.BorderSubtle, modifier = Modifier.padding(vertical = 8.dp)); OptionRow("Compression", "Enabled", Icons.Outlined.Compress, ShadoColors.Success); Divider(color = ShadoColors.BorderSubtle, modifier = Modifier.padding(vertical = 8.dp)); OptionRow("Encrypt (Phase 2)", "Coming Soon", Icons.Outlined.Shield, ShadoColors.TextMuted) }
                 }
                 Spacer(Modifier.height(20.dp))
                 val canEncode = when (state.mode) { EncodeMode.TEXT -> state.inputText.isNotBlank(); EncodeMode.FILE -> state.bytesLoaded }
                 Button(onClick = { viewModel.encode() }, enabled = canEncode && !state.isLoading, modifier = Modifier.fillMaxWidth().height(52.dp), colors = ButtonDefaults.buttonColors(containerColor = ShadoColors.Accent, contentColor = Color(0xFF001F2B), disabledContainerColor = ShadoColors.Accent.copy(alpha = 0.3f), disabledContentColor = ShadoColors.Accent.copy(alpha = 0.5f)), shape = RoundedCornerShape(14.dp)) {
-                    if (state.isLoading) { CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp, color = Color(0xFF001F2B)); Spacer(Modifier.width(10.dp)); Text("Encoding...") } else { Icon(Icons.Filled.Lock, null, Modifier.size(20.dp)); Spacer(Modifier.width(10.dp)); Text("Encode", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium) }
+                    if (state.isLoading) { LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp), color = ShadoColors.BgDarker, trackColor = ShadoColors.Accent.copy(alpha = 0.3f)) } else { Icon(Icons.Filled.Lock, null, Modifier.size(20.dp)); Spacer(Modifier.width(10.dp)); Text("Encode", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium) }
                 }
                 state.error?.let { err -> Spacer(Modifier.height(12.dp)); ErrorBanner(err) }; Spacer(Modifier.height(32.dp))
             }
