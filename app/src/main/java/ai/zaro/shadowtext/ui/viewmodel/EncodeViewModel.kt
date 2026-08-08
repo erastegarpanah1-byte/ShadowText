@@ -4,6 +4,7 @@ import ai.zaro.shadowtext.core.engine.EncodeResult
 import ai.zaro.shadowtext.data.repository.FileRepository
 import ai.zaro.shadowtext.domain.usecase.EncodeFileUseCase
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +38,8 @@ class EncodeViewModel @Inject constructor(
     private val fileRepository: FileRepository,
 ) : ViewModel() {
 
+    companion object { private const val TAG = "ShadowText:Encode" }
+
     private val _state = MutableStateFlow(EncodeUiState())
     val state: StateFlow<EncodeUiState> = _state.asStateFlow()
 
@@ -44,23 +47,51 @@ class EncodeViewModel @Inject constructor(
     private var fileName: String? = null
     private var mimeType: String? = null
 
-    fun setMode(mode: EncodeMode) { _state.value = _state.value.copy(mode = mode, error = null) }
+    fun setMode(mode: EncodeMode) { Log.d(TAG, "setMode: $mode"); _state.value = _state.value.copy(mode = mode, error = null) }
     fun setInputText(text: String) { _state.value = _state.value.copy(inputText = text, error = null) }
     fun toggleCarrierText() { _state.value = _state.value.copy(useCarrierText = !_state.value.useCarrierText) }
     fun setCarrierText(text: String) { _state.value = _state.value.copy(carrierText = text) }
 
-    fun loadFile(uri: Uri) { viewModelScope.launch { _state.value = _state.value.copy(isLoading = true, error = null); try { val (bytes, meta) = withContext(Dispatchers.IO) { fileRepository.readUri(uri) }; fileBytes = bytes; fileName = meta.first; mimeType = meta.second; _state.value = _state.value.copy(isLoading = false, selectedFileName = fileName, selectedFileSize = bytes.size.toLong(), selectedFileMimeType = mimeType, bytesLoaded = true) } catch (e: Exception) { _state.value = _state.value.copy(isLoading = false, error = "Failed to read file: ${e.message}") } } }
+    fun loadFile(uri: Uri) {
+        Log.d(TAG, "loadFile: $uri")
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true, error = null)
+            try {
+                val (bytes, meta) = withContext(Dispatchers.IO) { fileRepository.readUri(uri) }
+                fileBytes = bytes; fileName = meta.first; mimeType = meta.second
+                Log.d(TAG, "loadFile success: name=$fileName, mime=$mimeType, size=${bytes.size}")
+                _state.value = _state.value.copy(isLoading = false, selectedFileName = fileName, selectedFileSize = bytes.size.toLong(), selectedFileMimeType = mimeType, bytesLoaded = true)
+            } catch (e: Exception) {
+                Log.e(TAG, "loadFile failed", e)
+                _state.value = _state.value.copy(isLoading = false, error = "Failed to read file: ${e.message}")
+            }
+        }
+    }
 
     fun encode() {
+        Log.d(TAG, "encode: mode=${_state.value.mode}")
         _state.value = _state.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
                 val result: EncodeResult = when (_state.value.mode) {
-                    EncodeMode.FILE -> { val bytes = fileBytes ?: run { _state.value = _state.value.copy(isLoading = false, error = "No file selected"); return@launch }; withContext(Dispatchers.Default) { encodeFileUseCase(bytes, mimeType, fileName) } }
-                    EncodeMode.TEXT -> { val text = _state.value.inputText.ifBlank { _state.value = _state.value.copy(isLoading = false, error = "Enter text to hide"); return@launch }; withContext(Dispatchers.Default) { encodeFileUseCase(text.toByteArray(Charsets.UTF_8), "text/plain", "message.txt") } }
+                    EncodeMode.FILE -> {
+                        val bytes = fileBytes ?: run { _state.value = _state.value.copy(isLoading = false, error = "No file selected"); return@launch }
+                        Log.d(TAG, "encoding file: ${bytes.size} bytes")
+                        withContext(Dispatchers.Default) { encodeFileUseCase(bytes, mimeType, fileName) }
+                    }
+                    EncodeMode.TEXT -> {
+                        val text = _state.value.inputText.ifBlank { _state.value = _state.value.copy(isLoading = false, error = "Enter text to hide"); return@launch }
+                        val bytes = text.toByteArray(Charsets.UTF_8)
+                        Log.d(TAG, "encoding text: ${bytes.size} bytes")
+                        withContext(Dispatchers.Default) { encodeFileUseCase(bytes, "text/plain", "message.txt") }
+                    }
                 }
+                Log.d(TAG, "encode success: stegoText length=${result.stegoText.length}")
                 _state.value = _state.value.copy(isLoading = false, result = result)
-            } catch (e: Exception) { _state.value = _state.value.copy(isLoading = false, error = "Encoding failed: ${e.message}") }
+            } catch (e: Exception) {
+                Log.e(TAG, "encode failed", e)
+                _state.value = _state.value.copy(isLoading = false, error = "Encoding failed: ${e.message}")
+            }
         }
     }
 

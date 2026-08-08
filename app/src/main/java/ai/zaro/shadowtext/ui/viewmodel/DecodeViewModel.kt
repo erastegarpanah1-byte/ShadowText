@@ -5,6 +5,7 @@ import ai.zaro.shadowtext.core.engine.DetectionResult
 import ai.zaro.shadowtext.data.repository.FileRepository
 import ai.zaro.shadowtext.domain.usecase.DecodeTextUseCase
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,38 +35,64 @@ class DecodeViewModel @Inject constructor(
     private val fileRepository: FileRepository,
 ) : ViewModel() {
 
+    companion object { private const val TAG = "ShadowText:Decode" }
+
     private val _state = MutableStateFlow(DecodeUiState())
     val state: StateFlow<DecodeUiState> = _state.asStateFlow()
     private var fileBytes: ByteArray? = null
 
-    fun setInputMode(mode: DecodeInputMode) { _state.value = _state.value.copy(inputMode = mode, error = null) }
-    fun setInputText(text: String) { _state.value = _state.value.copy(inputText = text, error = null); if (text.isNotBlank()) detect(text) else _state.value = _state.value.copy(detection = null) }
+    fun setInputMode(mode: DecodeInputMode) { Log.d(TAG, "setInputMode: $mode"); _state.value = _state.value.copy(inputMode = mode, error = null) }
+
+    fun setInputText(text: String) {
+        _state.value = _state.value.copy(inputText = text, error = null)
+        if (text.isNotBlank()) detect(text) else _state.value = _state.value.copy(detection = null)
+    }
 
     fun loadFileForDecode(uri: Uri) {
+        Log.d(TAG, "loadFileForDecode: $uri")
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
                 val (bytes, meta) = withContext(Dispatchers.IO) { fileRepository.readUri(uri) }
                 fileBytes = bytes; val text = String(bytes, Charsets.UTF_8)
+                Log.d(TAG, "loadFileForDecode success: name=${meta.first}, textLength=${text.length}")
                 _state.value = _state.value.copy(isLoading = false, selectedFileName = meta.first, inputText = text)
                 detect(text)
-            } catch (e: Exception) { _state.value = _state.value.copy(isLoading = false, error = "Failed to read file: ${e.message}") }
+            } catch (e: Exception) {
+                Log.e(TAG, "loadFileForDecode failed", e)
+                _state.value = _state.value.copy(isLoading = false, error = "Failed to read file: ${e.message}")
+            }
         }
     }
 
     private fun detect(text: String) {
-        viewModelScope.launch { try { _state.value = _state.value.copy(detection = withContext(Dispatchers.Default) { decodeTextUseCase.detect(text) }) } catch (_: Exception) {} }
+        viewModelScope.launch {
+            try {
+                val result = withContext(Dispatchers.Default) { decodeTextUseCase.detect(text) }
+                Log.d(TAG, "detect: hasPayload=${result.hasHiddenPayload}, scheme=${result.encodingScheme}")
+                _state.value = _state.value.copy(detection = result)
+            } catch (e: Exception) {
+                Log.w(TAG, "detect failed (non-fatal)", e)
+            }
+        }
     }
 
     fun decode() {
+        Log.d(TAG, "decode: inputMode=${_state.value.inputMode}")
         val text = when (_state.value.inputMode) {
             DecodeInputMode.TEXT -> _state.value.inputText.ifBlank { _state.value = _state.value.copy(error = "No text to decode"); return }
             DecodeInputMode.FILE -> if (fileBytes != null) String(fileBytes!!, Charsets.UTF_8) else { _state.value = _state.value.copy(error = "No file loaded"); return }
         }
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
-            try { _state.value = _state.value.copy(isLoading = false, result = withContext(Dispatchers.Default) { decodeTextUseCase(text) }) }
-            catch (e: Exception) { _state.value = _state.value.copy(isLoading = false, error = "Decoding failed: ${e.message}") }
+            try {
+                val result = withContext(Dispatchers.Default) { decodeTextUseCase(text) }
+                Log.d(TAG, "decode success: payloadSize=${result.payload.size}, type=${result.payloadTypeLabel}")
+                _state.value = _state.value.copy(isLoading = false, result = result)
+            } catch (e: Exception) {
+                Log.e(TAG, "decode failed", e)
+                _state.value = _state.value.copy(isLoading = false, error = "Decoding failed: ${e.message}")
+            }
         }
     }
 
