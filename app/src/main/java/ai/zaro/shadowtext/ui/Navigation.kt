@@ -1,111 +1,87 @@
 package ai.zaro.shadowtext.ui
 
-import ai.zaro.shadowtext.ui.screens.DecodeScreen
-import ai.zaro.shadowtext.ui.screens.EncodeScreen
-import ai.zaro.shadowtext.ui.screens.HomeScreen
-import ai.zaro.shadowtext.ui.screens.ResultScreen
-import ai.zaro.shadowtext.ui.settings.SettingsManager
-import android.content.Intent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import ai.zaro.shadowtext.ui.screens.*
+import ai.zaro.shadowtext.ui.theme.ShadowTextTheme
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import kotlinx.coroutines.launch
 
-object Routes { const val HOME = "home"; const val ENCODE = "encode"; const val DECODE = "decode"; const val RESULT = "result/{mode}?stegoText={stegoText}" }
+object Routes {
+    const val HOME = "home"
+    const val ENCODE = "encode"
+    const val ENCODE_OPTIONS = "encode_options/{coverText}/{secretText}"
+    const val ENCODE_RESULT = "encode_result/{stegoText}"
+    const val DECODE = "decode"
+    const val DECODE_OPTIONS = "decode_options/{inputText}"
+    const val DECODE_RESULT = "decode_result/{decodedText}"
+    const val HISTORY = "history"
+    const val SETTINGS = "settings"
+    fun encodeOptions(cover: String, secret: String) = "encode_options/$cover/$secret"
+    fun encodeResult(stego: String) = "encode_result/$stego"
+    fun decodeOptions(input: String) = "decode_options/$input"
+    fun decodeResult(decoded: String) = "decode_result/$decoded"
+}
 
-private val Gold = Color(0xFFD4A574)
-private val NavyBorder = Color(0xFF1E3050)
-private val DimWhite = Color(0xFFC1C6CF)
-
-private data class MenuItem(val id: String, val title: String, val icon: ImageVector, val subtitle: String? = null)
-private data class MenuSection(val title: String, val items: List<MenuItem>)
+data class BottomNavItem(val route: String, val title: String, val selectedIcon: ImageVector, val unselectedIcon: ImageVector)
+val bottomNavItems = listOf(
+    BottomNavItem(Routes.HOME, "Home", Icons.Filled.Home, Icons.Outlined.Home),
+    BottomNavItem(Routes.HISTORY, "History", Icons.Filled.History, Icons.Outlined.History),
+    BottomNavItem(Routes.SETTINGS, "Settings", Icons.Filled.Settings, Icons.Outlined.Settings),
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShadowTextNavHost(modifier: Modifier = Modifier, intent: Intent?, settings: SettingsManager? = null) {
-    val navController = rememberNavController()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
-    val menuSections = listOf(
-        MenuSection("Navigation", listOf(MenuItem("home", "Home", Icons.Outlined.Home, "Main screen"), MenuItem("encode", "Encode", Icons.Outlined.Lock, "Hide data"), MenuItem("decode", "Decode", Icons.Outlined.Search, "Extract data"))),
-        MenuSection("Settings", listOf(MenuItem("settings_appearance", "Appearance", Icons.Outlined.Palette, "Theme & language"), MenuItem("settings_about", "About", Icons.Outlined.Info, "Version & info")))
-    )
-
-    ModalNavigationDrawer(drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet(modifier = Modifier.width(300.dp), drawerContainerColor = Color(0xFF0A1628)) {
-                Box(Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(Color(0xFF0D2238), Color(0xFF0A1628)))).padding(24.dp)) { Column { Icon(Icons.Filled.Shield, null, Modifier.size(38.dp), tint = Gold); Spacer(Modifier.height(12.dp)); Text("SHADOWTEXT", color = Gold, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge); Text("Steganography Engine", color = DimWhite.copy(alpha = 0.5f), style = MaterialTheme.typography.bodySmall) } }
-                Spacer(Modifier.height(8.dp)); Divider(color = NavyBorder, thickness = 0.5.dp)
-                menuSections.forEach { section ->
-                    Spacer(Modifier.height(8.dp)); Text(section.title.uppercase(), style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.2.sp), color = NavyBorder, modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp))
-                    section.items.forEach { item ->
-                        NavigationDrawerItem(icon = { Icon(item.icon, null, tint = if (item.id == "home") Gold else DimWhite.copy(alpha = 0.7f)) }, label = { Column { Text(item.title, color = DimWhite, style = MaterialTheme.typography.bodyMedium); item.subtitle?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = DimWhite.copy(alpha = 0.4f)) } } }, selected = false,
-                            onClick = {
-                                when (item.id) { "home" -> navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } }; "encode" -> navController.navigate(Routes.ENCODE); "decode" -> navController.navigate(Routes.DECODE); "settings_appearance" -> navController.navigate("settings_appearance") }
-                                scope.launch { drawerState.close() }
-                            }, colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent), modifier = Modifier.padding(horizontal = 12.dp))
+fun ShadowTextApp() {
+    ShadowTextTheme {
+        val navController = rememberNavController()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+        val showBottomBar = currentRoute in listOf(Routes.HOME, Routes.HISTORY, Routes.SETTINGS)
+        Scaffold(
+            bottomBar = {
+                if (showBottomBar) {
+                    NavigationBar(containerColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.onSurface, tonalElevation = 0.dp) {
+                        bottomNavItems.forEach { item ->
+                            val selected = currentRoute == item.route
+                            NavigationBarItem(selected = selected, onClick = {
+                                if (currentRoute != item.route) navController.navigate(item.route) { popUpTo(Routes.HOME) { saveState = true }; launchSingleTop = true; restoreState = true }
+                            }, icon = { Icon(if (selected) item.selectedIcon else item.unselectedIcon, item.title) },
+                                label = { Text(item.title, fontSize = 11.sp) },
+                                colors = NavigationBarItemDefaults.colors(selectedIconColor = MaterialTheme.colorScheme.primary, selectedTextColor = MaterialTheme.colorScheme.primary, unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)))
+                        }
                     }
                 }
-            }
-        },
-    ) {
-        NavHost(navController = navController, startDestination = Routes.HOME, modifier = modifier) {
-            composable(Routes.HOME) { HomeScreen(onMenuClick = { scope.launch { drawerState.open() } }, onEncodeClick = { navController.navigate(Routes.ENCODE) }, onDecodeClick = { navController.navigate(Routes.DECODE) }, incomingIntent = intent, onNavigateToDecode = { text -> navController.currentBackStackEntry?.savedStateHandle?.set("sharedText", text); navController.navigate(Routes.DECODE) }) }
-            composable(Routes.ENCODE) { EncodeScreen(onNavigateBack = { navController.popBackStack() }, onEncodeComplete = { stegoText -> val e = java.net.URLEncoder.encode(stegoText, "UTF-8"); navController.navigate("result/encoded?stegoText=$e") }) }
-            composable(Routes.DECODE) { DecodeScreen(onNavigateBack = { navController.popBackStack() }, onDecodeComplete = { _ -> navController.navigate("result/decoded") }) }
-            composable(route = Routes.RESULT, arguments = listOf(navArgument("mode") { type = NavType.StringType }, navArgument("stegoText") { type = NavType.StringType; defaultValue = "" })) { be -> val m = be.arguments?.getString("mode") ?: "encoded"; val s = be.arguments?.getString("stegoText") ?: ""; ResultScreen(mode = m, stegoText = s, onNavigateBack = { navController.popBackStack(Routes.HOME, inclusive = false) }, onNavigateHome = { navController.popBackStack(Routes.HOME, inclusive = true) }) }
-            composable("settings_appearance") { AppearanceScreen(settings = settings, onBack = { navController.popBackStack() }) }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppearanceScreen(settings: SettingsManager?, onBack: () -> Unit) {
-    Scaffold(containerColor = Color.Transparent, topBar = { TopAppBar(title = { Text("Appearance", color = DimWhite) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, "Back", tint = Gold) } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF070E17))) }) { padding ->
-        Column(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF070E17), Color(0xFF0D1625), Color(0xFF0A1A2E)))).padding(padding).padding(16.dp)) {
-            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color(0xFF111D30)), shape = RoundedCornerShape(14.dp), border = androidx.compose.foundation.BorderStroke(1.dp, NavyBorder)) {
-                Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) { Icon(Icons.Outlined.DarkMode, null, Modifier.size(22.dp), tint = Gold); Spacer(Modifier.width(10.dp)); Column { Text("Dark Mode", color = DimWhite, fontWeight = FontWeight.SemiBold); Text("Switch between dark and light theme", color = DimWhite.copy(alpha = 0.4f), style = MaterialTheme.typography.bodySmall) } }
-                    Switch(checked = settings?.isDarkMode ?: true, onCheckedChange = { settings?.setDarkMode(it) }, colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF0B1E33), checkedTrackColor = Gold, uncheckedThumbColor = DimWhite.copy(alpha = 0.5f), uncheckedTrackColor = NavyBorder))
-                }
-            }
-            Spacer(Modifier.height(12.dp))
-            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color(0xFF111D30)), shape = RoundedCornerShape(14.dp), border = androidx.compose.foundation.BorderStroke(1.dp, NavyBorder)) {
-                Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Language, null, Modifier.size(22.dp), tint = Gold); Spacer(Modifier.width(10.dp)); Text("Language", color = DimWhite, fontWeight = FontWeight.SemiBold) }
-                    Spacer(Modifier.height(12.dp))
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) { val lang = settings?.localeCode ?: "fa"; LangChip("English", "en", lang == "en") { settings?.setLocale("en") }; LangChip("\u0641\u0627\u0631\u0633\u06CC", "fa", lang == "fa") { settings?.setLocale("fa") } }
-                    Spacer(Modifier.height(4.dp)); Text("Restart the app for language changes to take effect", color = DimWhite.copy(alpha = 0.35f), style = MaterialTheme.typography.labelSmall)
-                }
+            },
+            containerColor = MaterialTheme.colorScheme.background,
+        ) { innerPadding ->
+            NavHost(navController = navController, startDestination = Routes.HOME, modifier = Modifier.padding(innerPadding)) {
+                composable(Routes.HOME) { HomeScreen(onEncodeClick = { navController.navigate(Routes.ENCODE) }, onDecodeClick = { navController.navigate(Routes.DECODE) }) }
+                composable(Routes.ENCODE) { EncodeScreen(onBack = { navController.popBackStack() }, onNext = { c, s -> navController.navigate(Routes.encodeOptions(c, s)) }) }
+                composable("encode_options/{coverText}/{secretText}", arguments = listOf(navArgument("coverText") { type = NavType.StringType }, navArgument("secretText") { type = NavType.StringType })) { be -> val c = be.arguments?.getString("coverText") ?: ""; val s = be.arguments?.getString("secretText") ?: ""; EncodeOptionsScreen(c, s, { navController.popBackStack() }, { stego -> navController.navigate(Routes.encodeResult(stego)) }) }
+                composable("encode_result/{stegoText}", arguments = listOf(navArgument("stegoText") { type = NavType.StringType })) { be -> val s = be.arguments?.getString("stegoText") ?: ""; EncodeResultScreen(s, { navController.popBackStack(Routes.HOME, false) }, { navController.navigate(Routes.ENCODE) { popUpTo(Routes.HOME) { saveState = true }; launchSingleTop = true; restoreState = true } }) }
+                composable(Routes.DECODE) { DecodeScreen(onBack = { navController.popBackStack() }, onNext = { input -> navController.navigate(Routes.decodeOptions(input)) }) }
+                composable("decode_options/{inputText}", arguments = listOf(navArgument("inputText") { type = NavType.StringType })) { be -> val i = be.arguments?.getString("inputText") ?: ""; DecodeOptionsScreen(i, { navController.popBackStack() }, { decoded -> navController.navigate(Routes.decodeResult(decoded)) }) }
+                composable("decode_result/{decodedText}", arguments = listOf(navArgument("decodedText") { type = NavType.StringType })) { be -> val d = be.arguments?.getString("decodedText") ?: ""; DecodeResultScreen(d, { navController.popBackStack(Routes.HOME, false) }, { navController.navigate(Routes.DECODE) { popUpTo(Routes.HOME) { saveState = true }; launchSingleTop = true; restoreState = true } }) }
+                composable(Routes.HISTORY) { HistoryScreen() }
+                composable(Routes.SETTINGS) { SettingsScreen() }
             }
         }
-    }
-}
-
-@Composable
-private fun LangChip(label: String, code: String, selected: Boolean, onClick: () -> Unit) {
-    Surface(modifier = Modifier.clickable(onClick = onClick), shape = RoundedCornerShape(10.dp), color = if (selected) Gold.copy(alpha = 0.2f) else Color(0xFF162033), border = androidx.compose.foundation.BorderStroke(1.dp, if (selected) Gold else NavyBorder)) {
-        Text(label, modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp), color = if (selected) Gold else DimWhite, fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal)
     }
 }
