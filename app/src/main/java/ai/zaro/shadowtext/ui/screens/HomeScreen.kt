@@ -28,8 +28,7 @@ fun HomeScreen(onEncodeClick: () -> Unit, onDecodeClick: () -> Unit) {
         Spacer(Modifier.height(20.dp))
         Box(Modifier.size(64.dp).clip(CircleShape).background(c.primary.copy(alpha=0.1f)),contentAlignment=Alignment.Center){Icon(Icons.Outlined.Shield,null,Modifier.size(36.dp),tint=c.primary)}
         Spacer(Modifier.height(16.dp))
-        Text("Steganography
-& Encryption",style=MaterialTheme.typography.headlineMedium.copy(fontWeight=FontWeight.Bold,lineHeight=32.sp),color=c.onBackground,textAlign=TextAlign.Center)
+        Text("Steganography\n& Encryption",style=MaterialTheme.typography.headlineMedium.copy(fontWeight=FontWeight.Bold,lineHeight=32.sp),color=c.onBackground,textAlign=TextAlign.Center)
         Spacer(Modifier.height(32.dp))
         ShadowCard(Icons.Filled.Lock,"Encode","Hide your secret text inside text or file",c.primary,onEncodeClick,Modifier.fillMaxWidth())
         Spacer(Modifier.height(16.dp))
@@ -39,11 +38,9 @@ fun HomeScreen(onEncodeClick: () -> Unit, onDecodeClick: () -> Unit) {
         Spacer(Modifier.height(32.dp))
         Text("SECURITY FIRST",style=MaterialTheme.typography.labelSmall.copy(fontWeight=FontWeight.Bold,letterSpacing=2.sp),color=c.onSurfaceVariant.copy(alpha=0.4f))
         Spacer(Modifier.height(4.dp))
-        Text("All processing is done on your device.
-Your data never leaves your device.",style=MaterialTheme.typography.bodySmall,color=c.onSurfaceVariant.copy(alpha=0.5f),textAlign=TextAlign.Center)
+        Text("All processing is done on your device.\nYour data never leaves your device.",style=MaterialTheme.typography.bodySmall,color=c.onSurfaceVariant.copy(alpha=0.5f),textAlign=TextAlign.Center)
         Spacer(Modifier.height(4.dp))
-        Text("Strong encryption + advanced steganography
-keeps your data safe.",style=MaterialTheme.typography.bodySmall,color=c.onSurfaceVariant.copy(alpha=0.35f),textAlign=TextAlign.Center)
+        Text("Strong encryption + advanced steganography\nkeeps your data safe.",style=MaterialTheme.typography.bodySmall,color=c.onSurfaceVariant.copy(alpha=0.35f),textAlign=TextAlign.Center)
         Spacer(Modifier.height(32.dp))
     }
 }
