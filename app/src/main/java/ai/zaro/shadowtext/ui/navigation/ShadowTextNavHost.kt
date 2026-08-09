@@ -53,8 +53,6 @@ fun ShadowTextNavHost(
     val c = MaterialTheme.colorScheme
 
     // Use cases — resolved from Hilt directly at top level
-    val encodeUseCase: EncodeFileUseCase? = null // We'll use CarrierTextProvider + StegoEncoder instead
-    val decodeUseCase: DecodeTextUseCase? = null
 
     val bottomNavItems = listOf(
         BottomNavItem(Routes.HOME, R.string.nav_home, Icons.Filled.Home, Icons.Outlined.Home),
