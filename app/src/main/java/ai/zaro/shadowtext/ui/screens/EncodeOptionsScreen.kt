@@ -20,10 +20,17 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EncodeOptionsScreen(inputText: String, secretText: String, onBack: () -> Unit, onEncode: (String, String, String, String, Boolean, String) -> Unit) {
+fun EncodeOptionsScreen(
+    inputText: String,
+    secretText: String,
+    isLoading: Boolean = false,
+    error: String? = null,
+    onBack: () -> Unit,
+    onEncode: (String, String, String, String, Boolean, String) -> Unit
+) {
     val c = MaterialTheme.colorScheme
     var algo by remember { mutableStateOf("AES-256") }
-    var stegoMethod by remember { mutableStateOf("Zero Width Characters") }
+    var stegoMethod by remember { mutableStateOf("Space Homoglyph") }
     var compress by remember { mutableStateOf(false) }
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
@@ -75,8 +82,24 @@ fun EncodeOptionsScreen(inputText: String, secretText: String, onBack: () -> Uni
                     }
                 }
             }
+            if (error != null) {
+                Spacer(Modifier.height(12.dp))
+                Text(error, style = MaterialTheme.typography.bodySmall, color = c.error)
+            }
             Spacer(Modifier.height(32.dp))
-            Button(onClick = { onEncode(inputText, secretText, algo, stegoMethod, compress, password) }, modifier = Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = c.primary, contentColor = c.onPrimary)) { Text(stringResource(R.string.encode_encode_btn), fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall) }
+            Button(
+                onClick = { onEncode(inputText, secretText, algo, stegoMethod, compress, password) },
+                enabled = !isLoading,
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = c.primary, contentColor = c.onPrimary)
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(Modifier.size(20.dp), color = c.onPrimary, strokeWidth = 2.dp)
+                    Spacer(Modifier.width(8.dp))
+                }
+                Text(stringResource(R.string.encode_encode_btn), fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
+            }
             Spacer(Modifier.height(24.dp))
         }
     }

@@ -20,7 +20,13 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DecodeOptionsScreen(inputText: String, onBack: () -> Unit, onDecode: (String, String, String) -> Unit) {
+fun DecodeOptionsScreen(
+    inputText: String,
+    isLoading: Boolean = false,
+    error: String? = null,
+    onBack: () -> Unit,
+    onDecode: (String, String, String) -> Unit
+) {
     val c = MaterialTheme.colorScheme
     var stegoMethod by remember { mutableStateOf("Auto Detect") }
     var password by remember { mutableStateOf("") }
@@ -53,8 +59,24 @@ fun DecodeOptionsScreen(inputText: String, onBack: () -> Unit, onDecode: (String
                     }
                 }
             }
+            if (error != null) {
+                Spacer(Modifier.height(12.dp))
+                Text(error, style = MaterialTheme.typography.bodySmall, color = c.error)
+            }
             Spacer(Modifier.height(32.dp))
-            Button(onClick = { onDecode(inputText, stegoMethod, password) }, modifier = Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = c.secondary, contentColor = c.onSecondary)) { Text(stringResource(R.string.decode_decode_btn), fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall) }
+            Button(
+                onClick = { onDecode(inputText, stegoMethod, password) },
+                enabled = !isLoading,
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = c.secondary, contentColor = c.onSecondary)
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(Modifier.size(20.dp), color = c.onSecondary, strokeWidth = 2.dp)
+                    Spacer(Modifier.width(8.dp))
+                }
+                Text(stringResource(R.string.decode_decode_btn), fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
+            }
             Spacer(Modifier.height(24.dp))
         }
     }

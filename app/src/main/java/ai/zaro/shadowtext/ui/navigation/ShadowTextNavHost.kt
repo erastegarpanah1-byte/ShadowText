@@ -14,22 +14,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ai.zaro.shadowtext.R
 import ai.zaro.shadowtext.ui.screens.*
+import ai.zaro.shadowtext.ui.viewmodel.DecodeViewModel
+import ai.zaro.shadowtext.ui.viewmodel.EncodeViewModel
 
 object Routes {
     const val HOME = "home"
     const val CHOOSE_INPUT = "choose_input/{mode}"
     const val ENCODE_INPUT = "encode_input"
     const val ENCODE_OPTIONS = "encode_options/{inputText}/{secretText}"
-    const val ENCODE_RESULT = "encode_result/{stegoText}"
+    const val ENCODE_RESULT = "encode_result"
     const val DECODE_INPUT = "decode_input"
     const val DECODE_OPTIONS = "decode_options/{inputText}"
-    const val DECODE_RESULT = "decode_result/{decodedText}"
+    const val DECODE_RESULT = "decode_result"
     const val HISTORY = "history"
     const val SETTINGS = "settings"
 }
@@ -152,24 +156,44 @@ fun ShadowTextNavHost(
             composable(Routes.ENCODE_OPTIONS) { be ->
                 val inputText = be.arguments?.getString("inputText") ?: ""
                 val secretText = be.arguments?.getString("secretText") ?: ""
-                EncodeOptionsScreen(
-                    inputText = inputText,
-                    secretText = secretText,
-                    onBack = { navController.popBackStack() },
-                    onEncode = { _, _, _, _, _, _ ->
-                        val result = "[ENCODED] $secretText"
-                        navController.navigate("encode_result/$result") {
+                val vm: EncodeViewModel = hiltViewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+
+                LaunchedEffect(state.stegoText) {
+                    state.stegoText?.let {
+                        navController.navigate(Routes.ENCODE_RESULT) {
                             popUpTo(Routes.HOME) { inclusive = false }
                         }
                     }
+                }
+
+                EncodeOptionsScreen(
+                    inputText = inputText,
+                    secretText = secretText,
+                    isLoading = state.isLoading,
+                    error = state.error,
+                    onBack = {
+                        vm.reset()
+                        navController.popBackStack()
+                    },
+                    onEncode = { _, _, _, _, _, _ ->
+                        vm.encode(secretText, carrierText = inputText)
+                    }
                 )
             }
-            composable(Routes.ENCODE_RESULT) { be ->
-                val stegoText = be.arguments?.getString("stegoText") ?: ""
+            composable(Routes.ENCODE_RESULT) {
+                val vm: EncodeViewModel = hiltViewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+
+                val stego = state.stegoText ?: ""
                 EncodeResultScreen(
-                    stegoText = stegoText,
-                    onBack = { navController.popBackStack(Routes.HOME, false) },
+                    stegoText = stego,
+                    onBack = {
+                        vm.reset()
+                        navController.popBackStack(Routes.HOME, false)
+                    },
                     onNew = {
+                        vm.reset()
                         navController.navigate(Routes.HOME) {
                             popUpTo(Routes.HOME) { inclusive = true }
                         }
@@ -186,23 +210,43 @@ fun ShadowTextNavHost(
             }
             composable(Routes.DECODE_OPTIONS) { be ->
                 val inputText = be.arguments?.getString("inputText") ?: ""
-                DecodeOptionsScreen(
-                    inputText = inputText,
-                    onBack = { navController.popBackStack() },
-                    onDecode = { _, _, _ ->
-                        val result = "[DECODED] Your hidden text here"
-                        navController.navigate("decode_result/$result") {
+                val vm: DecodeViewModel = hiltViewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+
+                LaunchedEffect(state.decodedText) {
+                    state.decodedText?.let {
+                        navController.navigate(Routes.DECODE_RESULT) {
                             popUpTo(Routes.HOME) { inclusive = false }
                         }
                     }
+                }
+
+                DecodeOptionsScreen(
+                    inputText = inputText,
+                    isLoading = state.isLoading,
+                    error = state.error,
+                    onBack = {
+                        vm.reset()
+                        navController.popBackStack()
+                    },
+                    onDecode = { _, _, _ ->
+                        vm.decode(inputText)
+                    }
                 )
             }
-            composable(Routes.DECODE_RESULT) { be ->
-                val decodedText = be.arguments?.getString("decodedText") ?: ""
+            composable(Routes.DECODE_RESULT) {
+                val vm: DecodeViewModel = hiltViewModel()
+                val state by vm.state.collectAsStateWithLifecycle()
+
+                val text = state.decodedText ?: ""
                 DecodeResultScreen(
-                    decodedText = decodedText,
-                    onBack = { navController.popBackStack(Routes.HOME, false) },
+                    decodedText = text,
+                    onBack = {
+                        vm.reset()
+                        navController.popBackStack(Routes.HOME, false)
+                    },
                     onNew = {
+                        vm.reset()
                         navController.navigate(Routes.HOME) {
                             popUpTo(Routes.HOME) { inclusive = true }
                         }

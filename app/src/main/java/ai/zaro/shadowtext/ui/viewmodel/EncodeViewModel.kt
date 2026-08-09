@@ -27,16 +27,16 @@ class EncodeViewModel @Inject constructor(
     private val _state = MutableStateFlow(EncodeUiState())
     val state: StateFlow<EncodeUiState> = _state.asStateFlow()
 
-    fun encode(secretText: String) {
+    fun encode(secretText: String, carrierText: String) {
         _state.value = _state.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
                 val result = withContext(Dispatchers.Default) {
-                    encodeFileUseCase(secretText.toByteArray(Charsets.UTF_8), "text/plain", "message.txt", carrierText = "")
+                    encodeFileUseCase(secretText.toByteArray(Charsets.UTF_8), "text/plain", "message.txt", carrierText = carrierText)
                 }
                 _state.value = _state.value.copy(isLoading = false, result = result, stegoText = result.stegoText)
             } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = "Encoding failed: ${"$"}{e.message}")
+                _state.value = _state.value.copy(isLoading = false, error = "Encoding failed: ${e.message}")
             }
         }
     }
