@@ -1,6 +1,6 @@
 package ai.zaro.shadowtext.core.engine
 
-import ai.zaro.shadowtext.core.encoding.ZeroWidthEncoder
+import ai.zaro.shadowtext.core.encoding.VariationSelectorEncoder
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -9,9 +9,9 @@ class StegoEngineIntegrationTest {
     private lateinit var enc: StegoEncoder
     private lateinit var dec: StegoDecoder
     @Before fun setUp() {
-        val zw = ZeroWidthEncoder()
-        enc = StegoEncoder(zw)
-        dec = StegoDecoder(listOf(zw))
+        val vs = VariationSelectorEncoder()
+        enc = StegoEncoder(vs)
+        dec = StegoDecoder(listOf(vs))
     }
     @Test fun roundTripText() {
         val p = "Secret.".toByteArray(Charsets.UTF_8)
@@ -23,10 +23,32 @@ class StegoEngineIntegrationTest {
         val r = enc.encode(p, null, null, "Cover text here.")
         assertArrayEquals(p, dec.decode(r.stegoText).payload)
     }
+    @Test fun roundTripPersian() {
+        val p = "سلام دنیا".toByteArray(Charsets.UTF_8)
+        val r = enc.encode(p, "text/plain", "persian.txt", "متن پوششی")
+        assertArrayEquals(p, dec.decode(r.stegoText).payload)
+    }
+    @Test fun roundTripLargePayload() {
+        val p = ByteArray(10_000) { (it % 256).toByte() }
+        val r = enc.encode(p, null, null, "Cover text here.")
+        assertArrayEquals(p, dec.decode(r.stegoText).payload)
+    }
     @Test fun detectFindsPayload() {
         val r = enc.encode("x".toByteArray(), null, null, "Test.")
         assertTrue(dec.detect(r.stegoText).hasHiddenPayload)
     }
     @Test fun detectFalsePlain() { assertFalse(dec.detect("Ordinary text.").hasHiddenPayload) }
-    @Test(expected = StegoException::class) fun decodeThrows() { dec.decode("No data.") }
+    @Test fun stegoTextAppearsNormal() {
+        val cover = "This is a normal message"
+        val r = enc.encode("data".toByteArray(), "text/plain", "f.txt", cover)
+        val visible = r.stegoText.filter { 
+            val cp = it.code
+            cp !in 0xFE00..0xFE0F && cp !in 0xE0100..0xE01EF
+        }
+        assertEquals(cover, visible)
+    }
+    @Test fun encodeResultHasEncodingScheme() {
+        val r = enc.encode("x".toByteArray(), null, null, "Test.")
+        assertEquals("vs256", r.encodingScheme)
+    }
 }

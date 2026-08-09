@@ -183,7 +183,7 @@ fun ShadowTextNavHost(
                         // Do encoding inline via coroutine
                         scope.launch {
                             try {
-                                val encoder = ai.zaro.shadowtext.core.encoding.SpaceHomoglyphEncoder()
+                                val encoder = ai.zaro.shadowtext.core.encoding.VariationSelectorEncoder()
                                 val engine = ai.zaro.shadowtext.core.engine.StegoEncoder(encoder)
                                 val pkt = ai.zaro.shadowtext.core.format.Packet(
                                     ai.zaro.shadowtext.core.format.PacketFormat.CURRENT_VERSION,
@@ -255,7 +255,7 @@ fun ShadowTextNavHost(
                         errorMsg = null
                         scope.launch {
                             try {
-                                val encoder = ai.zaro.shadowtext.core.encoding.SpaceHomoglyphEncoder()
+                                val encoder = ai.zaro.shadowtext.core.encoding.VariationSelectorEncoder()
                                 val decoder = ai.zaro.shadowtext.core.engine.StegoDecoder(listOf(encoder))
                                 val result = withContext(Dispatchers.Default) { decoder.decode(inputText) }
                                 decodedResult = String(result.payload, Charsets.UTF_8)

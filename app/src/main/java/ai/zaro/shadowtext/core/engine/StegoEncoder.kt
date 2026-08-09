@@ -2,6 +2,7 @@ package ai.zaro.shadowtext.core.engine
 
 import ai.zaro.shadowtext.core.encoding.InvisibleEncoder
 import ai.zaro.shadowtext.core.encoding.SpaceHomoglyphEncoder
+import ai.zaro.shadowtext.core.encoding.VariationSelectorEncoder
 import ai.zaro.shadowtext.core.format.Packet
 import ai.zaro.shadowtext.core.format.PacketFormat
 import ai.zaro.shadowtext.core.format.PacketSerializer
@@ -19,17 +20,18 @@ class StegoEncoder(private val encoder: InvisibleEncoder) {
         val pkt = Packet(PacketFormat.CURRENT_VERSION, PacketFormat.Flags.NONE, pt, payload, meta)
         val inv = encoder.encode(PacketSerializer.serialize(pkt))
 
-        val stego = if (encoder is SpaceHomoglyphEncoder) {
-            encoder.embed(carrierText, inv)
-        } else {
-            embedAtBreak(carrierText, inv)
+        val stego = when (encoder) {
+            is SpaceHomoglyphEncoder -> encoder.embed(carrierText, inv)
+            is VariationSelectorEncoder -> encoder.embed(carrierText, inv)
+            else -> {
+                if (carrierText.isEmpty()) inv
+                else {
+                    val i = carrierText.indexOf(' ')
+                    if (i >= 0) carrierText.substring(0, i) + inv + carrierText.substring(i)
+                    else carrierText + inv
+                }
+            }
         }
         return EncodeResult(stego, carrierText, payload.size, encoder.extractInvisible(inv).length, encoder.identifier)
-    }
-
-    private fun embedAtBreak(text: String, p: String): String {
-        if (text.isEmpty()) return p
-        val i = text.indexOf(' ')
-        return if (i >= 0) text.substring(0, i) + p + text.substring(i) else text + p
     }
 }
