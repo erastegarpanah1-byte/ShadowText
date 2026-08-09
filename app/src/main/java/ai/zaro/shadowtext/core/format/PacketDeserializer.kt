@@ -3,7 +3,7 @@ package ai.zaro.shadowtext.core.format
 import java.util.zip.CRC32
 import kotlinx.serialization.json.Json
 
-internal object PacketDeserializer {
+object PacketDeserializer {
 
     private val json = Json { ignoreUnknownKeys = true }
 

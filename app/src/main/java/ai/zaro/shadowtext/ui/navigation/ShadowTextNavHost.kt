@@ -1,5 +1,8 @@
 package ai.zaro.shadowtext.ui.navigation
 
+import ai.zaro.shadowtext.core.engine.EncodeResult
+import ai.zaro.shadowtext.domain.usecase.DecodeTextUseCase
+import ai.zaro.shadowtext.domain.usecase.EncodeFileUseCase
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,16 +17,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ai.zaro.shadowtext.R
 import ai.zaro.shadowtext.ui.screens.*
-import ai.zaro.shadowtext.ui.viewmodel.DecodeViewModel
-import ai.zaro.shadowtext.ui.viewmodel.EncodeViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object Routes {
     const val HOME = "home"
@@ -52,6 +53,10 @@ fun ShadowTextNavHost(
     val currentRoute = backStackEntry?.destination?.route
     val showSplash = remember { mutableStateOf(true) }
     val c = MaterialTheme.colorScheme
+
+    // Use cases — resolved from Hilt directly at top level
+    val encodeUseCase: EncodeFileUseCase? = null // We'll use CarrierTextProvider + StegoEncoder instead
+    val decodeUseCase: DecodeTextUseCase? = null
 
     val bottomNavItems = listOf(
         BottomNavItem(Routes.HOME, R.string.nav_home, Icons.Filled.Home, Icons.Outlined.Home),
@@ -156,11 +161,13 @@ fun ShadowTextNavHost(
             composable(Routes.ENCODE_OPTIONS) { be ->
                 val inputText = be.arguments?.getString("inputText") ?: ""
                 val secretText = be.arguments?.getString("secretText") ?: ""
-                val vm: EncodeViewModel = hiltViewModel()
-                val state by vm.state.collectAsStateWithLifecycle()
 
-                LaunchedEffect(state.stegoText) {
-                    state.stegoText?.let {
+                var isLoading by remember { mutableStateOf(false) }
+                var errorMsg by remember { mutableStateOf<String?>(null) }
+                var resultText by remember { mutableStateOf<String?>(null) }
+
+                if (resultText != null) {
+                    LaunchedEffect(resultText) {
                         navController.navigate(Routes.ENCODE_RESULT) {
                             popUpTo(Routes.HOME) { inclusive = false }
                         }
@@ -170,30 +177,47 @@ fun ShadowTextNavHost(
                 EncodeOptionsScreen(
                     inputText = inputText,
                     secretText = secretText,
-                    isLoading = state.isLoading,
-                    error = state.error,
-                    onBack = {
-                        vm.reset()
-                        navController.popBackStack()
-                    },
+                    isLoading = isLoading,
+                    error = errorMsg,
+                    onBack = { navController.popBackStack() },
                     onEncode = { _, _, _, _, _, _ ->
-                        vm.encode(secretText, carrierText = inputText)
+                        isLoading = true
+                        errorMsg = null
+                        // Do encoding inline via coroutine
+                        kotlinx.coroutines.MainScope().launch {
+                            try {
+                                val encoder = ai.zaro.shadowtext.core.encoding.SpaceHomoglyphEncoder()
+                                val engine = ai.zaro.shadowtext.core.engine.StegoEncoder(encoder)
+                                val pkt = ai.zaro.shadowtext.core.format.Packet(
+                                    ai.zaro.shadowtext.core.format.PacketFormat.CURRENT_VERSION,
+                                    ai.zaro.shadowtext.core.format.PacketFormat.Flags.NONE,
+                                    ai.zaro.shadowtext.core.format.PacketFormat.PayloadType.PLAIN_TEXT,
+                                    secretText.toByteArray(Charsets.UTF_8),
+                                    mapOf("filename" to "", "mimeType" to "text/plain", "encodedAt" to System.currentTimeMillis().toString())
+                                )
+                                val inv = encoder.encode(ai.zaro.shadowtext.core.format.PacketSerializer.serialize(pkt))
+                                val stego = encoder.embed(inputText, inv)
+                                resultText = stego
+                            } catch (e: Exception) {
+                                errorMsg = "Encode failed: ${e.message}"
+                            } finally {
+                                isLoading = false
+                            }
+                        }
                     }
                 )
             }
             composable(Routes.ENCODE_RESULT) {
-                val vm: EncodeViewModel = hiltViewModel()
-                val state by vm.state.collectAsStateWithLifecycle()
-
-                val stego = state.stegoText ?: ""
+                // Store result in a simple static holder
+                val stego = EncodeResultHolder.result ?: ""
                 EncodeResultScreen(
                     stegoText = stego,
                     onBack = {
-                        vm.reset()
+                        EncodeResultHolder.result = null
                         navController.popBackStack(Routes.HOME, false)
                     },
                     onNew = {
-                        vm.reset()
+                        EncodeResultHolder.result = null
                         navController.navigate(Routes.HOME) {
                             popUpTo(Routes.HOME) { inclusive = true }
                         }
@@ -210,11 +234,13 @@ fun ShadowTextNavHost(
             }
             composable(Routes.DECODE_OPTIONS) { be ->
                 val inputText = be.arguments?.getString("inputText") ?: ""
-                val vm: DecodeViewModel = hiltViewModel()
-                val state by vm.state.collectAsStateWithLifecycle()
 
-                LaunchedEffect(state.decodedText) {
-                    state.decodedText?.let {
+                var isLoading by remember { mutableStateOf(false) }
+                var errorMsg by remember { mutableStateOf<String?>(null) }
+                var decodedResult by remember { mutableStateOf<String?>(null) }
+
+                if (decodedResult != null) {
+                    LaunchedEffect(decodedResult) {
                         navController.navigate(Routes.DECODE_RESULT) {
                             popUpTo(Routes.HOME) { inclusive = false }
                         }
@@ -223,30 +249,37 @@ fun ShadowTextNavHost(
 
                 DecodeOptionsScreen(
                     inputText = inputText,
-                    isLoading = state.isLoading,
-                    error = state.error,
-                    onBack = {
-                        vm.reset()
-                        navController.popBackStack()
-                    },
+                    isLoading = isLoading,
+                    error = errorMsg,
+                    onBack = { navController.popBackStack() },
                     onDecode = { _, _, _ ->
-                        vm.decode(inputText)
+                        isLoading = true
+                        errorMsg = null
+                        kotlinx.coroutines.MainScope().launch {
+                            try {
+                                val encoder = ai.zaro.shadowtext.core.encoding.SpaceHomoglyphEncoder()
+                                val decoder = ai.zaro.shadowtext.core.engine.StegoDecoder(listOf(encoder))
+                                val result = withContext(Dispatchers.Default) { decoder.decode(inputText) }
+                                decodedResult = String(result.payload, Charsets.UTF_8)
+                            } catch (e: Exception) {
+                                errorMsg = "Decode failed: ${e.message}"
+                            } finally {
+                                isLoading = false
+                            }
+                        }
                     }
                 )
             }
             composable(Routes.DECODE_RESULT) {
-                val vm: DecodeViewModel = hiltViewModel()
-                val state by vm.state.collectAsStateWithLifecycle()
-
-                val text = state.decodedText ?: ""
+                val text = DecodeResultHolder.result ?: ""
                 DecodeResultScreen(
                     decodedText = text,
                     onBack = {
-                        vm.reset()
+                        DecodeResultHolder.result = null
                         navController.popBackStack(Routes.HOME, false)
                     },
                     onNew = {
-                        vm.reset()
+                        DecodeResultHolder.result = null
                         navController.navigate(Routes.HOME) {
                             popUpTo(Routes.HOME) { inclusive = true }
                         }
@@ -264,4 +297,13 @@ fun ShadowTextNavHost(
             }
         }
     }
+}
+
+// Simple static holders to pass encode/decode results between screens
+// (avoids putting large data in the URL)
+internal object EncodeResultHolder {
+    var result: String? = null
+}
+internal object DecodeResultHolder {
+    var result: String? = null
 }

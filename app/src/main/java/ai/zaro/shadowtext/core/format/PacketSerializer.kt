@@ -5,7 +5,7 @@ import java.util.zip.CRC32
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 
-internal object PacketSerializer {
+object PacketSerializer {
 
     private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
 
