@@ -1,73 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ShadowText</string>
-    <string name="home_title">شادو‌تکست</string>
-    <string name="home_subtitle">استگانوگرافی متن آفلاین</string>
-    <string name="encode_card_title">رمزگذاری</string>
-    <string name="encode_card_subtitle">مخفی کردن فایل درون متن</string>
-    <string name="decode_card_title">رمزگشایی</string>
-    <string name="decode_card_subtitle">استخراج فایل مخفی از متن</string>
-    <string name="offline_badge">کاملاً آفلاین و خصوصی</string>
-    <string name="offline_desc">بدون سرور. بدون ردیابی. بدون نیاز به مجوز.</string>
-    <string name="supported_formats">تصاویر  •  ویدیو  •  صوت  •  PDF  •  ZIP  •  APK  •  هر فایل باینری</string>
+
+    <!-- Splash -->
+    <string name="splash_title">SHADOWTEXT</string>
+    <string name="splash_subtitle">استگانوگرافی و رمزنگاری</string>
+    <string name="splash_tagline">از آنچه مهم است محافظت کن.</string>
+
+    <!-- Home -->
+    <string name="home_heading">استگانوگرافی\nو رمزنگاری</string>
+    <string name="home_encode">رمزگذاری</string>
+    <string name="home_encode_subtitle">متن محرمانه خود را درون متن پنهان کنید</string>
+    <string name="home_decode">رمزگشایی</string>
+    <string name="home_decode_subtitle">متن پنهان را از متن استخراج کنید</string>
+    <string name="home_text_in_text">متن در متن</string>
+    <string name="home_text_in_file">متن در فایل</string>
+    <string name="home_large_files">فایل‌های حجیم</string>
+    <string name="home_secure">امن و خصوصی</string>
+    <string name="home_security_first">امنیت در اولویت است</string>
+    <string name="home_processing">تمام پردازش‌ها روی دستگاه شما انجام می‌شود.\nداده‌های شما هرگز دستگاه را ترک نمی‌کنند.</string>
+    <string name="home_encryption">رمزنگاری قوی + استگانوگرافی پیشرفته\nداده‌های شما را ایمن نگه می‌دارد.</string>
+
+    <!-- Bottom Nav -->
+    <string name="nav_home">خانه</string>
+    <string name="nav_history">تاریخچه</string>
+    <string name="nav_settings">تنظیمات</string>
+
+    <!-- Choose Input -->
+    <string name="choose_type">نوع ورودی را انتخاب کنید</string>
+    <string name="choose_what">از چه چیزی می‌خواهید استفاده کنید؟</string>
+    <string name="choose_text">متن</string>
+    <string name="choose_text_subtitle">استفاده از متن به عنوان پوشش</string>
+    <string name="choose_file">فایل</string>
+    <string name="choose_file_subtitle">در به‌روزرسانی‌های آینده اضافه می‌شود</string>
+    <string name="coming_soon">به زودی</string>
+
+    <!-- Encode Input -->
     <string name="encode_title">رمزگذاری</string>
-    <string name="encode_what_hide">چه چیزی می‌خواهید مخفی کنید؟</string>
-    <string name="encode_hidden_message">پیام مخفی</string>
-    <string name="encode_hidden_message_desc">تایپ متن محرمانه</string>
-    <string name="encode_hidden_file">فایل مخفی</string>
-    <string name="encode_hidden_file_desc">تصاویر، ویدیو، PDF و غیره</string>
-    <string name="encode_write_message">پیام مخفی خود را بنویسید</string>
-    <string name="encode_type_hint">متن محرمانه را اینجا تایپ کنید…</string>
-    <string name="encode_select_file">انتخاب فایل از دستگاه</string>
-    <string name="encode_file_types">انواع فایل: تصویر · ویدیو · صوت · PDF · ZIP · APK · هر نوع</string>
-    <string name="encode_choose_file">انتخاب فایل</string>
-    <string name="encode_change_file">تغییر فایل</string>
-    <string name="encode_carrier_text">متن پوشش</string>
-    <string name="encode_carrier_on">محتوای شما در این متن مخفی می‌شود</string>
-    <string name="encode_carrier_off">خروجی خام بدون پوشش</string>
-    <string name="encode_carrier_placeholder">متن پوششی سفارشی (خالی = تولید خودکار)…</string>
-    <string name="encode_now">اکنون رمزگذاری کن</string>
-    <string name="encode_encoding">در حال رمزگذاری…</string>
-    <string name="encode_footer">فایل شما با استفاده از کاراکترهای نامرئی درون متن مخفی می‌شود.</string>
+    <string name="encode_input_label">ورودی (متن)</string>
+    <string name="encode_cover_placeholder">متن پوششی خود را اینجا تایپ یا جای‌گذاری کنید…</string>
+    <string name="encode_secret_label">متن محرمانه</string>
+    <string name="encode_secret_placeholder">متن محرمانه خود را اینجا بنویسید…</string>
+    <string name="encode_next">بعدی</string>
+
+    <!-- Encode Options -->
+    <string name="encode_options_title">تنظیمات</string>
+    <string name="encode_algorithm">الگوریتم</string>
+    <string name="encode_stego_method">روش استگانوگرافی</string>
+    <string name="encode_compression">فشرده‌سازی</string>
+    <string name="encode_password">رمز عبور (اختیاری)</string>
+    <string name="encode_password_set">تنظیم</string>
+    <string name="encode_password_hide">مخفی</string>
+    <string name="encode_password_placeholder">رمز عبور را وارد کنید</string>
+    <string name="encode_encode_btn">رمزگذاری</string>
+
+    <!-- Encode Result -->
+    <string name="encode_success">رمزگذاری با موفقیت انجام شد!</string>
+    <string name="encode_success_desc">داده محرمانه شما با امنیت پنهان شد.</string>
+    <string name="encode_hidden_text">متن پنهان شده</string>
+    <string name="encode_save">ذخیره خروجی</string>
+    <string name="encode_share">اشتراک‌گذاری</string>
+    <string name="encode_new">رمزگذاری جدید</string>
+    <string name="encode_copied">کپی شد!</string>
+
+    <!-- Decode Input -->
     <string name="decode_title">رمزگشایی</string>
-    <string name="decode_how_input">متن را چگونه می‌خواهید وارد کنید؟</string>
-    <string name="decode_paste_text">چسباندن متن</string>
-    <string name="decode_paste_text_desc">مستقیماً متن را بچسبانید</string>
-    <string name="decode_open_file">باز کردن فایل</string>
-    <string name="decode_open_file_desc">بارگذاری فایل txt</string>
-    <string name="decode_paste_label">چسباندن متن استگو</string>
-    <string name="decode_paste_hint">متن استگو را اینجا بچسبانید…</string>
-    <string name="decode_select_file">انتخاب فایل متنی حاوی متن استگو</string>
-    <string name="decode_file_types">پشتیبانی از فایل‌های txt, .text, .sms</string>
-    <string name="decode_choose_file">انتخاب فایل متنی</string>
-    <string name="decode_detected">داده مخفی شناسایی شد!</string>
-    <string name="decode_not_detected">داده مخفی شناسایی نشد</string>
-    <string name="decode_extract">استخراج داده مخفی</string>
-    <string name="decode_extracting">در حال استخراج…</string>
-    <string name="result_encoded_title">رمزگذاری کامل شد</string>
-    <string name="result_decoded_title">رمزگشایی کامل شد</string>
-    <string name="result_encoded_msg">فایل با موفقیت در متن مخفی شد!</string>
-    <string name="result_decoded_msg">فایل مخفی استخراج شد!</string>
-    <string name="result_stego_preview">پیش‌نمایش متن استگو</string>
-    <string name="result_copy">کپی</string>
-    <string name="result_share">اشتراک‌گذاری</string>
-    <string name="result_warning">برخی برنامه‌ها کاراکترهای نامرئی را حذف می‌کنند. ابتدا در پلتفرم مقصد تست کنید.</string>
-    <string name="result_back_home">بازگشت به خانه</string>
-    <string name="settings_navigation">ناوبری</string>
-    <string name="settings_settings">تنظیمات</string>
+    <string name="decode_input_label">ورودی (متن)</string>
+    <string name="decode_input_placeholder">متن کدگذاری شده را اینجا تایپ یا جای‌گذاری کنید…</string>
+
+    <!-- Decode Options -->
+    <string name="decode_options_title">تنظیمات</string>
+    <string name="decode_stego_method">روش استگانوگرافی</string>
+    <string name="decode_auto_detect">تشخیص خودکار</string>
+    <string name="decode_password">رمز عبور (اختیاری)</string>
+    <string name="decode_password_enter">وارد کردن</string>
+    <string name="decode_password_placeholder">رمز عبور را وارد کنید</string>
+    <string name="decode_decode_btn">رمزگشایی</string>
+
+    <!-- Decode Result -->
+    <string name="decode_success">رمزگشایی با موفقیت انجام شد!</string>
+    <string name="decode_success_desc">داده پنهان شما استخراج شد.</string>
+    <string name="decode_decoded_text">متن رمزگشایی شده</string>
+    <string name="decode_save">ذخیره خروجی</string>
+    <string name="decode_share">اشتراک‌گذاری</string>
+    <string name="decode_new">رمزگشایی جدید</string>
+
+    <!-- History -->
+    <string name="history_title">تاریخچه</string>
+    <string name="history_empty">هنوز تاریخچه‌ای وجود ندارد</string>
+    <string name="history_empty_desc">تاریخچه رمزگذاری و رمزگشایی شما در اینجا نمایش داده می‌شود.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">تنظیمات</string>
     <string name="settings_appearance">ظاهر</string>
-    <string name="settings_appearance_desc">تم و زبان</string>
-    <string name="settings_about">درباره</string>
-    <string name="settings_about_desc">نسخه و اطلاعات</string>
-    <string name="settings_dark_mode">حالت تاریک</string>
-    <string name="settings_dark_mode_desc">تغییر بین تم تاریک و روشن</string>
+    <string name="settings_theme">تم</string>
+    <string name="settings_theme_dark">تاریک</string>
+    <string name="settings_theme_light">روشن</string>
+    <string name="settings_theme_system">سیستم</string>
     <string name="settings_language">زبان</string>
-    <string name="settings_language_restart">برای اعمال تغییرات زبان، برنامه را مجدداً راه‌اندازی کنید.</string>
-    <string name="menu_home">خانه</string>
-    <string name="menu_home_desc">صفحه اصلی</string>
-    <string name="menu_encode">رمزگذاری</string>
-    <string name="menu_encode_desc">مخفی کردن داده در متن</string>
-    <string name="menu_decode">رمزگشایی</string>
-    <string name="menu_decode_desc">استخراج داده مخفی</string>
-    <string name="menu_open">باز کردن</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_fa">فارسی</string>
+    <string name="settings_data">داده‌ها</string>
+    <string name="settings_clear_history">پاک کردن تاریخچه</string>
+    <string name="settings_clear_title">پاک کردن تاریخچه</string>
+    <string name="settings_clear_message">آیا مطمئن هستید که می‌خواهید تمام تاریخچه را حذف کنید؟ این عمل قابل بازگشت نیست.</string>
+    <string name="settings_clear_confirm">حذف</string>
+    <string name="settings_clear_cancel">لغو</string>
+    <string name="settings_about">درباره</string>
+    <string name="settings_version">نسخه ۱.۰.۰</string>
+    <string name="settings_about_what_title">ShadowText چیست؟</string>
+    <string name="settings_about_what_body">ShadowText یک موتور استگانوگرافی متن آفلاین برای اندروید است. به شما امکان می‌دهد پیام‌های محرمانه را درون متن معمولی با استفاده از کاراکترهای یونیکد نامرئی پنهان کنید — به طوری که داده پنهان شما کاملاً غیرقابل شناسایی باشد.</string>
+    <string name="settings_about_goal_title">هدف ما</string>
+    <string name="settings_about_goal_body">ما معتقدیم حریم خصوصی یک حق اساسی است. هدف ما این است که ارتباط امن و نامرئی را برای همه قابل دسترس کنیم — بدون حساب کاربری، بدون اینترنت، بدون ردیابی. فقط شما و اسرارتان، محافظت‌شده با رمزنگاری قوی و پنهان در دید ساده.</string>
+    <string name="settings_about_how_title">طراحی آن</string>
+    <string name="settings_about_how_arch">معماری — MVVM + Clean Architecture برای جداسازی مسئولیت‌ها</string>
+    <string name="settings_about_how_ui">رابط کاربری — Jetpack Compose با Material 3، پشتیبانی از تم تاریک و روشن</string>
+    <string name="settings_about_how_security">امنیت — رمزنگاری AES-256 با تکنیک‌های پیشرفته استگانوگرافی</string>
+    <string name="settings_about_how_privacy">حریم خصوصی — ۱۰۰٪ آفلاین، تمام پردازش‌ها روی دستگاه شما</string>
+    <string name="settings_about_how_stego">استگانوگرافی — روش‌های Zero Width Characters و Homoglyph</string>
+    <string name="settings_security_first">امنیت در اولویت است</string>
+    <string name="settings_processing">تمام پردازش‌ها روی دستگاه شما انجام می‌شود.</string>
+    <string name="settings_no_leak">داده‌های شما هرگز دستگاه را ترک نمی‌کنند.</string>
+
+    <!-- General -->
+    <string name="back">بازگشت</string>
 </resources>

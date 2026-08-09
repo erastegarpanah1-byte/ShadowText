@@ -12,12 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import ai.zaro.shadowtext.R
 import ai.zaro.shadowtext.ui.screens.*
 
 object Routes {
@@ -33,17 +34,14 @@ object Routes {
     const val SETTINGS = "settings"
 }
 
-data class BottomNavItem(
-    val route: String,
-    val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
-)
+data class BottomNavItem(val route: String, val labelRes: Int, val selectedIcon: ImageVector, val unselectedIcon: ImageVector)
 
 @Composable
 fun ShadowTextNavHost(
     isDarkMode: Boolean = true,
-    onToggleDarkMode: (Boolean) -> Unit = {}
+    onToggleDarkMode: (Boolean) -> Unit = {},
+    languageCode: String = "en",
+    onChangeLanguage: (String) -> Unit = {}
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -52,9 +50,9 @@ fun ShadowTextNavHost(
     val c = MaterialTheme.colorScheme
 
     val bottomNavItems = listOf(
-        BottomNavItem(Routes.HOME, "Home", Icons.Filled.Home, Icons.Outlined.Home),
-        BottomNavItem(Routes.HISTORY, "History", Icons.Filled.DateRange, Icons.Outlined.DateRange),
-        BottomNavItem(Routes.SETTINGS, "Settings", Icons.Filled.Settings, Icons.Outlined.Settings),
+        BottomNavItem(Routes.HOME, R.string.nav_home, Icons.Filled.Home, Icons.Outlined.Home),
+        BottomNavItem(Routes.HISTORY, R.string.nav_history, Icons.Filled.DateRange, Icons.Outlined.DateRange),
+        BottomNavItem(Routes.SETTINGS, R.string.nav_settings, Icons.Filled.Settings, Icons.Outlined.Settings),
     )
 
     val showBottomBar = currentRoute in listOf(Routes.HOME, Routes.HISTORY, Routes.SETTINGS)
@@ -67,11 +65,8 @@ fun ShadowTextNavHost(
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                // Floating pill-style bottom nav
                 Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 12.dp),
+                    Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Surface(
@@ -100,10 +95,10 @@ fun ShadowTextNavHost(
                                     icon = {
                                         Icon(
                                             if (sel) item.selectedIcon else item.unselectedIcon,
-                                            item.label
+                                            stringResource(item.labelRes)
                                         )
                                     },
-                                    label = { Text(item.label) },
+                                    label = { Text(stringResource(item.labelRes)) },
                                     colors = NavigationBarItemDefaults.colors(
                                         selectedIconColor = c.primary,
                                         selectedTextColor = c.primary,
@@ -143,10 +138,7 @@ fun ShadowTextNavHost(
                         if (mode == "encode") navController.navigate(Routes.ENCODE_INPUT)
                         else navController.navigate(Routes.DECODE_INPUT)
                     },
-                    onFileSelected = {
-                        if (mode == "encode") navController.navigate(Routes.ENCODE_INPUT)
-                        else navController.navigate(Routes.DECODE_INPUT)
-                    }
+                    onFileSelected = {}
                 )
             }
             composable(Routes.ENCODE_INPUT) {
@@ -219,7 +211,12 @@ fun ShadowTextNavHost(
             }
             composable(Routes.HISTORY) { HistoryScreen() }
             composable(Routes.SETTINGS) {
-                SettingsScreen(isDarkMode = isDarkMode, onToggleDarkMode = onToggleDarkMode)
+                SettingsScreen(
+                    isDarkMode = isDarkMode,
+                    onToggleDarkMode = onToggleDarkMode,
+                    languageCode = languageCode,
+                    onChangeLanguage = onChangeLanguage
+                )
             }
         }
     }

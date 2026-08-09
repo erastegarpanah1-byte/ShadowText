@@ -1,5 +1,6 @@
 package ai.zaro.shadowtext.ui.screens
 
+import ai.zaro.shadowtext.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -19,166 +21,105 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) -> Unit = {}) {
+fun SettingsScreen(
+    isDarkMode: Boolean = true,
+    onToggleDarkMode: (Boolean) -> Unit = {},
+    languageCode: String = "en",
+    onChangeLanguage: (String) -> Unit = {}
+) {
     val c = MaterialTheme.colorScheme
-    var theme by remember { mutableStateOf(if (isDarkMode) "Dark" else "Light") }
+    var theme by remember { mutableStateOf(if (isDarkMode) stringResource(R.string.settings_theme_dark) else stringResource(R.string.settings_theme_light)) }
     var showClearDialog by remember { mutableStateOf(false) }
+    var showLangDialog by remember { mutableStateOf(false) }
+    val langLabel = if (languageCode == "fa") stringResource(R.string.settings_language_fa) else stringResource(R.string.settings_language_en)
 
     if (showClearDialog) {
         AlertDialog(
             onDismissRequest = { showClearDialog = false },
-            title = { Text("Clear History", color = c.onBackground) },
-            text = { Text("Are you sure you want to delete all history entries? This action cannot be undone.", color = c.onSurfaceVariant) },
-            confirmButton = {
-                TextButton(onClick = { showClearDialog = false }) {
-                    Text("Delete", color = c.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showClearDialog = false }) {
-                    Text("Cancel", color = c.onSurfaceVariant)
-                }
-            },
-            containerColor = c.surface,
-            shape = RoundedCornerShape(20.dp)
+            title = { Text(stringResource(R.string.settings_clear_title), color = c.onBackground) },
+            text = { Text(stringResource(R.string.settings_clear_message), color = c.onSurfaceVariant) },
+            confirmButton = { TextButton(onClick = { showClearDialog = false }) { Text(stringResource(R.string.settings_clear_confirm), color = c.error) } },
+            dismissButton = { TextButton(onClick = { showClearDialog = false }) { Text(stringResource(R.string.settings_clear_cancel), color = c.onSurfaceVariant) } },
+            containerColor = c.surface, shape = RoundedCornerShape(20.dp)
         )
     }
 
-    Scaffold(
-        containerColor = c.background,
-        topBar = {
-            TopAppBar(
-                title = { Text("Settings", fontWeight = FontWeight.SemiBold, color = c.onBackground) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background)
-            )
-        }
-    ) { padding ->
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+    if (showLangDialog) {
+        AlertDialog(
+            onDismissRequest = { showLangDialog = false },
+            title = { Text(stringResource(R.string.settings_language), color = c.onBackground) },
+            containerColor = c.surface, shape = RoundedCornerShape(20.dp)
         ) {
+            Column(Modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
+                TextButton(onClick = { onChangeLanguage("en"); showLangDialog = false }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_language_en), fontWeight = if (languageCode == "en") FontWeight.Bold else FontWeight.Normal, color = if (languageCode == "en") c.primary else c.onSurface) }
+                TextButton(onClick = { onChangeLanguage("fa"); showLangDialog = false }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_language_fa), fontWeight = if (languageCode == "fa") FontWeight.Bold else FontWeight.Normal, color = if (languageCode == "fa") c.primary else c.onSurface) }
+                Spacer(Modifier.height(8.dp))
+            }
+        }
+    }
+
+    Scaffold(containerColor = c.background, topBar = { TopAppBar(title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.SemiBold, color = c.onBackground) }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background)) }) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.height(12.dp))
 
-            // ===== GENERAL =====
-            SectionHeader("General")
-            Card(
-                Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = c.surfaceVariant),
-                shape = RoundedCornerShape(14.dp)
-            ) {
+            // ===== APPEARANCE =====
+            SectionHeader(stringResource(R.string.settings_appearance))
+            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
                 Column {
-                    SettingsRow(Icons.Outlined.Palette, "Theme", theme) {
+                    SettingsRow(Icons.Outlined.Palette, stringResource(R.string.settings_theme), theme) {
                         theme = when (theme) {
-                            "Dark" -> "Light"
-                            "Light" -> "System"
-                            else -> "Dark"
+                            stringResource(R.string.settings_theme_dark) -> stringResource(R.string.settings_theme_light)
+                            stringResource(R.string.settings_theme_light) -> stringResource(R.string.settings_theme_system)
+                            else -> stringResource(R.string.settings_theme_dark)
                         }
-                        onToggleDarkMode(theme == "Dark")
+                        onToggleDarkMode(theme == stringResource(R.string.settings_theme_dark))
                     }
-                    SettingsRow(Icons.Outlined.Delete, "Clear History", "", showDivider = false) {
-                        showClearDialog = true
-                    }
+                    SettingsRow(Icons.Outlined.Language, stringResource(R.string.settings_language), langLabel, showDivider = false) { showLangDialog = true }
                 }
+            }
+
+            Spacer(Modifier.height(28.dp))
+
+            // ===== DATA =====
+            SectionHeader(stringResource(R.string.settings_data))
+            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
+                SettingsRow(Icons.Outlined.Delete, stringResource(R.string.settings_clear_history), "", showDivider = false) { showClearDialog = true }
             }
 
             Spacer(Modifier.height(32.dp))
 
             // ===== ABOUT =====
-            SectionHeader("About")
-            Card(
-                Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = c.surfaceVariant),
-                shape = RoundedCornerShape(16.dp)
-            ) {
+            SectionHeader(stringResource(R.string.settings_about))
+            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(16.dp)) {
                 Column(Modifier.padding(20.dp)) {
-                    Text(
-                        "ShadowText",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                        color = c.primary
-                    )
+                    Text("ShadowText", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = c.primary)
                     Spacer(Modifier.height(4.dp))
-                    Text(
-                        "Version 1.0.0",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = c.onSurfaceVariant
-                    )
+                    Text(stringResource(R.string.settings_version), style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant)
                     Spacer(Modifier.height(20.dp))
-
-                    // What is this app?
-                    Text(
-                        "What is ShadowText?",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = c.onBackground
-                    )
+                    // What is
+                    Text(stringResource(R.string.settings_about_what_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
                     Spacer(Modifier.height(6.dp))
-                    Text(
-                        "ShadowText is an offline text steganography engine for Android. It lets you hide secret messages inside ordinary-looking text using invisible Unicode characters — making your hidden data completely undetectable to the naked eye.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = c.onSurfaceVariant
-                    )
-
+                    Text(stringResource(R.string.settings_about_what_body), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
                     Spacer(Modifier.height(16.dp))
-
-                    // Our goal
-                    Text(
-                        "Our Goal",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = c.onBackground
-                    )
+                    // Goal
+                    Text(stringResource(R.string.settings_about_goal_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
                     Spacer(Modifier.height(6.dp))
-                    Text(
-                        "We believe privacy is a fundamental right. Our goal is to make secure, invisible communication accessible to everyone — no accounts, no internet, no tracking. Just you and your secrets, protected by strong encryption and hidden in plain sight.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = c.onSurfaceVariant
-                    )
-
+                    Text(stringResource(R.string.settings_about_goal_body), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
                     Spacer(Modifier.height(16.dp))
-
-                    // How it's designed
-                    Text(
-                        "How It's Built",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = c.onBackground
-                    )
+                    // How
+                    Text(stringResource(R.string.settings_about_how_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
                     Spacer(Modifier.height(6.dp))
-                    Bullet("Architecture — MVVM + Clean Architecture for separation of concerns and testability")
-                    Bullet("UI — Jetpack Compose with Material 3, supporting dark and light themes")
-                    Bullet("Security — AES-256 encryption with advanced steganography techniques")
-                    Bullet("Privacy — 100% offline, all processing happens on your device")
-                    Bullet("Steganography — Zero Width Characters and Homoglyph methods")
-
+                    Bullet(stringResource(R.string.settings_about_how_arch))
+                    Bullet(stringResource(R.string.settings_about_how_ui))
+                    Bullet(stringResource(R.string.settings_about_how_security))
+                    Bullet(stringResource(R.string.settings_about_how_privacy))
+                    Bullet(stringResource(R.string.settings_about_how_stego))
                     Spacer(Modifier.height(16.dp))
-
-                    // Footer
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            "SECURITY FIRST",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 2.5.sp
-                            ),
-                            color = c.primary.copy(alpha = 0.5f),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) { Text(stringResource(R.string.settings_security_first), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 2.5.sp), color = c.primary.copy(alpha = 0.5f), textAlign = TextAlign.Center) }
                     Spacer(Modifier.height(4.dp))
-                    Text(
-                        "All processing is done on your device.\nYour data never leaves your device.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = c.onSurfaceVariant.copy(alpha = 0.5f),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    Text(stringResource(R.string.settings_processing) + "\n" + stringResource(R.string.settings_no_leak), style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant.copy(alpha = 0.5f), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 }
             }
-
             Spacer(Modifier.height(40.dp))
         }
     }
@@ -195,48 +136,22 @@ private fun Bullet(text: String) {
 
 @Composable
 private fun SectionHeader(title: String) {
-    Text(
-        title,
-        style = MaterialTheme.typography.labelMedium.copy(
-            fontWeight = FontWeight.Bold, letterSpacing = 1.sp
-        ),
-        color = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier.padding(bottom = 12.dp)
-    )
+    Text(title, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp), color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(bottom = 12.dp))
 }
 
 @Composable
-private fun SettingsRow(
-    icon: ImageVector,
-    title: String,
-    value: String,
-    showDivider: Boolean = true,
-    onClick: () -> Unit
-) {
+private fun SettingsRow(icon: ImageVector, title: String, value: String, showDivider: Boolean = true, onClick: () -> Unit) {
     val c = MaterialTheme.colorScheme
     Column {
         Surface(onClick = onClick, color = c.surfaceVariant) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(icon, null, Modifier.size(22.dp), tint = c.onSurface)
                 Spacer(Modifier.width(12.dp))
-                Text(
-                    title, Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyMedium, color = c.onSurface
-                )
-                if (value.isNotEmpty()) {
-                    Text(value, style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant)
-                    Spacer(Modifier.width(4.dp))
-                }
+                Text(title, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = c.onSurface)
+                if (value.isNotEmpty()) { Text(value, style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant); Spacer(Modifier.width(4.dp)) }
                 Icon(Icons.Filled.ChevronRight, null, Modifier.size(18.dp), tint = c.onSurfaceVariant)
             }
         }
-        if (showDivider) {
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = c.outline.copy(alpha = 0.15f))
-        }
+        if (showDivider) { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = c.outline.copy(alpha = 0.15f)) }
     }
 }

@@ -1,5 +1,7 @@
 package ai.zaro.shadowtext.ui.screens
-import androidx.compose.animation.*
+
+import ai.zaro.shadowtext.R
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,6 +16,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,17 +29,17 @@ fun SplashScreen(onFinished: () -> Unit) {
     var visible by remember { mutableStateOf(false) }
     var scale by remember { mutableStateOf(0.3f) }
     LaunchedEffect(Unit) { scale = 1f; delay(300); visible = true; delay(1500); onFinished() }
-    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(c.background,c.surface,c.background))), contentAlignment=Alignment.Center) {
-        Column(horizontalAlignment=Alignment.CenterHorizontally) {
-            Box(Modifier.size(88.dp).scale(scale).clip(CircleShape).background(Brush.linearGradient(listOf(c.primary.copy(alpha=0.2f),c.primary.copy(alpha=0.05f)))), contentAlignment=Alignment.Center) { Icon(Icons.Filled.Shield,null,Modifier.size(48.dp),tint=c.primary) }
+    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(c.background, c.surface, c.background))), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(Modifier.size(88.dp).scale(scale).clip(CircleShape).background(Brush.linearGradient(listOf(c.primary.copy(alpha = 0.2f), c.primary.copy(alpha = 0.05f)))), contentAlignment = Alignment.Center) { Icon(Icons.Filled.Shield, null, Modifier.size(48.dp), tint = c.primary) }
             Spacer(Modifier.height(24.dp))
-            Text("SHADOWTEXT",style=MaterialTheme.typography.headlineMedium.copy(fontWeight=FontWeight.Bold,letterSpacing=4.sp),color=c.primary)
+            Text(stringResource(R.string.splash_title), style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, letterSpacing = 4.sp), color = c.primary)
             Spacer(Modifier.height(8.dp))
-            Text("Steganography & Encryption",style=MaterialTheme.typography.bodyLarge.copy(letterSpacing=1.sp),color=c.onSurfaceVariant)
+            Text(stringResource(R.string.splash_subtitle), style = MaterialTheme.typography.bodyLarge.copy(letterSpacing = 1.sp), color = c.onSurfaceVariant)
             Spacer(Modifier.height(24.dp))
-            Box(Modifier.width(48.dp).height(3.dp).clip(RoundedCornerShape(2.dp)).alpha(if(visible)0.6f else 0f).background(c.primary))
+            Box(Modifier.width(48.dp).height(3.dp).clip(RoundedCornerShape(2.dp)).alpha(if (visible) 0.6f else 0f).background(c.primary))
             Spacer(Modifier.height(12.dp))
-            AnimatedVisibility(visible=visible) { Text("Secure what matters.",style=MaterialTheme.typography.bodySmall.copy(letterSpacing=1.sp),color=c.onSurfaceVariant.copy(alpha=0.5f),textAlign=TextAlign.Center) }
+            AnimatedVisibility(visible = visible) { Text(stringResource(R.string.splash_tagline), style = MaterialTheme.typography.bodySmall.copy(letterSpacing = 1.sp), color = c.onSurfaceVariant.copy(alpha = 0.5f), textAlign = TextAlign.Center) }
         }
     }
 }
