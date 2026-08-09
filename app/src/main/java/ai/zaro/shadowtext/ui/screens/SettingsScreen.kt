@@ -15,13 +15,33 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) -> Unit = {}) {
     val c = MaterialTheme.colorScheme
-    var theme by remember { mutableStateOf(if(isDarkMode)"Dark" else "Light") }
+    var theme by remember { mutableStateOf(if (isDarkMode) "Dark" else "Light") }
+    var showClearDialog by remember { mutableStateOf(false) }
+
+    if (showClearDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearDialog = false },
+            title = { Text("Clear History", color = c.onBackground) },
+            text = { Text("Are you sure you want to delete all history entries? This action cannot be undone.", color = c.onSurfaceVariant) },
+            confirmButton = {
+                TextButton(onClick = { showClearDialog = false }) {
+                    Text("Delete", color = c.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearDialog = false }) {
+                    Text("Cancel", color = c.onSurfaceVariant)
+                }
+            },
+            containerColor = c.surface,
+            shape = RoundedCornerShape(20.dp)
+        )
+    }
 
     Scaffold(
         containerColor = c.background,
@@ -33,64 +53,50 @@ fun SettingsScreen(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) -> Un
         }
     ) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp)
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
 
-            // ── Appearance ──
-            SectionTitle("Appearance")
+            // ===== GENERAL =====
+            SectionHeader("General")
             Card(
                 Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = c.surfaceVariant),
                 shape = RoundedCornerShape(14.dp)
             ) {
-                SettingsRow(
-                    icon = Icons.Outlined.Palette,
-                    title = "Theme",
-                    value = theme,
-                    onClick = {
+                Column {
+                    SettingsRow(Icons.Outlined.Palette, "Theme", theme) {
                         theme = when (theme) {
                             "Dark" -> "Light"
                             "Light" -> "System"
                             else -> "Dark"
                         }
                         onToggleDarkMode(theme == "Dark")
-                    },
-                    showDivider = false
-                )
+                    }
+                    SettingsRow(Icons.Outlined.Delete, "Clear History", "", showDivider = false) {
+                        showClearDialog = true
+                    }
+                }
             }
 
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(32.dp))
 
-            // ── Data ──
-            SectionTitle("Data")
+            // ===== ABOUT =====
+            SectionHeader("About")
             Card(
                 Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = c.surfaceVariant),
-                shape = RoundedCornerShape(14.dp)
-            ) {
-                SettingsRow(
-                    icon = Icons.Outlined.Delete,
-                    title = "Clear History",
-                    value = "",
-                    onClick = { /* TODO: clear history */ },
-                    showDivider = false
-                )
-            }
-
-            Spacer(Modifier.height(36.dp))
-
-            // ── About ──
-            SectionTitle("About")
-            Card(
-                Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = c.surfaceVariant),
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(16.dp)
             ) {
                 Column(Modifier.padding(20.dp)) {
                     Text(
                         "ShadowText",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         color = c.primary
                     )
                     Spacer(Modifier.height(4.dp))
@@ -99,79 +105,100 @@ fun SettingsScreen(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) -> Un
                         style = MaterialTheme.typography.bodySmall,
                         color = c.onSurfaceVariant
                     )
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(20.dp))
+
+                    // What is this app?
                     Text(
                         "What is ShadowText?",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = c.onSurface
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = c.onBackground
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(6.dp))
                     Text(
-                        "ShadowText is an offline text steganography engine that lets you hide secret messages inside ordinary text using invisible Unicode characters. No one will know a hidden message is there — it looks like normal text.",
+                        "ShadowText is an offline text steganography engine for Android. It lets you hide secret messages inside ordinary-looking text using invisible Unicode characters — making your hidden data completely undetectable to the naked eye.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = c.onSurfaceVariant
                     )
-                    Spacer(Modifier.height(12.dp))
+
+                    Spacer(Modifier.height(16.dp))
+
+                    // Our goal
                     Text(
                         "Our Goal",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = c.onSurface
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = c.onBackground
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(6.dp))
                     Text(
-                        "To give everyone a private, offline way to communicate securely. Whether you are a journalist, activist, or just someone who values privacy — ShadowText puts control back in your hands.",
+                        "We believe privacy is a fundamental right. Our goal is to make secure, invisible communication accessible to everyone — no accounts, no internet, no tracking. Just you and your secrets, protected by strong encryption and hidden in plain sight.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = c.onSurfaceVariant
                     )
-                    Spacer(Modifier.height(12.dp))
-                    Text(
-                        "How It Works",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = c.onSurface
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        "ShadowText encodes your secret data into invisible Zero-Width Characters and hides them inside a cover text. The output looks identical to the original text, but carries your hidden payload. Only someone with ShadowText (and the optional password) can extract it.
 
-All processing happens locally on your device — nothing ever leaves your phone.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = c.onSurfaceVariant
+                    Spacer(Modifier.height(16.dp))
+
+                    // How it's designed
+                    Text(
+                        "How It's Built",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = c.onBackground
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Bullet("Architecture — MVVM + Clean Architecture for separation of concerns and testability")
+                    Bullet("UI — Jetpack Compose with Material 3, supporting dark and light themes")
+                    Bullet("Security — AES-256 encryption with advanced steganography techniques")
+                    Bullet("Privacy — 100% offline, all processing happens on your device")
+                    Bullet("Steganography — Zero Width Characters and Homoglyph methods")
+
+                    Spacer(Modifier.height(16.dp))
+
+                    // Footer
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            "SECURITY FIRST",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 2.5.sp
+                            ),
+                            color = c.primary.copy(alpha = 0.5f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "All processing is done on your device.\nYour data never leaves your device.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = c.onSurfaceVariant.copy(alpha = 0.5f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
 
             Spacer(Modifier.height(40.dp))
-
-            // Security footer
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "SECURITY FIRST",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 2.sp),
-                    color = c.onSurfaceVariant.copy(alpha = 0.35f)
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    "All processing is done on your device.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = c.onSurfaceVariant.copy(alpha = 0.4f)
-                )
-                Text(
-                    "Your data never leaves your device.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = c.onSurfaceVariant.copy(alpha = 0.4f)
-                )
-            }
-
-            Spacer(Modifier.height(32.dp))
         }
     }
 }
 
 @Composable
-private fun SectionTitle(title: String) {
+private fun Bullet(text: String) {
+    val c = MaterialTheme.colorScheme
+    Row(Modifier.padding(vertical = 2.dp)) {
+        Text("\u2022", color = c.primary, modifier = Modifier.padding(end = 8.dp))
+        Text(text, style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun SectionHeader(title: String) {
     Text(
         title,
-        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
+        style = MaterialTheme.typography.labelMedium.copy(
+            fontWeight = FontWeight.Bold, letterSpacing = 1.sp
+        ),
         color = MaterialTheme.colorScheme.onBackground,
         modifier = Modifier.padding(bottom = 12.dp)
     )
@@ -182,19 +209,24 @@ private fun SettingsRow(
     icon: ImageVector,
     title: String,
     value: String,
-    onClick: () -> Unit,
-    showDivider: Boolean = true
+    showDivider: Boolean = true,
+    onClick: () -> Unit
 ) {
     val c = MaterialTheme.colorScheme
     Column {
         Surface(onClick = onClick, color = c.surfaceVariant) {
             Row(
-                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(icon, null, Modifier.size(22.dp), tint = c.onSurface)
                 Spacer(Modifier.width(12.dp))
-                Text(title, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = c.onSurface)
+                Text(
+                    title, Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyMedium, color = c.onSurface
+                )
                 if (value.isNotEmpty()) {
                     Text(value, style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant)
                     Spacer(Modifier.width(4.dp))
@@ -203,10 +235,7 @@ private fun SettingsRow(
             }
         }
         if (showDivider) {
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                color = c.outline.copy(alpha = 0.15f)
-            )
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = c.outline.copy(alpha = 0.15f))
         }
     }
 }
