@@ -1,8 +1,5 @@
 package ai.zaro.shadowtext.ui.navigation
 
-import ai.zaro.shadowtext.core.engine.EncodeResult
-import ai.zaro.shadowtext.domain.usecase.DecodeTextUseCase
-import ai.zaro.shadowtext.domain.usecase.EncodeFileUseCase
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import ai.zaro.shadowtext.R
 import ai.zaro.shadowtext.ui.screens.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 object Routes {
@@ -162,6 +160,7 @@ fun ShadowTextNavHost(
                 val inputText = be.arguments?.getString("inputText") ?: ""
                 val secretText = be.arguments?.getString("secretText") ?: ""
 
+                val scope = rememberCoroutineScope()
                 var isLoading by remember { mutableStateOf(false) }
                 var errorMsg by remember { mutableStateOf<String?>(null) }
                 var resultText by remember { mutableStateOf<String?>(null) }
@@ -184,7 +183,7 @@ fun ShadowTextNavHost(
                         isLoading = true
                         errorMsg = null
                         // Do encoding inline via coroutine
-                        kotlinx.coroutines.MainScope().launch {
+                        scope.launch {
                             try {
                                 val encoder = ai.zaro.shadowtext.core.encoding.SpaceHomoglyphEncoder()
                                 val engine = ai.zaro.shadowtext.core.engine.StegoEncoder(encoder)
@@ -235,6 +234,7 @@ fun ShadowTextNavHost(
             composable(Routes.DECODE_OPTIONS) { be ->
                 val inputText = be.arguments?.getString("inputText") ?: ""
 
+                val scope = rememberCoroutineScope()
                 var isLoading by remember { mutableStateOf(false) }
                 var errorMsg by remember { mutableStateOf<String?>(null) }
                 var decodedResult by remember { mutableStateOf<String?>(null) }
@@ -255,7 +255,7 @@ fun ShadowTextNavHost(
                     onDecode = { _, _, _ ->
                         isLoading = true
                         errorMsg = null
-                        kotlinx.coroutines.MainScope().launch {
+                        scope.launch {
                             try {
                                 val encoder = ai.zaro.shadowtext.core.encoding.SpaceHomoglyphEncoder()
                                 val decoder = ai.zaro.shadowtext.core.engine.StegoDecoder(listOf(encoder))
