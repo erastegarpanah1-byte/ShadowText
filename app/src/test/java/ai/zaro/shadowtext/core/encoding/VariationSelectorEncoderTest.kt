@@ -7,84 +7,96 @@ import org.junit.Test
 class VariationSelectorEncoderTest {
     private lateinit var e: VariationSelectorEncoder
 
-    @Before
-    fun setUp() { e = VariationSelectorEncoder() }
+    @Before fun setUp() { e = VariationSelectorEncoder() }
 
-    @Test fun `name and identifier`() {
+    @Test fun nameAndId() {
         assertEquals("Variation Selectors", e.name)
         assertEquals("vs256", e.identifier)
         assertEquals(8, e.bitsPerChar)
     }
 
-    @Test fun `encode single byte`() {
-        val enc = e.encode(byteArrayOf(0x42))
-        assertTrue(enc.length >= 9)
-        assertArrayEquals(byteArrayOf(0x42), e.decode(enc))
+    @Test fun roundTripSingleByte() {
+        val orig = byteArrayOf(0x42)
+        assertArrayEquals(orig, e.decode(e.encode(orig)))
     }
 
-    @Test fun `encode all byte values 0-255`() {
+    @Test fun roundTripAllBytes() {
         val orig = ByteArray(256) { it.toByte() }
         assertArrayEquals(orig, e.decode(e.encode(orig)))
     }
 
-    @Test fun `encode hello round trip`() {
+    @Test fun roundTripHello() {
         val orig = "hello world".toByteArray(Charsets.UTF_8)
         assertArrayEquals(orig, e.decode(e.encode(orig)))
     }
 
-    @Test fun `encode فارسی round trip`() {
+    @Test fun roundTripPersian() {
         val orig = "سلام دنیا".toByteArray(Charsets.UTF_8)
         assertArrayEquals(orig, e.decode(e.encode(orig)))
     }
 
-    @Test fun `encode large payload 10KB`() {
+    @Test fun roundTrip10KB() {
         val orig = ByteArray(10_000) { (it % 256).toByte() }
         assertArrayEquals(orig, e.decode(e.encode(orig)))
     }
 
-    @Test fun `all encoded chars are variation selectors`() {
-        val enc = e.encode(byteArrayOf(0x00, 0x42, 0xFF.toByte()))
-        for (ch in enc) {
-            val b = VariationSelectorEncoder.byteForVs(ch)
-            assertTrue("U+${ch.code.toString(16)} is not a VS", b in 0..255)
+    @Test fun allEncodedAreVs() {
+        val enc = e.encode(byteArrayOf(0x00, 0x0F, 0x10, 0xFF.toByte()))
+        var i = 0; while (i < enc.length) {
+            val cp = enc.codePointAt(i)
+            assertTrue("U+${cp.toString(16)} not a VS", VariationSelectorEncoder.isVsCp(cp))
+            i += Character.charCount(cp)
         }
     }
 
-    @Test fun `extract invisible from mixed text`() {
+    @Test fun extractFromMixed() {
         val enc = e.encode(byteArrayOf(0x42, 0x13, 0xFF.toByte()))
         val mixed = "Hello World" + enc + "more text"
         val extracted = e.extractInvisible(mixed)
         val decoded = e.decode(extracted)
         assertEquals(3, decoded.size)
+        assertEquals(0x42.toByte(), decoded[0])
     }
 
-    @Test fun `contains encoded data true`() {
+    @Test fun containsEncodedTrue() {
         val enc = e.encode(byteArrayOf(0x42))
         assertTrue(e.containsEncodedData(enc))
         assertTrue(e.containsEncodedData("visible text" + enc + "more"))
     }
 
-    @Test fun `contains encoded data false plain`() {
+    @Test fun containsEncodedFalse() {
         assertFalse(e.containsEncodedData("Hello World"))
         assertFalse(e.containsEncodedData(""))
     }
 
     @Test(expected = EncodingException::class)
-    fun `decode throws on plain text`() { e.decode("Hello World") }
+    fun decodeThrowsOnPlain() { e.decode("Hello World") }
 
     @Test(expected = EncodingException::class)
-    fun `decode throws on empty`() { e.decode("") }
+    fun decodeThrowsOnEmpty() { e.decode("") }
 
-    @Test fun `embed interleaves selectors after each char`() {
+    @Test fun embedPreservesCover() {
         val cover = "ABCD"
         val inv = e.encode(byteArrayOf(0x01, 0x02))
         val stego = e.embed(cover, inv)
-        val visible = stego.filter { !VariationSelectorEncoder.isVs(it) }
+        // Extract visible chars (code-point safe)
+        val visible = buildString {
+            var i = 0; while (i < stego.length) {
+                val cp = stego.codePointAt(i)
+                if (!VariationSelectorEncoder.isVsCp(cp)) appendCodePoint(cp)
+                i += Character.charCount(cp)
+            }
+        }
         assertEquals("ABCD", visible)
     }
 
-    @Test fun `empty payload round trip`() {
-        assertEquals(8, e.encode(ByteArray(0)).length)
-        assertEquals(0, e.decode(e.encode(ByteArray(0))).size)
+    @Test fun emptyPayloadLength() {
+        val enc = e.encode(ByteArray(0))
+        // Just header: 8 VS chars (but some are supplementary = more UTF-16 chars)
+        // code point count should be 8
+        var cpCount = 0; var i = 0
+        while (i < enc.length) { enc.codePointAt(i); cpCount++; i += Character.charCount(enc.codePointAt(i)) }
+        assertEquals(8, cpCount)
+        assertEquals(0, e.decode(enc).size)
     }
 }
