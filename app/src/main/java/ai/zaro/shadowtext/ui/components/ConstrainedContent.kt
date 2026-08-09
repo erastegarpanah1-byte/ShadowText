@@ -23,14 +23,10 @@ fun ConstrainedContent(
         contentAlignment = Alignment.TopCenter
     ) {
         // Use full width on small screens, cap on large
-        val containerWidth = if (maxWidth > maxWidth.toFloat()) {
-            maxWidth - innerPadding * 2
-        } else {
-            maxWidth.toFloat()
-        }
+        val capWidthPx = maxWidth.dp
         Box(
             modifier = Modifier
-                .widthIn(max = containerWidth.dp)
+                .widthIn(max = capWidthPx)
                 .fillMaxSize()
                 .padding(horizontal = innerPadding.dp),
             content = content
