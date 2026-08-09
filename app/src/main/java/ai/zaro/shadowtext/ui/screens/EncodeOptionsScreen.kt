@@ -1,6 +1,7 @@
 package ai.zaro.shadowtext.ui.screens
 
 import ai.zaro.shadowtext.R
+import ai.zaro.shadowtext.ui.components.ConstrainedColumn
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,11 +28,10 @@ fun EncodeOptionsScreen(inputText: String, secretText: String, onBack: () -> Uni
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
     Scaffold(containerColor = c.background, topBar = { TopAppBar(title = { Text(stringResource(R.string.encode_title), fontWeight = FontWeight.SemiBold, color = c.onBackground) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back), tint = c.onBackground) } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background)) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 24.dp).verticalScroll(rememberScrollState())) {
+        ConstrainedColumn(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())) {
             Spacer(Modifier.height(8.dp))
             Text(stringResource(R.string.encode_options_title), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
             Spacer(Modifier.height(20.dp))
-            // Algorithm
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Outlined.Lock, null, Modifier.size(22.dp), tint = c.onSurface)
@@ -42,7 +42,6 @@ fun EncodeOptionsScreen(inputText: String, secretText: String, onBack: () -> Uni
                 }
             }
             Spacer(Modifier.height(12.dp))
-            // Stego Method
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Outlined.Code, null, Modifier.size(22.dp), tint = c.onSurface)
@@ -53,7 +52,6 @@ fun EncodeOptionsScreen(inputText: String, secretText: String, onBack: () -> Uni
                 }
             }
             Spacer(Modifier.height(12.dp))
-            // Compression toggle
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Outlined.Compress, null, Modifier.size(22.dp), tint = c.onSurface)
@@ -63,7 +61,6 @@ fun EncodeOptionsScreen(inputText: String, secretText: String, onBack: () -> Uni
                 }
             }
             Spacer(Modifier.height(12.dp))
-            // Password
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
                 Column(Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {

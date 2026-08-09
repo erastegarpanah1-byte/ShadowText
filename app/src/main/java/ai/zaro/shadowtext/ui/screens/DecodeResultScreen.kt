@@ -1,6 +1,7 @@
 package ai.zaro.shadowtext.ui.screens
 
 import ai.zaro.shadowtext.R
+import ai.zaro.shadowtext.ui.components.ConstrainedColumn
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,7 +23,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -35,13 +35,13 @@ fun DecodeResultScreen(decodedText: String, onBack: () -> Unit, onNew: () -> Uni
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
     Scaffold(snackbarHost = { SnackbarHost(snackbar) }, containerColor = c.background, topBar = { TopAppBar(title = { Text(stringResource(R.string.decode_title), fontWeight = FontWeight.SemiBold, color = c.onBackground) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back), tint = c.onBackground) } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background)) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        ConstrainedColumn(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())) {
             Spacer(Modifier.height(40.dp))
             Box(Modifier.size(80.dp).clip(CircleShape).background(c.secondary.copy(alpha = 0.15f)), contentAlignment = Alignment.Center) { Icon(Icons.Filled.CheckCircle, null, Modifier.size(48.dp), tint = c.secondary) }
             Spacer(Modifier.height(24.dp))
             Text(stringResource(R.string.decode_success), style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = c.onBackground)
             Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.decode_success_desc), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant, textAlign = TextAlign.Center)
+            Text(stringResource(R.string.decode_success_desc), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
             Spacer(Modifier.height(28.dp))
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
                 Column(Modifier.padding(16.dp)) {

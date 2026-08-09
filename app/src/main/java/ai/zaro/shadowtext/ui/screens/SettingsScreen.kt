@@ -1,6 +1,7 @@
 package ai.zaro.shadowtext.ui.screens
 
 import ai.zaro.shadowtext.R
+import ai.zaro.shadowtext.ui.components.ConstrainedColumn
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,7 +32,7 @@ fun SettingsScreen(
     var theme by remember { mutableStateOf(if (isDarkMode) "Dark" else "Light") }
     var showClearDialog by remember { mutableStateOf(false) }
     var showLangDialog by remember { mutableStateOf(false) }
-    val langLabel = if (languageCode == "fa") "\u0641\u0627\u0631\u0633\u06CC" else "English"
+    val langLabel = if (languageCode == "fa") "فارسی" else "English"
 
     if (showClearDialog) {
         AlertDialog(
@@ -66,7 +67,7 @@ fun SettingsScreen(
     }
 
     Scaffold(containerColor = c.background, topBar = { TopAppBar(title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.SemiBold, color = c.onBackground) }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background)) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        ConstrainedColumn(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())) {
             Spacer(Modifier.height(12.dp))
 
             SectionHeader(stringResource(R.string.settings_appearance))

@@ -1,13 +1,13 @@
 package ai.zaro.shadowtext.ui.screens
 
 import ai.zaro.shadowtext.R
+import ai.zaro.shadowtext.ui.components.ConstrainedColumn
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -19,7 +19,7 @@ fun DecodeInputScreen(onBack: () -> Unit, onNext: (String) -> Unit) {
     val c = MaterialTheme.colorScheme
     var inputText by remember { mutableStateOf("") }
     Scaffold(containerColor = c.background, topBar = { TopAppBar(title = { Text(stringResource(R.string.decode_title), fontWeight = FontWeight.SemiBold, color = c.onBackground) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back), tint = c.onBackground) } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background)) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 24.dp)) {
+        ConstrainedColumn(modifier = Modifier.padding(padding)) {
             Spacer(Modifier.height(8.dp))
             Text(stringResource(R.string.decode_input_label), style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
             Spacer(Modifier.height(8.dp))

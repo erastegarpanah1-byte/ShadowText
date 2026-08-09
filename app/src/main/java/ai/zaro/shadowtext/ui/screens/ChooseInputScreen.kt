@@ -1,6 +1,7 @@
 package ai.zaro.shadowtext.ui.screens
 
 import ai.zaro.shadowtext.R
+import ai.zaro.shadowtext.ui.components.ConstrainedColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,13 +25,12 @@ fun ChooseInputScreen(mode: String, onBack: () -> Unit, onTextSelected: () -> Un
     val accent = if (mode == "encode") c.primary else c.secondary
     val title = if (mode == "encode") stringResource(R.string.encode_title) else stringResource(R.string.decode_title)
     Scaffold(containerColor = c.background, topBar = { TopAppBar(title = { Text(title, fontWeight = FontWeight.SemiBold, color = c.onBackground) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back), tint = c.onBackground) } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background)) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        ConstrainedColumn(modifier = Modifier.padding(padding)) {
             Spacer(Modifier.height(24.dp))
             Text(stringResource(R.string.choose_type), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground, textAlign = TextAlign.Center)
             Spacer(Modifier.height(4.dp))
             Text(stringResource(R.string.choose_what), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant, textAlign = TextAlign.Center)
             Spacer(Modifier.height(32.dp))
-            // Text card
             Card(onClick = onTextSelected, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
                 Row(Modifier.fillMaxWidth().padding(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                     Box(Modifier.size(52.dp).clip(RoundedCornerShape(14.dp)).background(accent.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) { Icon(Icons.Outlined.TextFields, null, Modifier.size(28.dp), tint = accent) }
@@ -39,7 +39,6 @@ fun ChooseInputScreen(mode: String, onBack: () -> Unit, onTextSelected: () -> Un
                 }
             }
             Spacer(Modifier.height(16.dp))
-            // File card (disabled)
             Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant.copy(alpha = 0.5f), disabledContainerColor = c.surfaceVariant.copy(alpha = 0.5f)), elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)) {
                 Box {
                     Row(Modifier.fillMaxWidth().padding(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {

@@ -1,6 +1,7 @@
 package ai.zaro.shadowtext.ui.screens
 
 import ai.zaro.shadowtext.R
+import ai.zaro.shadowtext.ui.components.ConstrainedColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,13 +27,12 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun HomeScreen(onEncodeClick: () -> Unit, onDecodeClick: () -> Unit) {
     val c = MaterialTheme.colorScheme
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    ConstrainedColumn(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Spacer(Modifier.height(20.dp))
         Box(Modifier.size(64.dp).clip(CircleShape).background(c.primary.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) { Icon(Icons.Outlined.Shield, null, Modifier.size(36.dp), tint = c.primary) }
         Spacer(Modifier.height(16.dp))
         Text(stringResource(R.string.home_heading), style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, lineHeight = 32.sp), color = c.onBackground, textAlign = TextAlign.Center)
         Spacer(Modifier.height(32.dp))
-        // Encode card
         Card(onClick = onEncodeClick, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = c.primary), elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
             Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Filled.Lock, null, Modifier.size(36.dp), tint = c.onPrimary)
@@ -46,7 +45,6 @@ fun HomeScreen(onEncodeClick: () -> Unit, onDecodeClick: () -> Unit) {
             }
         }
         Spacer(Modifier.height(16.dp))
-        // Decode card
         OutlinedCard(onClick = onDecodeClick, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), colors = CardDefaults.outlinedCardColors(containerColor = c.surface), border = CardDefaults.outlinedCardBorder()) {
             Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)).background(c.secondary.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) { Icon(Icons.Filled.Search, null, Modifier.size(26.dp), tint = c.secondary) }
