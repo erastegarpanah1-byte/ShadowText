@@ -7,9 +7,9 @@ package ai.zaro.shadowtext.core.encoding
  *   VS1–VS16   U+FE00–U+FE0F   (bytes 0x00–0x0F)
  *   VS17–VS256 U+E0100–U+E01EF (bytes 0x10–0xFF)
  *
- * Each selector encodes ONE FULL BYTE.
- * CRITICAL: VS17+ are supplementary Unicode (> U+FFFF) → UTF-16 surrogate pairs.
- * All iteration MUST use codePointAt, NOT char-by-char iteration.
+ * CRITICAL: Kotlin Char is 16-bit → cannot hold supplementary (>U+FFFF).
+ * vsForByte returns String (surrogate pair for VS17+).
+ * All encoding uses appendCodePoint, all decoding uses codePointAt.
  */
 class VariationSelectorEncoder : InvisibleEncoder {
 
@@ -19,14 +19,16 @@ class VariationSelectorEncoder : InvisibleEncoder {
 
     companion object {
         const val MAGIC = 0x53565300  // "SVS\0"
-        const val HEADER_SIZE = 8     // 4 magic + 4 length
+        const val HEADER_SIZE = 8
 
-        fun vsForByte(b: Int): Char =
-            if (b < 16) (0xFE00 + b).toChar()
-            else (0xE0100 + (b - 16)).toChar()
+        // ── code point helpers ──
+
+        /** Returns the VS code point for a byte value (0-255). */
+        fun vsCodePoint(b: Int): Int =
+            if (b < 16) 0xFE00 + b else 0xE0100 + (b - 16)
 
         /** Returns byte value (0-255) if cp is a VS code point, -1 otherwise. */
-        private fun byteForCp(cp: Int): Int = when {
+        fun byteForCp(cp: Int): Int = when {
             cp in 0xFE00..0xFE0F   -> cp - 0xFE00
             cp in 0xE0100..0xE01EF -> cp - 0xE0100 + 16
             else -> -1
@@ -35,15 +37,20 @@ class VariationSelectorEncoder : InvisibleEncoder {
         fun isVsCp(cp: Int): Boolean = byteForCp(cp) >= 0
     }
 
+    // ── InvisibleEncoder interface ──
+
     override fun encode(bytes: ByteArray): String {
         val sb = StringBuilder(HEADER_SIZE + bytes.size)
+        // Magic: 4 selectors
         for (shift in 24 downTo 0 step 8)
-            sb.append(vsForByte((MAGIC shr shift) and 0xFF))
+            sb.appendCodePoint(vsCodePoint((MAGIC shr shift) and 0xFF))
+        // Length: 4 selectors (big-endian u32)
         val len = bytes.size
         for (shift in 24 downTo 0 step 8)
-            sb.append(vsForByte((len shr shift) and 0xFF))
+            sb.appendCodePoint(vsCodePoint((len shr shift) and 0xFF))
+        // Payload: 1 selector per byte
         for (b in bytes)
-            sb.append(vsForByte(b.toInt() and 0xFF))
+            sb.appendCodePoint(vsCodePoint(b.toInt() and 0xFF))
         return sb.toString()
     }
 
@@ -60,18 +67,13 @@ class VariationSelectorEncoder : InvisibleEncoder {
         if (len < 0 || len > 50_000_000)
             throw EncodingException("Invalid payload length: $len")
         if (bytes.size < HEADER_SIZE + len)
-            throw EncodingException("Truncated payload: expected $len got ${bytes.size - HEADER_SIZE}")
+            throw EncodingException("Truncated: expected $len got ${bytes.size - HEADER_SIZE}")
         return ByteArray(len) { i -> bytes[HEADER_SIZE + i].toByte() }
     }
 
     override fun extractInvisible(text: String): String {
         val sb = StringBuilder()
-        var i = 0
-        while (i < text.length) {
-            val cp = text.codePointAt(i)
-            if (isVsCp(cp)) sb.appendCodePoint(cp)
-            i += Character.charCount(cp)
-        }
+        forEachCp(text) { cp -> if (isVsCp(cp)) sb.appendCodePoint(cp) }
         return sb.toString()
     }
 
@@ -85,42 +87,43 @@ class VariationSelectorEncoder : InvisibleEncoder {
 
     override fun encodedCharCount(byteCount: Int): Int = HEADER_SIZE + byteCount
 
-    /** Interleave invisible selectors after each visible character. */
+    /** Interleave invisible selectors after each code point of carrier text. */
     fun embed(carrierText: String, invisible: String): String {
-        // invisible is already a proper code-point string, so char iteration is fine
-        // because StringBuilder.append() handles surrogates correctly when we
-        // append the original chars. But to be safe we iterate by code points.
+        // Collect invisible code points
+        val inv = mutableListOf<Int>()
+        forEachCp(invisible) { cp -> if (isVsCp(cp)) inv.add(cp) }
         var invIdx = 0
         val sb = StringBuilder()
-        var ci = 0
-        while (ci < carrierText.length) {
-            val ccp = carrierText.codePointAt(ci)
-            sb.appendCodePoint(ccp)
-            ci += Character.charCount(ccp)
-            // Append one VS from invisible
-            if (invIdx < invisible.length) {
-                val vcp = invisible.codePointAt(invIdx)
-                sb.appendCodePoint(vcp)
-                invIdx += Character.charCount(vcp)
+        forEachCp(carrierText) { cp ->
+            sb.appendCodePoint(cp)
+            if (invIdx < inv.size) {
+                sb.appendCodePoint(inv[invIdx++])
             }
         }
-        while (invIdx < invisible.length) {
-            val vcp = invisible.codePointAt(invIdx)
-            sb.appendCodePoint(vcp)
-            invIdx += Character.charCount(vcp)
+        while (invIdx < inv.size) {
+            sb.appendCodePoint(inv[invIdx++])
         }
         return sb.toString()
     }
 
-    /** Extract all VS bytes from text (code-point-safe). */
-    private fun extractBytes(text: String): List<Int> {
-        val result = mutableListOf<Int>()
+    // ── private helpers ──
+
+    /** Iterate code points of a string. */
+    private fun forEachCp(text: String, action: (Int) -> Unit) {
         var i = 0
         while (i < text.length) {
             val cp = text.codePointAt(i)
+            action(cp)
+            i += Character.charCount(cp)
+        }
+    }
+
+    /** Extract all VS byte values from text. */
+    private fun extractBytes(text: String): List<Int> {
+        val result = mutableListOf<Int>()
+        forEachCp(text) { cp ->
             val b = byteForCp(cp)
             if (b >= 0) result.add(b)
-            i += Character.charCount(cp)
         }
         return result
     }

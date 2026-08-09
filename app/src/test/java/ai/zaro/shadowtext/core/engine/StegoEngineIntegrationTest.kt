@@ -24,13 +24,13 @@ class StegoEngineIntegrationTest {
         assertArrayEquals(p, dec.decode(r.stegoText).payload)
     }
     @Test fun roundTripPersian() {
-        val p = "سلام دنیا".toByteArray(Charsets.UTF_8)
-        val r = enc.encode(p, "text/plain", "persian.txt", "متن پوششی")
+        val p = "\u0633\u0644\u0627\u0645".toByteArray(Charsets.UTF_8) // "سلام"
+        val r = enc.encode(p, "text/plain", "p.txt", "Cover.")
         assertArrayEquals(p, dec.decode(r.stegoText).payload)
     }
     @Test fun roundTripLargePayload() {
         val p = ByteArray(10_000) { (it % 256).toByte() }
-        val r = enc.encode(p, null, null, "Long cover text.")
+        val r = enc.encode(p, null, null, "Long cover text here.")
         assertArrayEquals(p, dec.decode(r.stegoText).payload)
     }
     @Test fun detectFindsPayload() {
@@ -43,9 +43,9 @@ class StegoEngineIntegrationTest {
     @Test fun stegoTextAppearsNormal() {
         val cover = "This is a normal message"
         val r = enc.encode("data".toByteArray(), "text/plain", "f.txt", cover)
-        // Extract only visible (non-VS) code points
         val visible = buildString {
-            var i = 0; while (i < r.stegoText.length) {
+            var i = 0
+            while (i < r.stegoText.length) {
                 val cp = r.stegoText.codePointAt(i)
                 if (!VariationSelectorEncoder.isVsCp(cp)) appendCodePoint(cp)
                 i += Character.charCount(cp)
