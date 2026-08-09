@@ -28,18 +28,18 @@ fun SettingsScreen(
     onChangeLanguage: (String) -> Unit = {}
 ) {
     val c = MaterialTheme.colorScheme
-    var theme by remember { mutableStateOf(if (isDarkMode) stringResource(R.string.settings_theme_dark) else stringResource(R.string.settings_theme_light)) }
+    var theme by remember { mutableStateOf(if (isDarkMode) "Dark" else "Light") }
     var showClearDialog by remember { mutableStateOf(false) }
     var showLangDialog by remember { mutableStateOf(false) }
-    val langLabel = if (languageCode == "fa") stringResource(R.string.settings_language_fa) else stringResource(R.string.settings_language_en)
+    val langLabel = if (languageCode == "fa") "\u0641\u0627\u0631\u0633\u06CC" else "English"
 
     if (showClearDialog) {
         AlertDialog(
             onDismissRequest = { showClearDialog = false },
-            title = { Text(stringResource(R.string.settings_clear_title), color = c.onBackground) },
-            text = { Text(stringResource(R.string.settings_clear_message), color = c.onSurfaceVariant) },
+            title = { Text(stringResource(R.string.settings_clear_title)) },
+            text = { Text(stringResource(R.string.settings_clear_message)) },
             confirmButton = { TextButton(onClick = { showClearDialog = false }) { Text(stringResource(R.string.settings_clear_confirm), color = c.error) } },
-            dismissButton = { TextButton(onClick = { showClearDialog = false }) { Text(stringResource(R.string.settings_clear_cancel), color = c.onSurfaceVariant) } },
+            dismissButton = { TextButton(onClick = { showClearDialog = false }) { Text(stringResource(R.string.settings_clear_cancel)) } },
             containerColor = c.surface, shape = RoundedCornerShape(20.dp)
         )
     }
@@ -47,12 +47,16 @@ fun SettingsScreen(
     if (showLangDialog) {
         AlertDialog(
             onDismissRequest = { showLangDialog = false },
-            title = { Text(stringResource(R.string.settings_language), color = c.onBackground) },
+            title = { Text(stringResource(R.string.settings_language)) },
             containerColor = c.surface, shape = RoundedCornerShape(20.dp)
         ) {
             Column(Modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
-                TextButton(onClick = { onChangeLanguage("en"); showLangDialog = false }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_language_en), fontWeight = if (languageCode == "en") FontWeight.Bold else FontWeight.Normal, color = if (languageCode == "en") c.primary else c.onSurface) }
-                TextButton(onClick = { onChangeLanguage("fa"); showLangDialog = false }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_language_fa), fontWeight = if (languageCode == "fa") FontWeight.Bold else FontWeight.Normal, color = if (languageCode == "fa") c.primary else c.onSurface) }
+                TextButton(onClick = { onChangeLanguage("en"); showLangDialog = false }, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.settings_language_en), fontWeight = if (languageCode == "en") FontWeight.Bold else FontWeight.Normal, color = if (languageCode == "en") c.primary else c.onSurface)
+                }
+                TextButton(onClick = { onChangeLanguage("fa"); showLangDialog = false }, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.settings_language_fa), fontWeight = if (languageCode == "fa") FontWeight.Bold else FontWeight.Normal, color = if (languageCode == "fa") c.primary else c.onSurface)
+                }
                 Spacer(Modifier.height(8.dp))
             }
         }
@@ -62,17 +66,16 @@ fun SettingsScreen(
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.height(12.dp))
 
-            // ===== APPEARANCE =====
             SectionHeader(stringResource(R.string.settings_appearance))
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
                 Column {
                     SettingsRow(Icons.Outlined.Palette, stringResource(R.string.settings_theme), theme) {
                         theme = when (theme) {
-                            stringResource(R.string.settings_theme_dark) -> stringResource(R.string.settings_theme_light)
-                            stringResource(R.string.settings_theme_light) -> stringResource(R.string.settings_theme_system)
-                            else -> stringResource(R.string.settings_theme_dark)
+                            "Dark" -> "Light"
+                            "Light" -> "System"
+                            else -> "Dark"
                         }
-                        onToggleDarkMode(theme == stringResource(R.string.settings_theme_dark))
+                        onToggleDarkMode(theme == "Dark")
                     }
                     SettingsRow(Icons.Outlined.Language, stringResource(R.string.settings_language), langLabel, showDivider = false) { showLangDialog = true }
                 }
@@ -80,7 +83,6 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(28.dp))
 
-            // ===== DATA =====
             SectionHeader(stringResource(R.string.settings_data))
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
                 SettingsRow(Icons.Outlined.Delete, stringResource(R.string.settings_clear_history), "", showDivider = false) { showClearDialog = true }
@@ -88,7 +90,6 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // ===== ABOUT =====
             SectionHeader(stringResource(R.string.settings_about))
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(16.dp)) {
                 Column(Modifier.padding(20.dp)) {
@@ -96,17 +97,14 @@ fun SettingsScreen(
                     Spacer(Modifier.height(4.dp))
                     Text(stringResource(R.string.settings_version), style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant)
                     Spacer(Modifier.height(20.dp))
-                    // What is
                     Text(stringResource(R.string.settings_about_what_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
                     Spacer(Modifier.height(6.dp))
                     Text(stringResource(R.string.settings_about_what_body), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
                     Spacer(Modifier.height(16.dp))
-                    // Goal
                     Text(stringResource(R.string.settings_about_goal_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
                     Spacer(Modifier.height(6.dp))
                     Text(stringResource(R.string.settings_about_goal_body), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
                     Spacer(Modifier.height(16.dp))
-                    // How
                     Text(stringResource(R.string.settings_about_how_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
                     Spacer(Modifier.height(6.dp))
                     Bullet(stringResource(R.string.settings_about_how_arch))

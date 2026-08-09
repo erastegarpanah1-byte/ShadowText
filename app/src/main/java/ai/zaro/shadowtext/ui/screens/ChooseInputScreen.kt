@@ -40,7 +40,7 @@ fun ChooseInputScreen(mode: String, onBack: () -> Unit, onTextSelected: () -> Un
             }
             Spacer(Modifier.height(16.dp))
             // File card (disabled)
-            Card(enabled = false, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant.copy(alpha = 0.5f), disabledContainerColor = c.surfaceVariant.copy(alpha = 0.5f)), elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)) {
+            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant.copy(alpha = 0.5f), disabledContainerColor = c.surfaceVariant.copy(alpha = 0.5f)), elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)) {
                 Box {
                     Row(Modifier.fillMaxWidth().padding(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                         Box(Modifier.size(52.dp).clip(RoundedCornerShape(14.dp)).background(accent.copy(alpha = 0.05f)), contentAlignment = Alignment.Center) { Icon(Icons.Outlined.InsertDriveFile, null, Modifier.size(28.dp), tint = c.onSurfaceVariant.copy(alpha = 0.3f)) }
