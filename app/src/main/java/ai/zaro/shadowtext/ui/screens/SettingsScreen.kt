@@ -48,18 +48,21 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showLangDialog = false },
             title = { Text(stringResource(R.string.settings_language)) },
-            containerColor = c.surface, shape = RoundedCornerShape(20.dp)
-        ) {
-            Column(Modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
-                TextButton(onClick = { onChangeLanguage("en"); showLangDialog = false }, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.settings_language_en), fontWeight = if (languageCode == "en") FontWeight.Bold else FontWeight.Normal, color = if (languageCode == "en") c.primary else c.onSurface)
+            text = {
+                Column {
+                    TextButton(onClick = { onChangeLanguage("en"); showLangDialog = false }, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.settings_language_en), fontWeight = if (languageCode == "en") FontWeight.Bold else FontWeight.Normal, color = if (languageCode == "en") c.primary else c.onSurface)
+                    }
+                    TextButton(onClick = { onChangeLanguage("fa"); showLangDialog = false }, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.settings_language_fa), fontWeight = if (languageCode == "fa") FontWeight.Bold else FontWeight.Normal, color = if (languageCode == "fa") c.primary else c.onSurface)
+                    }
                 }
-                TextButton(onClick = { onChangeLanguage("fa"); showLangDialog = false }, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.settings_language_fa), fontWeight = if (languageCode == "fa") FontWeight.Bold else FontWeight.Normal, color = if (languageCode == "fa") c.primary else c.onSurface)
-                }
-                Spacer(Modifier.height(8.dp))
-            }
-        }
+            },
+            confirmButton = {},
+            dismissButton = {},
+            shape = RoundedCornerShape(20.dp),
+            containerColor = c.surface
+        )
     }
 
     Scaffold(containerColor = c.background, topBar = { TopAppBar(title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.SemiBold, color = c.onBackground) }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background)) }) { padding ->
