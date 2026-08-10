@@ -85,15 +85,15 @@
     <string name="settings_about">درباره</string>
     <string name="settings_version">نسخه ۱.۰.۰</string>
     <string name="settings_about_what_title">ShadowText چیست؟</string>
-    <string name="settings_about_what_body">ShadowText یک موتور استگانوگرافی متن آفلاین برای اندروید است. به شما امکان می‌دهد پیام‌های محرمانه را درون متن معمولی با استفاده از کاراکترهای یونیکد نامرئی پنهان کنید — به طوری که داده پنهان شما کاملاً غیرقابل شناسایی باشد.</string>
+    <string name="settings_about_what_body">ShadowText یک موتور استگانوگرافی متن آفلاین برای اندروید است. به شما امکان می‌دهد پیام‌های محرمانه را درون متن معمولی با استفاده از کاراکترهای Variation Selector نامرئی پنهان کنید — به طوری که داده پنهان شما کاملاً غیرقابل شناسایی باشد.</string>
     <string name="settings_about_goal_title">هدف ما</string>
-    <string name="settings_about_goal_body">ما معتقدیم حریم خصوصی یک حق اساسی است. هدف ما این است که ارتباط امن و نامرئی را برای همه قابل دسترس کنیم — بدون حساب کاربری، بدون اینترنت، بدون ردیابی. فقط شما و اسرارتان، محافظت‌شده با رمزنگاری قوی و پنهان در دید ساده.</string>
+    <string name="settings_about_goal_body">ما معتقدیم حریم خصوصی یک حق اساسی است و برای همین یک برنامه کاملا آموزشی برای درک عمق مخفی‌سازی پیام‌ها در هر چیزی به طوری که از دید شما و واسط پنهان بماند طراحی و توسعه دادیم.</string>
     <string name="settings_about_how_title">طراحی آن</string>
     <string name="settings_about_how_arch">معماری — MVVM + Clean Architecture برای جداسازی مسئولیت‌ها</string>
     <string name="settings_about_how_ui">رابط کاربری — Jetpack Compose با Material 3، پشتیبانی از تم تاریک و روشن</string>
     <string name="settings_about_how_security">امنیت — رمزنگاری AES-256 با تکنیک‌های پیشرفته استگانوگرافی</string>
     <string name="settings_about_how_privacy">حریم خصوصی — ۱۰۰٪ آفلاین، تمام پردازش‌ها روی دستگاه شما</string>
-    <string name="settings_about_how_stego">استگانوگرافی — روش‌های Zero Width Characters و Homoglyph</string>
+    <string name="settings_about_how_stego">استگانوگرافی — روش‌های Variation Selector (VS1–VS256) و Homoglyph</string>
     <string name="settings_security_first">امنیت در اولویت است</string>
     <string name="settings_processing">تمام پردازش‌ها روی دستگاه شما انجام می‌شود.</string>
     <string name="settings_no_leak">داده‌های شما هرگز دستگاه را ترک نمی‌کنند.</string>
@@ -110,4 +110,7 @@
     <string name="onboarding_welcome_title">به برنامه خوش آمدید!</string>
     <string name="onboarding_welcome_subtitle">حریم خصوصی شما برای ما مهم است.\nبیایید شروع کنیم.</string>
     <string name="onboarding_welcome_desc">اسرار خود را با استگانوگرافی پیشرفته در دید ساده پنهان کنید.\nتمام پردازش‌ها روی دستگاه شما انجام می‌شود — بدون نیاز به اینترنت.</string>
+    <string name="settings_about_disclaimer_title">سلب مسئولیت</string>
+    <string name="settings_about_disclaimer_body">این برنامه صرفا برای اهداف آموزشی و شوخی‌های ملایم با برخی از نزدیکان و دوستان طراحی شده است.\n\nنکته: طراح و پلتفرم منتشر کننده اپلیکیشن هیچ مسئولیتی در قبال استفاده نادرست و غیر اخلاقی شما از این برنامه ندارد.</string>
+    <string name="settings_open_source">پروژه متن‌باز (Open Source)</string>
 </resources>
