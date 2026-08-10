@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ShadowText</string>
-
-    <!-- Splash -->
     <string name="splash_title">SHADOWTEXT</string>
     <string name="splash_subtitle">Steganography &amp; Encryption</string>
     <string name="splash_tagline">Secure what matters.</string>
-
-    <!-- Home -->
     <string name="home_heading">Steganography\n&amp; Encryption</string>
     <string name="home_encode">Encode</string>
     <string name="home_encode_subtitle">Hide your secret text inside text</string>
@@ -20,13 +16,9 @@
     <string name="home_security_first">SECURITY FIRST</string>
     <string name="home_processing">All processing is done on your device.\nYour data never leaves your device.</string>
     <string name="home_encryption">Strong encryption + advanced steganography\nkeeps your data safe.</string>
-
-    <!-- Bottom Nav -->
     <string name="nav_home">Home</string>
     <string name="nav_history">History</string>
     <string name="nav_settings">Settings</string>
-
-    <!-- Choose Input -->
     <string name="choose_type">Choose Input Type</string>
     <string name="choose_what">What do you want to use?</string>
     <string name="choose_text">Text</string>
@@ -34,16 +26,12 @@
     <string name="choose_file">File</string>
     <string name="choose_file_subtitle">Available in upcoming updates</string>
     <string name="coming_soon">Coming Soon</string>
-
-    <!-- Encode Input -->
     <string name="encode_title">Encode</string>
     <string name="encode_input_label">Input (Text)</string>
     <string name="encode_cover_placeholder">Paste or type your cover text here…</string>
     <string name="encode_secret_label">Secret Text</string>
     <string name="encode_secret_placeholder">Type your secret text here…</string>
     <string name="encode_next">Next</string>
-
-    <!-- Encode Options -->
     <string name="encode_options_title">Options</string>
     <string name="encode_algorithm">Algorithm</string>
     <string name="encode_stego_method">Steganography Method</string>
@@ -53,8 +41,6 @@
     <string name="encode_password_hide">Hide</string>
     <string name="encode_password_placeholder">Enter password</string>
     <string name="encode_encode_btn">Encode</string>
-
-    <!-- Encode Result -->
     <string name="encode_success">Encoding Successful!</string>
     <string name="encode_success_desc">Your secret data has been hidden securely.</string>
     <string name="encode_hidden_text">Hidden Text</string>
@@ -62,13 +48,9 @@
     <string name="encode_share">Share</string>
     <string name="encode_new">New Encode</string>
     <string name="encode_copied">Copied!</string>
-
-    <!-- Decode Input -->
     <string name="decode_title">Decode</string>
     <string name="decode_input_label">Input (Text)</string>
     <string name="decode_input_placeholder">Paste or type your encoded text here…</string>
-
-    <!-- Decode Options -->
     <string name="decode_options_title">Options</string>
     <string name="decode_stego_method">Steganography Method</string>
     <string name="decode_auto_detect">Auto Detect</string>
@@ -76,21 +58,15 @@
     <string name="decode_password_enter">Enter</string>
     <string name="decode_password_placeholder">Enter password</string>
     <string name="decode_decode_btn">Decode</string>
-
-    <!-- Decode Result -->
     <string name="decode_success">Decoding Successful!</string>
     <string name="decode_success_desc">Your hidden data has been extracted.</string>
     <string name="decode_decoded_text">Decoded Text</string>
     <string name="decode_save">Save Output</string>
     <string name="decode_share">Share</string>
     <string name="decode_new">New Decode</string>
-
-    <!-- History -->
     <string name="history_title">History</string>
     <string name="history_empty">No history yet</string>
     <string name="history_empty_desc">Your encode and decode history will appear here.</string>
-
-    <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_appearance">Appearance</string>
     <string name="settings_theme">Theme</string>
@@ -121,21 +97,17 @@
     <string name="settings_security_first">SECURITY FIRST</string>
     <string name="settings_processing">All processing is done on your device.</string>
     <string name="settings_no_leak">Your data never leaves your device.</string>
-
-    <!-- General -->
     <string name="back">Back</string>
-
-    <!-- Onboarding -->
     <string name="onboarding_next">Next</string>
     <string name="onboarding_get_started">Get Started</string>
-    <string name="onboarding_step">Step %1$d of %2$d</string>
+    <string name="onboarding_step">%1$d / %2$d</string>
     <string name="onboarding_language_title">Choose Your Language</string>
-    <string name="onboarding_language_subtitle">Select your preferred language</string>
+    <string name="onboarding_language_subtitle">You can change the language\nanytime in settings.</string>
     <string name="onboarding_theme_title">Choose Your Theme</string>
-    <string name="onboarding_theme_subtitle">Select how the app looks</string>
+    <string name="onboarding_theme_subtitle">You can change the theme\nanytime in settings.</string>
     <string name="onboarding_theme_dark">Dark</string>
     <string name="onboarding_theme_light">Light</string>
-    <string name="onboarding_welcome_title">Welcome to</string>
-    <string name="onboarding_welcome_subtitle">Secure. Invisible. Offline.</string>
+    <string name="onboarding_welcome_title">Welcome!</string>
+    <string name="onboarding_welcome_subtitle">Your privacy matters.\nLet\'s get you started.</string>
     <string name="onboarding_welcome_desc">Hide your secrets in plain sight with advanced steganography.\nAll processing is done on your device — no internet needed.</string>
 </resources>
