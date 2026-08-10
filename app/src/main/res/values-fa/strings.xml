@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ShadowText</string>
-
-    <!-- Splash -->
     <string name="splash_title">SHADOWTEXT</string>
     <string name="splash_subtitle">استگانوگرافی و رمزنگاری</string>
     <string name="splash_tagline">از آنچه مهم است محافظت کن.</string>
-
-    <!-- Home -->
     <string name="home_heading">استگانوگرافی\nو رمزنگاری</string>
     <string name="home_encode">رمزگذاری</string>
     <string name="home_encode_subtitle">متن محرمانه خود را درون متن پنهان کنید</string>
@@ -20,13 +16,9 @@
     <string name="home_security_first">امنیت در اولویت است</string>
     <string name="home_processing">تمام پردازش‌ها روی دستگاه شما انجام می‌شود.\nداده‌های شما هرگز دستگاه را ترک نمی‌کنند.</string>
     <string name="home_encryption">رمزنگاری قوی + استگانوگرافی پیشرفته\nداده‌های شما را ایمن نگه می‌دارد.</string>
-
-    <!-- Bottom Nav -->
     <string name="nav_home">خانه</string>
     <string name="nav_history">تاریخچه</string>
     <string name="nav_settings">تنظیمات</string>
-
-    <!-- Choose Input -->
     <string name="choose_type">نوع ورودی را انتخاب کنید</string>
     <string name="choose_what">از چه چیزی می‌خواهید استفاده کنید؟</string>
     <string name="choose_text">متن</string>
@@ -34,16 +26,12 @@
     <string name="choose_file">فایل</string>
     <string name="choose_file_subtitle">در به‌روزرسانی‌های آینده اضافه می‌شود</string>
     <string name="coming_soon">به زودی</string>
-
-    <!-- Encode Input -->
     <string name="encode_title">رمزگذاری</string>
     <string name="encode_input_label">ورودی (متن)</string>
     <string name="encode_cover_placeholder">متن پوششی خود را اینجا تایپ یا جای‌گذاری کنید…</string>
     <string name="encode_secret_label">متن محرمانه</string>
     <string name="encode_secret_placeholder">متن محرمانه خود را اینجا بنویسید…</string>
     <string name="encode_next">بعدی</string>
-
-    <!-- Encode Options -->
     <string name="encode_options_title">تنظیمات</string>
     <string name="encode_algorithm">الگوریتم</string>
     <string name="encode_stego_method">روش استگانوگرافی</string>
@@ -53,8 +41,6 @@
     <string name="encode_password_hide">مخفی</string>
     <string name="encode_password_placeholder">رمز عبور را وارد کنید</string>
     <string name="encode_encode_btn">رمزگذاری</string>
-
-    <!-- Encode Result -->
     <string name="encode_success">رمزگذاری با موفقیت انجام شد!</string>
     <string name="encode_success_desc">داده محرمانه شما با امنیت پنهان شد.</string>
     <string name="encode_hidden_text">متن پنهان شده</string>
@@ -62,13 +48,9 @@
     <string name="encode_share">اشتراک‌گذاری</string>
     <string name="encode_new">رمزگذاری جدید</string>
     <string name="encode_copied">کپی شد!</string>
-
-    <!-- Decode Input -->
     <string name="decode_title">رمزگشایی</string>
     <string name="decode_input_label">ورودی (متن)</string>
     <string name="decode_input_placeholder">متن کدگذاری شده را اینجا تایپ یا جای‌گذاری کنید…</string>
-
-    <!-- Decode Options -->
     <string name="decode_options_title">تنظیمات</string>
     <string name="decode_stego_method">روش استگانوگرافی</string>
     <string name="decode_auto_detect">تشخیص خودکار</string>
@@ -76,21 +58,15 @@
     <string name="decode_password_enter">وارد کردن</string>
     <string name="decode_password_placeholder">رمز عبور را وارد کنید</string>
     <string name="decode_decode_btn">رمزگشایی</string>
-
-    <!-- Decode Result -->
     <string name="decode_success">رمزگشایی با موفقیت انجام شد!</string>
     <string name="decode_success_desc">داده پنهان شما استخراج شد.</string>
     <string name="decode_decoded_text">متن رمزگشایی شده</string>
     <string name="decode_save">ذخیره خروجی</string>
     <string name="decode_share">اشتراک‌گذاری</string>
     <string name="decode_new">رمزگشایی جدید</string>
-
-    <!-- History -->
     <string name="history_title">تاریخچه</string>
     <string name="history_empty">هنوز تاریخچه‌ای وجود ندارد</string>
     <string name="history_empty_desc">تاریخچه رمزگذاری و رمزگشایی شما در اینجا نمایش داده می‌شود.</string>
-
-    <!-- Settings -->
     <string name="settings_title">تنظیمات</string>
     <string name="settings_appearance">ظاهر</string>
     <string name="settings_theme">تم</string>
@@ -121,21 +97,17 @@
     <string name="settings_security_first">امنیت در اولویت است</string>
     <string name="settings_processing">تمام پردازش‌ها روی دستگاه شما انجام می‌شود.</string>
     <string name="settings_no_leak">داده‌های شما هرگز دستگاه را ترک نمی‌کنند.</string>
-
-    <!-- General -->
     <string name="back">بازگشت</string>
-
-    <!-- Onboarding -->
     <string name="onboarding_next">بعدی</string>
     <string name="onboarding_get_started">شروع کنید</string>
-    <string name="onboarding_step">مرحله %1$d از %2$d</string>
+    <string name="onboarding_step">%1$d / %2$d</string>
     <string name="onboarding_language_title">زبان خود را انتخاب کنید</string>
-    <string name="onboarding_language_subtitle">زبان مورد نظر خود را انتخاب کنید</string>
-    <string name="onboarding_theme_title">تم خود را انتخاب کنید</string>
-    <string name="onboarding_theme_subtitle">ظاهر برنامه را انتخاب کنید</string>
+    <string name="onboarding_language_subtitle">شما می‌توانید زبان را در\nتنظیمات تغییر دهید.</string>
+    <string name="onboarding_theme_title">تم مورد نظر خود را انتخاب کنید</string>
+    <string name="onboarding_theme_subtitle">شما می‌توانید تم را در\nتنظیمات تغییر دهید.</string>
     <string name="onboarding_theme_dark">تاریک</string>
     <string name="onboarding_theme_light">روشن</string>
-    <string name="onboarding_welcome_title">به</string>
-    <string name="onboarding_welcome_subtitle">امن. نامرئی. آفلاین.</string>
+    <string name="onboarding_welcome_title">به برنامه خوش آمدید!</string>
+    <string name="onboarding_welcome_subtitle">حریم خصوصی شما برای ما مهم است.\nبیایید شروع کنیم.</string>
     <string name="onboarding_welcome_desc">اسرار خود را با استگانوگرافی پیشرفته در دید ساده پنهان کنید.\nتمام پردازش‌ها روی دستگاه شما انجام می‌شود — بدون نیاز به اینترنت.</string>
 </resources>
