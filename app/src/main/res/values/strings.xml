@@ -121,6 +121,9 @@
     <string name="settings_security_first">SECURITY FIRST</string>
     <string name="settings_processing">All processing is done on your device.</string>
     <string name="settings_no_leak">Your data never leaves your device.</string>
+    <string name="settings_open_source">Open Source</string>
+    <string name="settings_about_disclaimer_title">Disclaimer</string>
+    <string name="settings_about_disclaimer_body">ShadowText is a personal project. Use at your own risk. The developer is not responsible for any misuse.</string>
 
     <!-- General -->
     <string name="back">Back</string>
@@ -128,6 +131,7 @@
     <!-- Onboarding -->
     <string name="onboarding_next">Next</string>
     <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_get_started_disabled">Accept terms to continue</string>
     <string name="onboarding_step">Step %1$d of %2$d</string>
     <string name="onboarding_language_title">Choose Your Language</string>
     <string name="onboarding_language_subtitle">Select your preferred language</string>
@@ -135,10 +139,12 @@
     <string name="onboarding_theme_subtitle">Select how the app looks</string>
     <string name="onboarding_theme_dark">Dark</string>
     <string name="onboarding_theme_light">Light</string>
-    <string name="onboarding_welcome_title">Welcome to</string>
-    <string name="onboarding_welcome_subtitle">Secure. Invisible. Offline.</string>
-    <string name="onboarding_welcome_desc">Hide your secrets in plain sight with advanced steganography.\nAll processing is done on your device — no internet needed.</string>
-    <string name="settings_open_source">Open Source</string>
-    <string name="settings_about_disclaimer_title">Disclaimer</string>
-    <string name="settings_about_disclaimer_body">ShadowText is a personal project. Use at your own risk. The developer is not responsible for any misuse.</string>
+    <string name="onboarding_welcome_title">Welcome to ShadowText</string>
+    <string name="onboarding_welcome_desc">Your offline tool for hiding secret messages inside ordinary-looking text — invisible to application servers. All processing happens on your device, your data never leaves it.</string>
+    <string name="onboarding_agree_checkbox">I have read and accept the Terms of Use</string>
+    <string name="onboarding_view_terms">View Terms of Use</string>
+
+    <!-- Terms -->
+    <string name="terms_title">Terms of Use</string>
+    <string name="terms_close">Close</string>
 </resources>
