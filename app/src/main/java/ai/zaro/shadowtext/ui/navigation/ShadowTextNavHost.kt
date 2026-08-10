@@ -194,6 +194,7 @@ fun ShadowTextNavHost(
                                 )
                                 val inv = encoder.encode(ai.zaro.shadowtext.core.format.PacketSerializer.serialize(pkt))
                                 val stego = encoder.embed(inputText, inv)
+                                EncodeResultHolder.result = stego
                                 resultText = stego
                             } catch (e: Exception) {
                                 errorMsg = "Encode failed: ${e.message}"
@@ -258,7 +259,8 @@ fun ShadowTextNavHost(
                                 val encoder = ai.zaro.shadowtext.core.encoding.VariationSelectorEncoder()
                                 val decoder = ai.zaro.shadowtext.core.engine.StegoDecoder(listOf(encoder))
                                 val result = withContext(Dispatchers.Default) { decoder.decode(inputText) }
-                                decodedResult = String(result.payload, Charsets.UTF_8)
+                                DecodeResultHolder.result = String(result.payload, Charsets.UTF_8)
+                                decodedResult = DecodeResultHolder.result
                             } catch (e: Exception) {
                                 errorMsg = "Decode failed: ${e.message}"
                             } finally {
