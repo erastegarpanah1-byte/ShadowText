@@ -85,15 +85,15 @@
     <string name="settings_about">About</string>
     <string name="settings_version">Version 1.0.0</string>
     <string name="settings_about_what_title">What is ShadowText?</string>
-    <string name="settings_about_what_body">ShadowText is an offline text steganography engine for Android. It lets you hide secret messages inside ordinary-looking text using invisible Unicode characters — making your hidden data completely undetectable to the naked eye.</string>
+    <string name="settings_about_what_body">ShadowText is an offline text steganography engine for Android. It lets you hide secret messages inside ordinary-looking text using invisible Variation Selector characters — making your hidden data completely undetectable to the naked eye.</string>
     <string name="settings_about_goal_title">Our Goal</string>
-    <string name="settings_about_goal_body">We believe privacy is a fundamental right. Our goal is to make secure, invisible communication accessible to everyone — no accounts, no internet, no tracking. Just you and your secrets, protected by strong encryption and hidden in plain sight.</string>
+    <string name="settings_about_goal_body">We believe privacy is a fundamental right. That\'s why we designed and developed a fully educational application to help understand the depth of message concealment — hiding data in plain sight, undetectable to both the human eye and ordinary tools.</string>
     <string name="settings_about_how_title">How It\'s Built</string>
     <string name="settings_about_how_arch">Architecture — MVVM + Clean Architecture for separation of concerns and testability</string>
     <string name="settings_about_how_ui">UI — Jetpack Compose with Material 3, supporting dark and light themes</string>
     <string name="settings_about_how_security">Security — AES-256 encryption with advanced steganography techniques</string>
     <string name="settings_about_how_privacy">Privacy — 100% offline, all processing happens on your device</string>
-    <string name="settings_about_how_stego">Steganography — Zero Width Characters and Homoglyph methods</string>
+    <string name="settings_about_how_stego">Steganography — Variation Selector (VS1–VS256) and Homoglyph methods</string>
     <string name="settings_security_first">SECURITY FIRST</string>
     <string name="settings_processing">All processing is done on your device.</string>
     <string name="settings_no_leak">Your data never leaves your device.</string>
@@ -110,4 +110,7 @@
     <string name="onboarding_welcome_title">Welcome!</string>
     <string name="onboarding_welcome_subtitle">Your privacy matters.\nLet\'s get you started.</string>
     <string name="onboarding_welcome_desc">Hide your secrets in plain sight with advanced steganography.\nAll processing is done on your device — no internet needed.</string>
+    <string name="settings_about_disclaimer_title">Disclaimer</string>
+    <string name="settings_about_disclaimer_body">This application is designed solely for educational purposes and light-hearted fun with close friends and family.\n\nNote: The developer and the publishing platform bear no responsibility for any unethical or improper use of this application.</string>
+    <string name="settings_open_source">Open Source Project</string>
 </resources>
