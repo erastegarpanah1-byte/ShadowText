@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -22,27 +23,29 @@ import androidx.compose.ui.unit.sp
 
 /**
  * 3-step onboarding shown on first launch:
- *   Step 1 – Language selection (فارسی | ENGLISH)
- *   Step 2 – Theme selection (Dark | Light) — in the chosen language
- *   Step 3 – Welcome screen — with chosen language & theme
+ *   Step 0 – Language selection (فارسی | ENGLISH)
+ *   Step 1 – Theme selection (Dark | Light)
+ *   Step 2 – Welcome screen
+ *
+ * After language selection the activity will recreate() so step 1+
+ * can use stringResource with the correct locale.
  */
 @Composable
 fun OnboardingScreen(
-    onComplete: (languageCode: String, isDarkMode: Boolean) -> Unit
+    initialStep: Int = 0,
+    onLanguageSelected: (languageCode: String) -> Unit = {},
+    onComplete: (languageCode: String, isDarkMode: Boolean) -> Unit = { _, _ -> }
 ) {
-    // ---- local state ----
-    var step by remember { mutableStateOf(0) }
+    var step by remember { mutableStateOf(initialStep) }
     var langCode by remember { mutableStateOf("en") }
     var isDark by remember { mutableStateOf(true) }
 
-    // Wrap each step in the current theme + language so the user sees it live
     val c = MaterialTheme.colorScheme
     val totalSteps = 3
 
     Scaffold(
         containerColor = c.background,
         topBar = {
-            // Step indicator bar
             if (step < totalSteps - 1) {
                 Row(
                     modifier = Modifier
@@ -80,11 +83,10 @@ fun OnboardingScreen(
                 0 -> LanguageStep(
                     onSelect = { code ->
                         langCode = code
-                        step = 1
+                        onLanguageSelected(code)
                     }
                 )
                 1 -> ThemeStep(
-                    langCode = langCode,
                     isDark = isDark,
                     onSelect = { dark ->
                         isDark = dark
@@ -93,6 +95,7 @@ fun OnboardingScreen(
                     onBack = { step = 0 }
                 )
                 2 -> WelcomeStep(
+                    isDark = isDark,
                     onGetStarted = { onComplete(langCode, isDark) },
                     onBack = { step = 1 }
                 )
@@ -122,7 +125,6 @@ private fun LanguageStep(onSelect: (String) -> Unit) {
     )
     Spacer(Modifier.height(40.dp))
 
-    // Two large cards
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
@@ -166,7 +168,6 @@ private fun LanguageCard(label: String, onClick: () -> Unit, modifier: Modifier 
 
 @Composable
 private fun ThemeStep(
-    langCode: String,
     isDark: Boolean,
     onSelect: (Boolean) -> Unit,
     onBack: () -> Unit
@@ -223,14 +224,8 @@ private fun ThemeCard(
     modifier: Modifier = Modifier
 ) {
     val c = MaterialTheme.colorScheme
-    val bg = if (isLightPreview)
-        androidx.compose.ui.graphics.Color(0xFFFAF7F2)
-    else
-        androidx.compose.ui.graphics.Color(0xFF070E17)
-    val accent = if (isLightPreview)
-        androidx.compose.ui.graphics.Color(0xFFB8860B)
-    else
-        androidx.compose.ui.graphics.Color(0xFFD4A574)
+    val bg = if (isLightPreview) Color(0xFFFAF7F2) else Color(0xFF070E17)
+    val accent = if (isLightPreview) Color(0xFFB8860B) else Color(0xFFD4A574)
 
     Card(
         modifier = modifier
@@ -250,25 +245,17 @@ private fun ThemeCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Mini preview
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .weight(1f)
                     .clip(RoundedCornerShape(12.dp))
                     .background(
-                        if (isLightPreview)
-                            androidx.compose.ui.graphics.Color(0xFFF5F0E8)
-                        else
-                            androidx.compose.ui.graphics.Color(0xFF0A1628)
+                        if (isLightPreview) Color(0xFFF5F0E8) else Color(0xFF0A1628)
                     )
             ) {
-                // Fake text lines
                 Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    val lineColor = if (isLightPreview)
-                        androidx.compose.ui.graphics.Color(0xFFE8E2D5)
-                    else
-                        androidx.compose.ui.graphics.Color(0xFF1E3050)
+                    val lineColor = if (isLightPreview) Color(0xFFE8E2D5) else Color(0xFF1E3050)
                     Box(Modifier.fillMaxWidth(0.7f).height(6.dp).clip(RoundedCornerShape(3.dp)).background(lineColor))
                     Box(Modifier.fillMaxWidth(0.9f).height(6.dp).clip(RoundedCornerShape(3.dp)).background(lineColor))
                     Box(Modifier.fillMaxWidth(0.5f).height(6.dp).clip(RoundedCornerShape(3.dp)).background(lineColor))
@@ -279,8 +266,10 @@ private fun ThemeCard(
             Spacer(Modifier.height(12.dp))
             Text(
                 text = label,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium),
-                color = if (isLightPreview) androidx.compose.ui.graphics.Color(0xFF1A1C1E) else androidx.compose.ui.graphics.Color(0xFFE2E2E8),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                ),
+                color = if (isLightPreview) Color(0xFF1A1C1E) else Color(0xFFE2E2E8),
                 textAlign = TextAlign.Center
             )
         }
@@ -291,6 +280,7 @@ private fun ThemeCard(
 
 @Composable
 private fun WelcomeStep(
+    isDark: Boolean,
     onGetStarted: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -298,16 +288,11 @@ private fun WelcomeStep(
 
     Spacer(Modifier.height(24.dp))
 
-    // App icon placeholder
     Box(
         modifier = Modifier
             .size(100.dp)
             .clip(RoundedCornerShape(24.dp))
-            .background(
-                Brush.linearGradient(
-                    listOf(c.primary, c.secondary)
-                )
-            ),
+            .background(Brush.linearGradient(listOf(c.primary, c.secondary))),
         contentAlignment = Alignment.Center
     ) {
         Text(
