@@ -38,7 +38,6 @@ class MainActivity : ComponentActivity() {
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val onboardingDone = prefs.getBoolean(KEY_ONBOARDING_DONE, false)
         val savedDarkMode = prefs.getBoolean(KEY_DARK_MODE, true)
-        // Restore onboarding step after language-selection recreate
         val savedStep = savedInstanceState?.getInt(KEY_ONBOARDING_STEP, 0) ?: 0
 
         setContent {
@@ -46,10 +45,6 @@ class MainActivity : ComponentActivity() {
             var isDarkMode by remember { mutableStateOf(savedDarkMode) }
             val context = LocalContext.current
 
-            // During onboarding, use dark theme (default) for step 0 (language).
-            // For step 1 (theme) user picks theme live.
-            // For step 2 (welcome) use chosen theme.
-            // We handle this inside OnboardingScreen itself.
             val effectiveTheme = if (showOnboarding) true else isDarkMode
 
             ShadowTextTheme(darkTheme = effectiveTheme) {
@@ -58,25 +53,20 @@ class MainActivity : ComponentActivity() {
                         OnboardingScreen(
                             initialStep = savedStep,
                             onLanguageSelected = { languageCode ->
-                                // Save language and step, then recreate so
-                                // attachBaseContext picks up the new locale
+                                LocaleHelper.setLocale(context, languageCode)
                                 prefs.edit()
                                     .putInt(KEY_ONBOARDING_STEP, 1)
                                     .apply()
-                                LocaleHelper.setLocale(context, languageCode)
                                 recreate()
                             },
                             onComplete = { languageCode, dark ->
-                                // Persist all choices
                                 prefs.edit()
                                     .putBoolean(KEY_ONBOARDING_DONE, true)
                                     .putBoolean(KEY_DARK_MODE, dark)
                                     .putInt(KEY_ONBOARDING_STEP, 0)
                                     .apply()
-                                LocaleHelper.setLocale(context, languageCode)
                                 showOnboarding = false
                                 isDarkMode = dark
-                                // Recreate so attachBaseContext uses new locale
                                 recreate()
                             }
                         )
