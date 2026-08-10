@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -109,6 +110,10 @@ fun SettingsScreen(
                     Spacer(Modifier.height(6.dp))
                     Text(stringResource(R.string.settings_about_goal_body), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
                     Spacer(Modifier.height(16.dp))
+                    Text(stringResource(R.string.settings_about_disclaimer_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.error)
+                    Spacer(Modifier.height(6.dp))
+                    Text(stringResource(R.string.settings_about_disclaimer_body), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
+                    Spacer(Modifier.height(16.dp))
                     Text(stringResource(R.string.settings_about_how_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
                     Spacer(Modifier.height(6.dp))
                     Bullet(stringResource(R.string.settings_about_how_arch))
@@ -116,6 +121,18 @@ fun SettingsScreen(
                     Bullet(stringResource(R.string.settings_about_how_security))
                     Bullet(stringResource(R.string.settings_about_how_privacy))
                     Bullet(stringResource(R.string.settings_about_how_stego))
+                    Spacer(Modifier.height(16.dp))
+                    // GitHub link
+                    Surface(onClick = { LocalContext.current.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/erastegarpanah1-byte/ShadowText"))) }, shape = RoundedCornerShape(12.dp), color = c.primary.copy(alpha = 0.1f), modifier = Modifier.fillMaxWidth()) {
+                        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text(stringResource(R.string.settings_open_source), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.primary)
+                                Spacer(Modifier.height(2.dp))
+                                Text("github.com/erastegarpanah1-byte/ShadowText", style = MaterialTheme.typography.bodySmall, color = c.primary.copy(alpha = 0.7f))
+                            }
+                            Text("↗", color = c.primary, style = MaterialTheme.typography.titleMedium)
+                        }
+                    }
                     Spacer(Modifier.height(16.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) { Text(stringResource(R.string.settings_security_first), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 2.5.sp), color = c.primary.copy(alpha = 0.5f), textAlign = TextAlign.Center) }
                     Spacer(Modifier.height(4.dp))
