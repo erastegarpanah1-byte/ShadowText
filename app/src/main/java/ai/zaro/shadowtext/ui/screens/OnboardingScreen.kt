@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Locale
 
 @Composable
 fun OnboardingScreen(
@@ -35,8 +36,15 @@ fun OnboardingScreen(
     var step by remember { mutableStateOf(initialStep) }
     var langCode by remember { mutableStateOf("en") }
     var isDark by remember { mutableStateOf(true) }
+    var agreedToTerms by remember { mutableStateOf(false) }
+    var showTerms by remember { mutableStateOf(false) }
 
     val c = MaterialTheme.colorScheme
+
+    if (showTerms) {
+        TermsScreen(onBack = { showTerms = false })
+        return
+    }
 
     Column(
         modifier = Modifier
@@ -75,7 +83,12 @@ fun OnboardingScreen(
                         onSelect = { dark -> isDark = dark; step = 2 },
                         onBack = { step = 0 }
                     )
-                    2 -> WelcomeStep(onGetStarted = { onComplete(langCode, isDark) })
+                    2 -> WelcomeStep(
+                        agreedToTerms = agreedToTerms,
+                        onAgreeToggle = { agreedToTerms = it },
+                        onViewTerms = { showTerms = true },
+                        onGetStarted = { onComplete(langCode, isDark) }
+                    )
                 }
             }
         }
@@ -150,7 +163,7 @@ private fun LanguageStep(onSelect: (String) -> Unit) {
     Text(stringResource(R.string.onboarding_language_subtitle), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant, textAlign = TextAlign.Center, lineHeight = 20.sp, modifier = Modifier.fillMaxWidth())
     Spacer(Modifier.height(40.dp))
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)) {
-        LangCard("فارسی", Modifier.weight(1f)) { onSelect("fa") }
+        LangCard("\u200Fفارسی\u200F", Modifier.weight(1f)) { onSelect("fa") }
         LangCard("ENGLISH", Modifier.weight(1f)) { onSelect("en") }
     }
 }
@@ -206,15 +219,83 @@ private fun ThemeCard(label: String, isSelected: Boolean, isLightPreview: Boolea
 }
 
 @Composable
-private fun WelcomeStep(onGetStarted: () -> Unit) {
+private fun WelcomeStep(
+    agreedToTerms: Boolean,
+    onAgreeToggle: (Boolean) -> Unit,
+    onViewTerms: () -> Unit,
+    onGetStarted: () -> Unit
+) {
     val c = MaterialTheme.colorScheme
-    Image(painter = painterResource(id = R.drawable.logo_shadowtext), contentDescription = "Logo", modifier = Modifier.size(120.dp).clip(RoundedCornerShape(24.dp)), contentScale = ContentScale.Fit)
-    Spacer(Modifier.height(28.dp))
-    Text(stringResource(R.string.onboarding_welcome_title), style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold), color = c.onBackground, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+    val isPersian = Locale.getDefault().language == "fa"
+    val title = stringResource(R.string.onboarding_welcome_title)
+    val desc = stringResource(R.string.onboarding_welcome_desc)
+    val checkboxLabel = stringResource(R.string.onboarding_agree_checkbox)
+    val viewTermsLabel = stringResource(R.string.onboarding_view_terms)
+    val getStartedLabel = stringResource(R.string.onboarding_get_started)
+    val disabledLabel = stringResource(R.string.onboarding_get_started_disabled)
+
+    Image(painter = painterResource(id = R.drawable.logo_shadowtext), contentDescription = "Logo", modifier = Modifier.size(100.dp).clip(RoundedCornerShape(24.dp)), contentScale = ContentScale.Fit)
+    Spacer(Modifier.height(24.dp))
+    Text(title, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = c.onBackground, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
     Spacer(Modifier.height(10.dp))
-    Text(stringResource(R.string.onboarding_welcome_subtitle), style = MaterialTheme.typography.bodyLarge, color = c.onSurfaceVariant, textAlign = TextAlign.Center, lineHeight = 24.sp, modifier = Modifier.fillMaxWidth())
-    Spacer(Modifier.height(44.dp))
-    Button(onClick = onGetStarted, Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = c.primary)) {
-        Text(stringResource(R.string.onboarding_get_started), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold), color = c.onPrimary)
+    Text(desc, style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp), color = c.onSurfaceVariant, textAlign = TextAlign.Center, lineHeight = 22.sp, modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp))
+
+    Spacer(Modifier.height(28.dp))
+
+    // Terms checkbox row
+    Surface(
+        modifier = Modifier.fillMaxWidth().clickable { onAgreeToggle(!agreedToTerms) },
+        shape = RoundedCornerShape(12.dp),
+        color = if (agreedToTerms) c.primary.copy(alpha = 0.08f) else c.surfaceVariant.copy(alpha = 0.5f),
+        border = if (agreedToTerms) androidx.compose.foundation.BorderStroke(1.dp, c.primary.copy(alpha = 0.3f)) else null
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = agreedToTerms,
+                onCheckedChange = onAgreeToggle,
+                colors = CheckboxDefaults.colors(checkedColor = c.primary, uncheckedColor = c.onSurfaceVariant.copy(alpha = 0.5f))
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = checkboxLabel,
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = if (agreedToTerms) FontWeight.Medium else FontWeight.Normal),
+                color = if (agreedToTerms) c.onBackground else c.onSurfaceVariant
+            )
+        }
+    }
+
+    Spacer(Modifier.height(8.dp))
+
+    // View terms link
+    TextButton(onClick = onViewTerms) {
+        Text(
+            text = viewTermsLabel,
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+            color = c.primary
+        )
+    }
+
+    Spacer(Modifier.height(24.dp))
+
+    // Get Started button
+    Button(
+        onClick = onGetStarted,
+        enabled = agreedToTerms,
+        modifier = Modifier.fillMaxWidth().height(52.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = c.primary,
+            contentColor = c.onPrimary,
+            disabledContainerColor = c.surfaceVariant,
+            disabledContentColor = c.onSurfaceVariant.copy(alpha = 0.4f)
+        )
+    ) {
+        Text(
+            text = if (agreedToTerms) getStartedLabel else disabledLabel,
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+        )
     }
 }
