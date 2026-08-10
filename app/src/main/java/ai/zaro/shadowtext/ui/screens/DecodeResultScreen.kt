@@ -34,6 +34,9 @@ fun DecodeResultScreen(decodedText: String, onBack: () -> Unit, onNew: () -> Uni
     val clipboard = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
+    val copiedText = stringResource(R.string.encode_copied)
+    val copyLabel = stringResource(R.string.decode_copy)
+    val shareLabel = stringResource(R.string.decode_share)
     Scaffold(snackbarHost = { SnackbarHost(snackbar) }, containerColor = c.background, topBar = { TopAppBar(title = { Text(stringResource(R.string.decode_title), fontWeight = FontWeight.SemiBold, color = c.onBackground) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back), tint = c.onBackground) } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background)) }) { padding ->
         ConstrainedColumn(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())) {
             Spacer(Modifier.height(40.dp))
@@ -52,8 +55,8 @@ fun DecodeResultScreen(decodedText: String, onBack: () -> Unit, onNew: () -> Uni
             }
             Spacer(Modifier.height(24.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick = { clipboard.setText(AnnotatedString(decodedText)); scope.launch { snackbar.showSnackbar(stringResource(R.string.encode_copied)) } }, modifier = Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.outlinedButtonColors(contentColor = c.secondary)) { Icon(Icons.Outlined.ContentCopy, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.decode_copy), fontWeight = FontWeight.SemiBold) }
-                Button(onClick = { val intent = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, decodedText) }; context.startActivity(Intent.createChooser(intent, stringResource(R.string.decode_share))) }, modifier = Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = c.secondary, contentColor = c.onSecondary)) { Icon(Icons.Outlined.Share, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.decode_share), fontWeight = FontWeight.SemiBold) }
+                OutlinedButton(onClick = { clipboard.setText(AnnotatedString(decodedText)); scope.launch { snackbar.showSnackbar(copiedText) } }, modifier = Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.outlinedButtonColors(contentColor = c.secondary)) { Icon(Icons.Outlined.ContentCopy, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(copyLabel, fontWeight = FontWeight.SemiBold) }
+                Button(onClick = { val intent = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, decodedText) }; context.startActivity(Intent.createChooser(intent, shareLabel)) }, modifier = Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = c.secondary, contentColor = c.onSecondary)) { Icon(Icons.Outlined.Share, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(shareLabel, fontWeight = FontWeight.SemiBold) }
             }
             Spacer(Modifier.height(28.dp))
             TextButton(onClick = onNew) { Icon(Icons.Filled.Add, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.decode_new), color = c.secondary) }
