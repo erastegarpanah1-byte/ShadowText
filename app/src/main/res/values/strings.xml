@@ -124,7 +124,7 @@
 
     <!-- General -->
     <string name="back">Back</string>
-</resources>
+
     <!-- Onboarding -->
     <string name="onboarding_next">Next</string>
     <string name="onboarding_get_started">Get Started</string>
@@ -138,3 +138,4 @@
     <string name="onboarding_welcome_title">Welcome to</string>
     <string name="onboarding_welcome_subtitle">Secure. Invisible. Offline.</string>
     <string name="onboarding_welcome_desc">Hide your secrets in plain sight with advanced steganography.\nAll processing is done on your device — no internet needed.</string>
+</resources>
