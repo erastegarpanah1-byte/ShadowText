@@ -121,6 +121,9 @@
     <string name="settings_security_first">امنیت در اولویت است</string>
     <string name="settings_processing">تمام پردازش‌ها روی دستگاه شما انجام می‌شود.</string>
     <string name="settings_no_leak">داده‌های شما هرگز دستگاه را ترک نمی‌کنند.</string>
+    <string name="settings_open_source">متن باز</string>
+    <string name="settings_about_disclaimer_title">سلب مسئولیت</string>
+    <string name="settings_about_disclaimer_body">ShadowText یک پروژه شخصی است. استفاده از آن به عهده خودتان می‌باشد. توسعه‌دهنده مسئولیتی در قبال سوءاستفاده ندارد.</string>
 
     <!-- General -->
     <string name="back">بازگشت</string>
@@ -128,6 +131,7 @@
     <!-- Onboarding -->
     <string name="onboarding_next">بعدی</string>
     <string name="onboarding_get_started">شروع کنید</string>
+    <string name="onboarding_get_started_disabled">برای ادامه، قوانین را بپذیرید</string>
     <string name="onboarding_step">مرحله %1$d از %2$d</string>
     <string name="onboarding_language_title">زبان خود را انتخاب کنید</string>
     <string name="onboarding_language_subtitle">زبان مورد نظر خود را انتخاب کنید</string>
@@ -135,10 +139,12 @@
     <string name="onboarding_theme_subtitle">ظاهر برنامه را انتخاب کنید</string>
     <string name="onboarding_theme_dark">تاریک</string>
     <string name="onboarding_theme_light">روشن</string>
-    <string name="onboarding_welcome_title">به</string>
-    <string name="onboarding_welcome_subtitle">امن. نامرئی. آفلاین.</string>
-    <string name="onboarding_welcome_desc">اسرار خود را با استگانوگرافی پیشرفته در دید ساده پنهان کنید.\nتمام پردازش‌ها روی دستگاه شما انجام می‌شود — بدون نیاز به اینترنت.</string>
-    <string name="settings_open_source">متن باز</string>
-    <string name="settings_about_disclaimer_title">سلب مسئولیت</string>
-    <string name="settings_about_disclaimer_body">ShadowText یک پروژه شخصی است. استفاده از آن به عهده خودتان می‌باشد. توسعه‌دهنده مسئولیتی در قبال سوءاستفاده ندارد.</string>
+    <string name="onboarding_welcome_title">به ShadowText خوش آمدید</string>
+    <string name="onboarding_welcome_desc">ابزار آفلاین شما برای مخفی کردن پیام‌های محرمانه درون متنی معمولی — نامرئی از دید سرورهای اپلیکیشن‌ها. تمام پردازش‌ها روی دستگاه شما انجام می‌شود، داده‌هایتان هرگز آن را ترک نمی‌کند.</string>
+    <string name="onboarding_agree_checkbox">قوانین استفاده از برنامه را خوانده و می‌پذیرم</string>
+    <string name="onboarding_view_terms">مشاهده قوانین استفاده</string>
+
+    <!-- Terms -->
+    <string name="terms_title">قوانین استفاده</string>
+    <string name="terms_close">بستن</string>
 </resources>
