@@ -20,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ai.zaro.shadowtext.R
 import ai.zaro.shadowtext.ui.screens.*
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -155,6 +156,7 @@ fun ShadowTextNavHost(
                 )
             }
             composable(Routes.ENCODE_OPTIONS) { be ->
+                val context = LocalContext.current
                 val inputText = be.arguments?.getString("inputText") ?: ""
                 val secretText = be.arguments?.getString("secretText") ?: ""
 
@@ -195,6 +197,7 @@ fun ShadowTextNavHost(
                                 val inv = encoder.encode(ai.zaro.shadowtext.core.format.PacketSerializer.serialize(pkt))
                                 val stego = encoder.embed(inputText, inv)
                                 EncodeResultHolder.result = stego
+                                HistoryStore.add(context, HistoryEntry(type = "encode", inputPreview = inputText.take(80), outputPreview = stego.take(80)))
                                 resultText = stego
                             } catch (e: Exception) {
                                 errorMsg = "Encode failed: ${e.message}"
@@ -231,6 +234,7 @@ fun ShadowTextNavHost(
                 )
             }
             composable(Routes.DECODE_OPTIONS) { be ->
+                val context = LocalContext.current
                 val inputText = be.arguments?.getString("inputText") ?: ""
 
                 val scope = rememberCoroutineScope()
@@ -259,8 +263,10 @@ fun ShadowTextNavHost(
                                 val encoder = ai.zaro.shadowtext.core.encoding.VariationSelectorEncoder()
                                 val decoder = ai.zaro.shadowtext.core.engine.StegoDecoder(listOf(encoder))
                                 val result = withContext(Dispatchers.Default) { decoder.decode(inputText) }
-                                DecodeResultHolder.result = String(result.payload, Charsets.UTF_8)
-                                decodedResult = DecodeResultHolder.result
+                                val decodedStr = String(result.payload, Charsets.UTF_8)
+                                DecodeResultHolder.result = decodedStr
+                                HistoryStore.add(context, HistoryEntry(type = "decode", inputPreview = inputText.take(80), outputPreview = decodedStr.take(80)))
+                                decodedResult = decodedStr
                             } catch (e: Exception) {
                                 errorMsg = "Decode failed: ${e.message}"
                             } finally {
