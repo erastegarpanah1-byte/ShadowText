@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Language
@@ -25,12 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/**
- * 3-step onboarding:
- *   Step 0 – Language (globe icon, "1/3")
- *   Step 1 – Theme (sun icon, "2/3")
- *   Step 2 – Welcome (custom logo, "3/3")
- */
 @Composable
 fun OnboardingScreen(
     initialStep: Int = 0,
@@ -50,21 +45,15 @@ fun OnboardingScreen(
             .navigationBarsPadding()
             .imePadding()
     ) {
-        // Step counter at top
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp, vertical = 20.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = stringResource(R.string.onboarding_step, if (step == 2) 3 else step + 1, 3),
-                style = MaterialTheme.typography.labelLarge,
-                color = c.onBackground.copy(alpha = 0.5f)
-            )
+            StepIndicator(currentStep = step, totalSteps = 3)
         }
 
-        // Content centered in remaining space
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -88,6 +77,64 @@ fun OnboardingScreen(
                     )
                     2 -> WelcomeStep(onGetStarted = { onComplete(langCode, isDark) })
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StepIndicator(currentStep: Int, totalSteps: Int) {
+    val c = MaterialTheme.colorScheme
+    val activeColor = c.primary
+    val inactiveColor = c.outline.copy(alpha = 0.5f)
+    val dotSize = 36.dp
+    val barHeight = 2.dp
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        for (i in 0 until totalSteps) {
+            val stepNumber = i + 1
+            val isActive = i == currentStep
+            val isCompleted = i < currentStep
+
+            Box(
+                modifier = Modifier
+                    .size(dotSize)
+                    .clip(CircleShape)
+                    .background(
+                        when {
+                            isActive -> activeColor
+                            isCompleted -> activeColor.copy(alpha = 0.3f)
+                            else -> Color.Transparent
+                        }
+                    )
+                    .then(
+                        if (!isActive && !isCompleted) {
+                            Modifier.border(1.5.dp, inactiveColor, CircleShape)
+                        } else Modifier
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stepNumber.toString(),
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    ),
+                    color = when {
+                        isActive -> c.onPrimary
+                        isCompleted -> activeColor
+                        else -> inactiveColor
+                    }
+                )
+            }
+
+            if (i < totalSteps - 1) {
+                Box(
+                    modifier = Modifier
+                        .height(barHeight)
+                        .width(32.dp)
+                        .background(if (i < currentStep) activeColor.copy(alpha = 0.4f) else inactiveColor.copy(alpha = 0.3f))
+                )
             }
         }
     }
