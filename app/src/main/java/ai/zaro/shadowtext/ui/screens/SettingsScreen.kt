@@ -30,6 +30,7 @@ fun SettingsScreen(
     onChangeLanguage: (String) -> Unit = {}
 ) {
     val c = MaterialTheme.colorScheme
+    val context = LocalContext.current
     var theme by remember { mutableStateOf(if (isDarkMode) "Dark" else "Light") }
     var showClearDialog by remember { mutableStateOf(false) }
     var showLangDialog by remember { mutableStateOf(false) }
@@ -123,7 +124,7 @@ fun SettingsScreen(
                     Bullet(stringResource(R.string.settings_about_how_stego))
                     Spacer(Modifier.height(16.dp))
                     // GitHub link
-                    Surface(onClick = { LocalContext.current.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/erastegarpanah1-byte/ShadowText"))) }, shape = RoundedCornerShape(12.dp), color = c.primary.copy(alpha = 0.1f), modifier = Modifier.fillMaxWidth()) {
+                    Surface(onClick = { context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/erastegarpanah1-byte/ShadowText"))) }, shape = RoundedCornerShape(12.dp), color = c.primary.copy(alpha = 0.1f), modifier = Modifier.fillMaxWidth()) {
                         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(stringResource(R.string.settings_open_source), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.primary)
