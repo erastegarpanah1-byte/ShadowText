@@ -24,6 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 
 /**
  * 3-step onboarding matching the bilingual mockup:
@@ -145,7 +148,13 @@ private fun ThemeCard(label: String, isSelected: Boolean, isLightPreview: Boolea
 private fun WelcomeStep(onGetStarted: () -> Unit) {
     val c = MaterialTheme.colorScheme
 
-    Icon(Icons.Outlined.Security, contentDescription = null, modifier = Modifier.size(64.dp), tint = c.primary)
+    // Custom logo image (upload to app/src/main/res/drawable/logo_shadowtext.png)
+    Image(
+        painter = painterResource(id = R.drawable.logo_shadowtext),
+        contentDescription = "ShadowText Logo",
+        modifier = Modifier.size(120.dp).clip(RoundedCornerShape(24.dp)),
+        contentScale = ContentScale.Fit
+    )
     Spacer(Modifier.height(28.dp))
 
     Text(stringResource(R.string.onboarding_welcome_title), style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold), color = c.onBackground, textAlign = TextAlign.Center)
