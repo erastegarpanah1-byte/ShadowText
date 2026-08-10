@@ -3,7 +3,10 @@ package ai.zaro.shadowtext.ui.screens
 import ai.zaro.shadowtext.R
 import ai.zaro.shadowtext.ui.components.ConstrainedColumn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,7 +32,7 @@ fun HomeScreen(onEncodeClick: () -> Unit, onDecodeClick: () -> Unit) {
     val c = MaterialTheme.colorScheme
     ConstrainedColumn(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Spacer(Modifier.height(20.dp))
-        Box(Modifier.size(64.dp).clip(CircleShape).background(c.primary.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) { Icon(Icons.Outlined.Shield, null, Modifier.size(36.dp), tint = c.primary) }
+        Image(painter = painterResource(id = R.drawable.logo_shadowtext), contentDescription = "ShadowText", modifier = Modifier.size(64.dp), contentScale = ContentScale.Fit)
         Spacer(Modifier.height(16.dp))
         Text(stringResource(R.string.home_heading), style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, lineHeight = 32.sp), color = c.onBackground, textAlign = TextAlign.Center)
         Spacer(Modifier.height(32.dp))
@@ -61,7 +64,7 @@ fun HomeScreen(onEncodeClick: () -> Unit, onDecodeClick: () -> Unit) {
             Feat(Icons.Outlined.TextFields, stringResource(R.string.home_text_in_text))
             Feat(Icons.Outlined.InsertDriveFile, stringResource(R.string.home_text_in_file))
             Feat(Icons.Outlined.Storage, stringResource(R.string.home_large_files))
-            Feat(Icons.Outlined.Shield, stringResource(R.string.home_secure))
+            Feat(Icons.Outlined.Security, stringResource(R.string.home_secure))
         }
         Spacer(Modifier.height(32.dp))
         Text(stringResource(R.string.home_security_first), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 2.sp), color = c.onSurfaceVariant.copy(alpha = 0.4f))

@@ -3,11 +3,13 @@ package ai.zaro.shadowtext.ui.screens
 import ai.zaro.shadowtext.R
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,7 +33,7 @@ fun SplashScreen(onFinished: () -> Unit) {
     LaunchedEffect(Unit) { scale = 1f; delay(300); visible = true; delay(1500); onFinished() }
     Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(c.background, c.surface, c.background))), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(Modifier.size(88.dp).scale(scale).clip(CircleShape).background(Brush.linearGradient(listOf(c.primary.copy(alpha = 0.2f), c.primary.copy(alpha = 0.05f)))), contentAlignment = Alignment.Center) { Icon(Icons.Filled.Shield, null, Modifier.size(48.dp), tint = c.primary) }
+            Image(painter = painterResource(id = R.drawable.logo_shadowtext), contentDescription = "ShadowText", modifier = Modifier.size(88.dp).scale(scale), contentScale = ContentScale.Fit)
             Spacer(Modifier.height(24.dp))
             Text(stringResource(R.string.splash_title), style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, letterSpacing = 4.sp), color = c.primary)
             Spacer(Modifier.height(8.dp))
