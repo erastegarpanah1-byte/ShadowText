@@ -1,5 +1,7 @@
 package ai.zaro.shadowtext.ui.navigation
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -15,9 +17,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.client.compose.composable
+import androidx.client.compose.currentBackStackEntryAsState
+import androidx.client.compose.rememberNavController
 import ai.zaro.shadowtext.R
 import ai.zaro.shadowtext.ui.screens.*
 import kotlinx.coroutines.Dispatchers
@@ -83,9 +85,12 @@ fun ShadowTextNavHost(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) ->
                             val inv = encoder.encode(serialized)
                             val stego = encoder.embed(inputText, inv)
                             EncodeResultHolder.result = stego
+                            EncodeResultHolder.error = null
                             if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "encode", inputPreview = inputText.take(80), outputPreview = stego.take(80)))
                             navController.navigate(Routes.ENCODE_RESULT) { popUpTo(Routes.HOME) { inclusive = false } }
                         } catch (e: Exception) {
+                            Log.e("ShadowText", "Encode failed", e)
+                            EncodeResultHolder.result = null
                             EncodeResultHolder.error = e.message
                             if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "encode", inputPreview = inputText.take(80), outputPreview = "", status = "failed"))
                             navController.navigate(Routes.ENCODE_RESULT) { popUpTo(Routes.HOME) { inclusive = false } }
@@ -94,7 +99,8 @@ fun ShadowTextNavHost(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) ->
                 })
             }
             composable(Routes.ENCODE_RESULT) {
-                val stego = EncodeResultHolder.result; val error = EncodeResultHolder.error
+                val stego = remember { EncodeResultHolder.result }
+                val error = remember { EncodeResultHolder.error }
                 LaunchedEffect(Unit) { EncodeResultHolder.result = null; EncodeResultHolder.error = null }
                 EncodeResultScreen(stegoText = stego, errorText = error, onBack = { navController.popBackStack(Routes.HOME, false) }, onNew = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } })
             }
@@ -109,9 +115,12 @@ fun ShadowTextNavHost(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) ->
                             val result = withContext(Dispatchers.Default) { decoder.decode(inputText) }
                             val decodedStr = String(result.payload, Charsets.UTF_8)
                             DecodeResultHolder.result = decodedStr
+                            DecodeResultHolder.error = null
                             if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "decode", inputPreview = inputText.take(80), outputPreview = decodedStr.take(80)))
                             navController.navigate(Routes.DECODE_RESULT) { popUpTo(Routes.HOME) { inclusive = false } }
                         } catch (e: Exception) {
+                            Log.e("ShadowText", "Decode failed", e)
+                            DecodeResultHolder.result = null
                             DecodeResultHolder.error = e.message
                             if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "decode", inputPreview = inputText.take(80), outputPreview = "", status = "failed"))
                             navController.navigate(Routes.DECODE_RESULT) { popUpTo(Routes.HOME) { inclusive = false } }
@@ -120,9 +129,10 @@ fun ShadowTextNavHost(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) ->
                 })
             }
             composable(Routes.DECODE_RESULT) {
-                val text = DecodeResultHolder.result; val error = DecodeResultHolder.error
+                val text = remember { DecodeResultHolder.result }
+                val error = remember { DecodeResultHolder.error }
                 LaunchedEffect(Unit) { DecodeResultHolder.result = null; DecodeResultHolder.error = null }
-                DecodeResultScreen(decodedText = text, errorText = error, onBack = { navController.popBackStack(Routes.HOME, false) }, onNew = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } })
+                DecodeResultScreen(decodedText = text, errorText = error, onBack = { navController.popBackStack(Routes.HOME, false) }, onNew = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } )
             }
             composable(Routes.HISTORY) { HistoryScreen() }
             composable(Routes.SETTINGS) { SettingsScreen(isDarkMode = isDarkMode, onToggleDarkMode = onToggleDarkMode, languageCode = languageCode, onChangeLanguage = onChangeLanguage, onNavigateToAbout = { navController.navigate(Routes.ABOUT) }) }
@@ -131,6 +141,6 @@ fun ShadowTextNavHost(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) ->
     }
 }
 
-internal fun isHistoryEnabled(context: android.content.Context): Boolean = context.getSharedPreferences("shadowtext_prefs", android.content.Context.MODE_PRIVATE).getBoolean("history_enabled", true)
+internal fun isHistoryEnabled(context: Context): Boolean = context.getSharedPreferences("shadowtext_prefs", Context.MODE_PRIVATE).getBoolean("history_enabled", true)
 internal object EncodeResultHolder { var result: String? = null; var error: String? = null }
 internal object DecodeResultHolder { var result: String? = null; var error: String? = null }
