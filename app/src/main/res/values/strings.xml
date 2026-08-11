@@ -106,24 +106,21 @@
     <string name="settings_clear_message">Are you sure you want to delete all history entries? This action cannot be undone.</string>
     <string name="settings_clear_confirm">Delete</string>
     <string name="settings_clear_cancel">Cancel</string>
-    <string name="settings_about">About</string>
+    <string name="settings_about">About ShadowText</string>
     <string name="settings_version">Version 1.0.0</string>
-    <string name="settings_about_what_title">What is ShadowText?</string>
-    <string name="settings_about_what_body">ShadowText is an offline text steganography engine for Android. It lets you hide secret messages inside ordinary-looking text using invisible Unicode characters — making your hidden data completely undetectable to the naked eye.</string>
-    <string name="settings_about_goal_title">Our Goal</string>
-    <string name="settings_about_goal_body">We believe privacy is a fundamental right. Our goal is to make secure, invisible communication accessible to everyone — no accounts, no internet, no tracking. Just you and your secrets, protected by strong encryption and hidden in plain sight.</string>
-    <string name="settings_about_how_title">How It\'s Built</string>
-    <string name="settings_about_how_arch">Architecture — MVVM + Clean Architecture for separation of concerns and testability</string>
-    <string name="settings_about_how_ui">UI — Jetpack Compose with Material 3, supporting dark and light themes</string>
-    <string name="settings_about_how_security">Security — AES-256 encryption with advanced steganography techniques</string>
-    <string name="settings_about_how_privacy">Privacy — 100% offline, all processing happens on your device</string>
-    <string name="settings_about_how_stego">Steganography — Zero Width Characters and Homoglyph methods</string>
+    <string name="settings_about_tagline">Steganography. Offline. Private.</string>
+    <string name="settings_about_intro">ShadowText is a modern steganography tool for hiding and retrieving data.</string>
+    <string name="settings_about_intro_body">With ShadowText you can hide various data inside supported carrier content, then extract and recover it on the same device — no internet connection required.</string>
+    <string name="settings_about_privacy_title">Designed with Privacy in Mind</string>
+    <string name="settings_about_privacy_body">ShadowText is designed for local processing.\n\nNo accounts. No servers. No data sent to the internet.\n\nData you enter into the app for processing is never sent to any server for steganography operations.</string>
+    <string name="settings_about_features_title">Features</string>
+    <string name="settings_about_features">• Hide data inside text\n• Extract hidden data\n• Fully offline processing\n• Architecture ready for future security capabilities</string>
+    <string name="settings_about_note_title">An Important Note</string>
+    <string name="settings_about_note_body">ShadowText is a technical and educational tool.\n\nIts capabilities should only be used on data you own or have legal permission to process.\n\nResponsibility for how the software is used and for the data processed rests with the user.</string>
+    <string name="settings_about_footer">© 2026 ShadowText</string>
     <string name="settings_security_first">SECURITY FIRST</string>
     <string name="settings_processing">All processing is done on your device.</string>
     <string name="settings_no_leak">Your data never leaves your device.</string>
-    <string name="settings_open_source">Open Source</string>
-    <string name="settings_about_disclaimer_title">Disclaimer</string>
-    <string name="settings_about_disclaimer_body">ShadowText is a personal project. Use at your own risk. The developer is not responsible for any misuse.</string>
 
     <!-- General -->
     <string name="back">Back</string>
@@ -140,7 +137,7 @@
     <string name="onboarding_theme_dark">Dark</string>
     <string name="onboarding_theme_light">Light</string>
     <string name="onboarding_welcome_title">Welcome to ShadowText</string>
-    <string name="onboarding_welcome_desc">Your offline tool for hiding secret messages inside ordinary-looking text — invisible to application servers. All processing happens on your device, your data never leaves it.</string>
+    <string name="onboarding_welcome_desc">Steganography, fully offline.\nHide your data inside text and supported files, and recover them whenever you want.</string>
     <string name="onboarding_agree_checkbox">I have read and accept the Terms of Use</string>
     <string name="onboarding_view_terms">View Terms of Use</string>
 
