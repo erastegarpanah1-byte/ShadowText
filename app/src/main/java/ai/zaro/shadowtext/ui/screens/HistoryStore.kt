@@ -9,6 +9,7 @@ data class HistoryEntry(
     val type: String,
     val inputPreview: String,
     val outputPreview: String,
+    val status: String = "success",
     val timestamp: Long = System.currentTimeMillis()
 )
 
@@ -36,10 +37,16 @@ object HistoryStore {
                 type = obj.optString("type", ""),
                 inputPreview = obj.optString("inputPreview", ""),
                 outputPreview = obj.optString("outputPreview", ""),
+                status = obj.optString("status", "success"),
                 timestamp = obj.optLong("timestamp", 0)
             ))
         }
         return list
+    }
+
+    fun remove(context: Context, id: Long) {
+        val entries = getAll(context).filter { it.id != id }
+        save(context, entries)
     }
 
     fun clear(context: Context) {
@@ -55,6 +62,7 @@ object HistoryStore {
                 put("type", e.type)
                 put("inputPreview", e.inputPreview)
                 put("outputPreview", e.outputPreview)
+                put("status", e.status)
                 put("timestamp", e.timestamp)
             })
         }
