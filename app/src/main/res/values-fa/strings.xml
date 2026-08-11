@@ -106,24 +106,21 @@
     <string name="settings_clear_message">آیا مطمئن هستید که می‌خواهید تمام تاریخچه را حذف کنید؟ این عمل قابل بازگشت نیست.</string>
     <string name="settings_clear_confirm">حذف</string>
     <string name="settings_clear_cancel">لغو</string>
-    <string name="settings_about">درباره</string>
+    <string name="settings_about">درباره ShadowText</string>
     <string name="settings_version">نسخه ۱.۰.۰</string>
-    <string name="settings_about_what_title">ShadowText چیست؟</string>
-    <string name="settings_about_what_body">ShadowText یک موتور استگانوگرافی متن آفلاین برای اندروید است. به شما امکان می‌دهد پیام‌های محرمانه را درون متن معمولی با استفاده از کاراکترهای یونیکد نامرئی پنهان کنید — به طوری که داده پنهان شما کاملاً غیرقابل شناسایی باشد.</string>
-    <string name="settings_about_goal_title">هدف ما</string>
-    <string name="settings_about_goal_body">ما معتقدیم حریم خصوصی یک حق اساسی است. هدف ما این است که ارتباط امن و نامرئی را برای همه قابل دسترس کنیم — بدون حساب کاربری، بدون اینترنت، بدون ردیابی. فقط شما و اسرارتان، محافظت‌شده با رمزنگاری قوی و پنهان در دید ساده.</string>
-    <string name="settings_about_how_title">طراحی آن</string>
-    <string name="settings_about_how_arch">معماری — MVVM + Clean Architecture برای جداسازی مسئولیت‌ها</string>
-    <string name="settings_about_how_ui">رابط کاربری — Jetpack Compose با Material 3، پشتیبانی از تم تاریک و روشن</string>
-    <string name="settings_about_how_security">امنیت — رمزنگاری AES-256 با تکنیک‌های پیشرفته استگانوگرافی</string>
-    <string name="settings_about_how_privacy">حریم خصوصی — ۱۰۰٪ آفلاین، تمام پردازش‌ها روی دستگاه شما</string>
-    <string name="settings_about_how_stego">استگانوگرافی — روش‌های Zero Width Characters و Homoglyph</string>
+    <string name="settings_about_tagline">استگانوگرافی. آفلاین. خصوصی.</string>
+    <string name="settings_about_intro">ShadowText یک ابزار استگانوگرافی مدرن برای مخفی‌سازی و بازیابی داده است.</string>
+    <string name="settings_about_intro_body">با ShadowText می‌توانید داده‌های مختلف را در محتوای پشتیبان‌شده مخفی کنید و بدون نیاز به اتصال اینترنت، آن‌ها را در همان دستگاه استخراج و بازیابی کنید.</string>
+    <string name="settings_about_privacy_title">طراحی‌شده با حریم خصوصی در ذهن</string>
+    <string name="settings_about_privacy_body">ShadowText برای پردازش محلی طراحی شده است.\n\nبدون حساب کاربری. بدون سرور. بدون ارسال داده به اینترنت.\n\nداده‌هایی که برای پردازش وارد برنامه می‌کنید، برای عملیات استگانوگرافی به سرور ارسال نمی‌شوند.</string>
+    <string name="settings_about_features_title">قابلیت‌ها</string>
+    <string name="settings_about_features">• مخفی‌سازی داده در متن\n• استخراج داده‌های مخفی\n• پردازش کاملاً آفلاین\n• معماری آماده برای قابلیت‌های امنیتی آینده</string>
+    <string name="settings_about_note_title">یک نکته مهم</string>
+    <string name="settings_about_note_body">ShadowText یک ابزار فنی و آموزشی است.\n\nقابلیت‌های آن باید فقط برای داده‌هایی استفاده شوند که مالک آن‌ها هستید یا اجازه قانونی برای پردازش آن‌ها دارید.\n\nمسئولیت نحوه استفاده از نرم‌افزار و داده‌های پردازش‌شده بر عهده کاربر است.</string>
+    <string name="settings_about_footer">© ۲۰۲۶ ShadowText</string>
     <string name="settings_security_first">امنیت در اولویت است</string>
     <string name="settings_processing">تمام پردازش‌ها روی دستگاه شما انجام می‌شود.</string>
     <string name="settings_no_leak">داده‌های شما هرگز دستگاه را ترک نمی‌کنند.</string>
-    <string name="settings_open_source">متن باز</string>
-    <string name="settings_about_disclaimer_title">سلب مسئولیت</string>
-    <string name="settings_about_disclaimer_body">ShadowText یک پروژه شخصی است. استفاده از آن به عهده خودتان می‌باشد. توسعه‌دهنده مسئولیتی در قبال سوءاستفاده ندارد.</string>
 
     <!-- General -->
     <string name="back">بازگشت</string>
@@ -140,7 +137,7 @@
     <string name="onboarding_theme_dark">تاریک</string>
     <string name="onboarding_theme_light">روشن</string>
     <string name="onboarding_welcome_title">به ShadowText خوش آمدید</string>
-    <string name="onboarding_welcome_desc">ابزار آفلاین شما برای مخفی کردن پیام‌های محرمانه درون متنی معمولی — نامرئی از دید سرورهای اپلیکیشن‌ها. تمام پردازش‌ها روی دستگاه شما انجام می‌شود، داده‌هایتان هرگز آن را ترک نمی‌کند.</string>
+    <string name="onboarding_welcome_desc">استگانوگرافی، کاملاً آفلاین.\nداده‌های خود را در متن و فایل‌های پشتیبانی‌شده مخفی کنید و هر زمان که خواستید آن‌ها را بازیابی کنید.</string>
     <string name="onboarding_agree_checkbox">قوانین استفاده از برنامه را خوانده و می‌پذیرم</string>
     <string name="onboarding_view_terms">مشاهده قوانین استفاده</string>
 
