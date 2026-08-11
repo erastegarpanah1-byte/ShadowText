@@ -11,13 +11,11 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -27,10 +25,10 @@ fun SettingsScreen(
     isDarkMode: Boolean = true,
     onToggleDarkMode: (Boolean) -> Unit = {},
     languageCode: String = "en",
-    onChangeLanguage: (String) -> Unit = {}
+    onChangeLanguage: (String) -> Unit = {},
+    onNavigateToAbout: () -> Unit = {}
 ) {
     val c = MaterialTheme.colorScheme
-    val context = LocalContext.current
     var theme by remember { mutableStateOf(if (isDarkMode) "Dark" else "Light") }
     var showClearDialog by remember { mutableStateOf(false) }
     var showLangDialog by remember { mutableStateOf(false) }
@@ -76,11 +74,7 @@ fun SettingsScreen(
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
                 Column {
                     SettingsRow(Icons.Outlined.Palette, stringResource(R.string.settings_theme), theme) {
-                        theme = when (theme) {
-                            "Dark" -> "Light"
-                            "Light" -> "System"
-                            else -> "Dark"
-                        }
+                        theme = when (theme) { "Dark" -> "Light"; "Light" -> "System"; else -> "Dark" }
                         onToggleDarkMode(theme == "Dark")
                     }
                     SettingsRow(Icons.Outlined.Language, stringResource(R.string.settings_language), langLabel, showDivider = false) { showLangDialog = true }
@@ -94,63 +88,15 @@ fun SettingsScreen(
                 SettingsRow(Icons.Outlined.Delete, stringResource(R.string.settings_clear_history), "", showDivider = false) { showClearDialog = true }
             }
 
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(28.dp))
 
             SectionHeader(stringResource(R.string.settings_about))
-            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(16.dp)) {
-                Column(Modifier.padding(20.dp)) {
-                    Text("ShadowText", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = c.primary)
-                    Spacer(Modifier.height(4.dp))
-                    Text(stringResource(R.string.settings_version), style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant)
-                    Spacer(Modifier.height(20.dp))
-                    Text(stringResource(R.string.settings_about_what_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
-                    Spacer(Modifier.height(6.dp))
-                    Text(stringResource(R.string.settings_about_what_body), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
-                    Spacer(Modifier.height(16.dp))
-                    Text(stringResource(R.string.settings_about_goal_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
-                    Spacer(Modifier.height(6.dp))
-                    Text(stringResource(R.string.settings_about_goal_body), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
-                    Spacer(Modifier.height(16.dp))
-                    Text(stringResource(R.string.settings_about_disclaimer_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.error)
-                    Spacer(Modifier.height(6.dp))
-                    Text(stringResource(R.string.settings_about_disclaimer_body), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
-                    Spacer(Modifier.height(16.dp))
-                    Text(stringResource(R.string.settings_about_how_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.onBackground)
-                    Spacer(Modifier.height(6.dp))
-                    Bullet(stringResource(R.string.settings_about_how_arch))
-                    Bullet(stringResource(R.string.settings_about_how_ui))
-                    Bullet(stringResource(R.string.settings_about_how_security))
-                    Bullet(stringResource(R.string.settings_about_how_privacy))
-                    Bullet(stringResource(R.string.settings_about_how_stego))
-                    Spacer(Modifier.height(16.dp))
-                    // GitHub link
-                    Surface(onClick = { context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/erastegarpanah1-byte/ShadowText"))) }, shape = RoundedCornerShape(12.dp), color = c.primary.copy(alpha = 0.1f), modifier = Modifier.fillMaxWidth()) {
-                        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Column(Modifier.weight(1f)) {
-                                Text(stringResource(R.string.settings_open_source), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold), color = c.primary)
-                                Spacer(Modifier.height(2.dp))
-                                Text("github.com/erastegarpanah1-byte/ShadowText", style = MaterialTheme.typography.bodySmall, color = c.primary.copy(alpha = 0.7f))
-                            }
-                            Text("↗", color = c.primary, style = MaterialTheme.typography.titleMedium)
-                        }
-                    }
-                    Spacer(Modifier.height(16.dp))
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) { Text(stringResource(R.string.settings_security_first), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 2.5.sp), color = c.primary.copy(alpha = 0.5f), textAlign = TextAlign.Center) }
-                    Spacer(Modifier.height(4.dp))
-                    Text(stringResource(R.string.settings_processing) + "\n" + stringResource(R.string.settings_no_leak), style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant.copy(alpha = 0.5f), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
-                }
+            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
+                SettingsRow(Icons.Outlined.Info, stringResource(R.string.settings_about), "", showDivider = false) { onNavigateToAbout() }
             }
+
             Spacer(Modifier.height(40.dp))
         }
-    }
-}
-
-@Composable
-private fun Bullet(text: String) {
-    val c = MaterialTheme.colorScheme
-    Row(Modifier.padding(vertical = 2.dp)) {
-        Text("\u2022", color = c.primary, modifier = Modifier.padding(end = 8.dp))
-        Text(text, style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
     }
 }
 
