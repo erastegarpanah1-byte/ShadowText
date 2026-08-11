@@ -14,7 +14,7 @@ object LocaleHelper {
         config.setLocale(locale)
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
         context.getSharedPreferences("shadowtext_prefs", Context.MODE_PRIVATE)
-            .edit().putString(PREF_LANGUAGE, languageCode).apply()
+            .edit().putString(PREF_LANGUAGE, languageCode).commit()
     }
 
     fun getLanguage(context: Context): String {
