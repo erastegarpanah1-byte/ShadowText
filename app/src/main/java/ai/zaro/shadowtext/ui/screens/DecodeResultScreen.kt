@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DecodeResultScreen(decodedText: String, onBack: () -> Unit, onNew: () -> Unit) {
+fun DecodeResultScreen(decodedText: String?, errorText: String?, onBack: () -> Unit, onNew: () -> Unit) {
     val c = MaterialTheme.colorScheme
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
@@ -37,26 +37,33 @@ fun DecodeResultScreen(decodedText: String, onBack: () -> Unit, onNew: () -> Uni
     val copiedText = stringResource(R.string.encode_copied)
     val copyLabel = stringResource(R.string.decode_copy)
     val shareLabel = stringResource(R.string.decode_share)
+    val isError = errorText != null || decodedText == null
+
     Scaffold(snackbarHost = { SnackbarHost(snackbar) }, containerColor = c.background, topBar = { TopAppBar(title = { Text(stringResource(R.string.decode_title), fontWeight = FontWeight.SemiBold, color = c.onBackground) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back), tint = c.onBackground) } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background)) }) { padding ->
         ConstrainedColumn(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())) {
             Spacer(Modifier.height(40.dp))
-            Box(Modifier.size(80.dp).clip(CircleShape).background(c.secondary.copy(alpha = 0.15f)), contentAlignment = Alignment.Center) { Icon(Icons.Filled.CheckCircle, null, Modifier.size(48.dp), tint = c.secondary) }
-            Spacer(Modifier.height(24.dp))
-            Text(stringResource(R.string.decode_success), style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = c.onBackground)
-            Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.decode_success_desc), style = MaterialTheme.typography.bodyMedium, color = c.onSurfaceVariant)
-            Spacer(Modifier.height(28.dp))
-            Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(stringResource(R.string.decode_decoded_text), style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium), color = c.onSurfaceVariant)
-                    Spacer(Modifier.height(8.dp))
-                    Text(decodedText.take(300) + if (decodedText.length > 300) "..." else "", style = MaterialTheme.typography.bodySmall, color = c.onSurface)
-                }
+            Box(Modifier.size(80.dp).clip(CircleShape).background(if (isError) c.error.copy(alpha = 0.15f) else c.secondary.copy(alpha = 0.15f)), contentAlignment = Alignment.Center) {
+                Icon(if (isError) Icons.Filled.Close else Icons.Filled.CheckCircle, null, Modifier.size(48.dp), tint = if (isError) c.error else c.secondary)
             }
             Spacer(Modifier.height(24.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick = { clipboard.setText(AnnotatedString(decodedText)); scope.launch { snackbar.showSnackbar(copiedText) } }, modifier = Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.outlinedButtonColors(contentColor = c.secondary)) { Icon(Icons.Outlined.ContentCopy, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(copyLabel, fontWeight = FontWeight.SemiBold) }
-                Button(onClick = { val intent = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, decodedText) }; context.startActivity(Intent.createChooser(intent, shareLabel)) }, modifier = Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = c.secondary, contentColor = c.onSecondary)) { Icon(Icons.Outlined.Share, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(shareLabel, fontWeight = FontWeight.SemiBold) }
+            Text(if (isError) stringResource(R.string.decode_failed) else stringResource(R.string.decode_success), style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = c.onBackground)
+            Spacer(Modifier.height(8.dp))
+            Text(if (isError) (errorText ?: "Unknown error") else stringResource(R.string.decode_success_desc), style = MaterialTheme.typography.bodyMedium, color = if (isError) c.error else c.onSurfaceVariant)
+
+            if (!isError && decodedText != null) {
+                Spacer(Modifier.height(28.dp))
+                Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
+                    Column(Modifier.padding(16.dp)) {
+                        Text(stringResource(R.string.decode_decoded_text), style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium), color = c.onSurfaceVariant)
+                        Spacer(Modifier.height(8.dp))
+                        Text(decodedText.take(300) + if (decodedText.length > 300) "..." else "", style = MaterialTheme.typography.bodySmall, color = c.onSurface)
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedButton(onClick = { clipboard.setText(AnnotatedString(decodedText)); scope.launch { snackbar.showSnackbar(copiedText) } }, modifier = Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.outlinedButtonColors(contentColor = c.secondary)) { Icon(Icons.Outlined.ContentCopy, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(copyLabel, fontWeight = FontWeight.SemiBold) }
+                    Button(onClick = { val intent = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, decodedText) }; context.startActivity(Intent.createChooser(intent, shareLabel)) }, modifier = Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(14.dp), colors = ButtonDefaults.buttonColors(containerColor = c.secondary, contentColor = c.onSecondary)) { Icon(Icons.Outlined.Share, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(shareLabel, fontWeight = FontWeight.SemiBold) }
+                }
             }
             Spacer(Modifier.height(28.dp))
             TextButton(onClick = onNew) { Icon(Icons.Filled.Add, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.decode_new), color = c.secondary) }
