@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,9 +30,11 @@ fun SettingsScreen(
     onNavigateToAbout: () -> Unit = {}
 ) {
     val c = MaterialTheme.colorScheme
+    val context = LocalContext.current
     var theme by remember { mutableStateOf(if (isDarkMode) "Dark" else "Light") }
     var showClearDialog by remember { mutableStateOf(false) }
     var showLangDialog by remember { mutableStateOf(false) }
+    var historyEnabled by remember { mutableStateOf(context.getSharedPreferences("shadowtext_prefs", android.content.Context.MODE_PRIVATE).getBoolean("history_enabled", true)) }
     val langLabel = if (languageCode == "fa") "فارسی" else "English"
 
     if (showClearDialog) {
@@ -39,7 +42,7 @@ fun SettingsScreen(
             onDismissRequest = { showClearDialog = false },
             title = { Text(stringResource(R.string.settings_clear_title)) },
             text = { Text(stringResource(R.string.settings_clear_message)) },
-            confirmButton = { TextButton(onClick = { showClearDialog = false }) { Text(stringResource(R.string.settings_clear_confirm), color = c.error) } },
+            confirmButton = { TextButton(onClick = { HistoryStore.clear(context); showClearDialog = false }) { Text(stringResource(R.string.settings_clear_confirm), color = c.error) } },
             dismissButton = { TextButton(onClick = { showClearDialog = false }) { Text(stringResource(R.string.settings_clear_cancel)) } },
             containerColor = c.surface, shape = RoundedCornerShape(20.dp)
         )
@@ -85,7 +88,20 @@ fun SettingsScreen(
 
             SectionHeader(stringResource(R.string.settings_data))
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = c.surfaceVariant), shape = RoundedCornerShape(14.dp)) {
-                SettingsRow(Icons.Outlined.Delete, stringResource(R.string.settings_clear_history), "", showDivider = false) { showClearDialog = true }
+                Column {
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Outlined.History, null, Modifier.size(22.dp), tint = c.onSurface)
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(stringResource(R.string.settings_history_toggle), style = MaterialTheme.typography.bodyMedium, color = c.onSurface)
+                            Text(stringResource(R.string.settings_history_toggle_desc), style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant.copy(alpha = 0.6f))
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        Switch(checked = historyEnabled, onCheckedChange = { historyEnabled = it; context.getSharedPreferences("shadowtext_prefs", android.content.Context.MODE_PRIVATE).edit().putBoolean("history_enabled", it).apply() }, colors = SwitchDefaults.colors(checkedThumbColor = c.primary, checkedTrackColor = c.primary.copy(alpha = 0.3f)))
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = c.outline.copy(alpha = 0.15f))
+                    SettingsRow(Icons.Outlined.Delete, stringResource(R.string.settings_clear_history), "", showDivider = false) { showClearDialog = true }
+                }
             }
 
             Spacer(Modifier.height(28.dp))
