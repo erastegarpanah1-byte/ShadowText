@@ -73,8 +73,8 @@ fun ShadowTextNavHost(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) ->
             composable(Routes.HOME) { HomeScreen(onEncodeClick = { navController.navigate(Routes.ENCODE_INPUT) }, onDecodeClick = { navController.navigate(Routes.DECODE_INPUT) }) }
             composable(Routes.ENCODE_INPUT) {
                 val ctx = LocalContext.current
+                val scope = rememberCoroutineScope()
                 EncodeInputScreen(onBack = { navController.popBackStack() }, onEncode = { inputText, secretText ->
-                    val scope = rememberCoroutineScope()
                     scope.launch {
                         try {
                             val encoder = ai.zaro.shadowtext.core.encoding.VariationSelectorEncoder()
@@ -100,8 +100,8 @@ fun ShadowTextNavHost(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) ->
             }
             composable(Routes.DECODE_INPUT) {
                 val ctx = LocalContext.current
+                val scope = rememberCoroutineScope()
                 DecodeInputScreen(onBack = { navController.popBackStack() }, onDecode = { inputText ->
-                    val scope = rememberCoroutineScope()
                     scope.launch {
                         try {
                             val encoder = ai.zaro.shadowtext.core.encoding.VariationSelectorEncoder()
