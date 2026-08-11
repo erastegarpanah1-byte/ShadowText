@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity() {
             var showOnboarding by remember { mutableStateOf(!onboardingDone) }
             var isDarkMode by remember { mutableStateOf(savedDarkMode) }
             val context = LocalContext.current
-
             val effectiveTheme = if (showOnboarding) true else isDarkMode
 
             ShadowTextTheme(darkTheme = effectiveTheme) {
@@ -54,9 +53,7 @@ class MainActivity : ComponentActivity() {
                             initialStep = savedStep,
                             onLanguageSelected = { languageCode ->
                                 LocaleHelper.setLocale(context, languageCode)
-                                prefs.edit()
-                                    .putInt(KEY_ONBOARDING_STEP, 1)
-                                    .apply()
+                                prefs.edit().putInt(KEY_ONBOARDING_STEP, 1).apply()
                                 recreate()
                             },
                             onComplete = { languageCode, dark ->
