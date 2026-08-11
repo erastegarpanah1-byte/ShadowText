@@ -2,7 +2,7 @@ name: ShadowText CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, new-ui ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
