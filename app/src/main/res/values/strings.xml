@@ -26,37 +26,18 @@
     <string name="nav_history">History</string>
     <string name="nav_settings">Settings</string>
 
-    <!-- Choose Input -->
-    <string name="choose_type">Choose Input Type</string>
-    <string name="choose_what">What do you want to use?</string>
-    <string name="choose_text">Text</string>
-    <string name="choose_text_subtitle">Use text as container</string>
-    <string name="choose_file">File</string>
-    <string name="choose_file_subtitle">Available in upcoming updates</string>
-    <string name="coming_soon">Coming Soon</string>
-
     <!-- Encode Input -->
     <string name="encode_title">Encode</string>
     <string name="encode_input_label">Input (Text)</string>
     <string name="encode_cover_placeholder">Paste or type your cover text here…</string>
     <string name="encode_secret_label">Secret Text</string>
     <string name="encode_secret_placeholder">Type your secret text here…</string>
-    <string name="encode_next">Next</string>
-
-    <!-- Encode Options -->
-    <string name="encode_options_title">Options</string>
-    <string name="encode_algorithm">Algorithm</string>
-    <string name="encode_stego_method">Steganography Method</string>
-    <string name="encode_compression">Compression</string>
-    <string name="encode_password">Password (Optional)</string>
-    <string name="encode_password_set">Set</string>
-    <string name="encode_password_hide">Hide</string>
-    <string name="encode_password_placeholder">Enter password</string>
     <string name="encode_encode_btn">Encode</string>
 
     <!-- Encode Result -->
     <string name="encode_success">Encoding Successful!</string>
     <string name="encode_success_desc">Your secret data has been hidden securely.</string>
+    <string name="encode_failed">Encoding Failed</string>
     <string name="encode_hidden_text">Hidden Text</string>
     <string name="encode_copy">Copy</string>
     <string name="encode_share">Share</string>
@@ -67,19 +48,12 @@
     <string name="decode_title">Decode</string>
     <string name="decode_input_label">Input (Text)</string>
     <string name="decode_input_placeholder">Paste or type your encoded text here…</string>
-
-    <!-- Decode Options -->
-    <string name="decode_options_title">Options</string>
-    <string name="decode_stego_method">Steganography Method</string>
-    <string name="decode_auto_detect">Auto Detect</string>
-    <string name="decode_password">Password (Optional)</string>
-    <string name="decode_password_enter">Enter</string>
-    <string name="decode_password_placeholder">Enter password</string>
     <string name="decode_decode_btn">Decode</string>
 
     <!-- Decode Result -->
     <string name="decode_success">Decoding Successful!</string>
     <string name="decode_success_desc">Your hidden data has been extracted.</string>
+    <string name="decode_failed">Decoding Failed</string>
     <string name="decode_decoded_text">Decoded Text</string>
     <string name="decode_copy">Copy</string>
     <string name="decode_share">Share</string>
@@ -87,8 +61,32 @@
 
     <!-- History -->
     <string name="history_title">History</string>
-    <string name="history_empty">No history yet</string>
-    <string name="history_empty_desc">Your encode and decode history will appear here.</string>
+    <string name="history_empty">No activity recorded yet</string>
+    <string name="history_empty_desc">Your encode and decode operations will appear here.</string>
+    <string name="history_filter_all">All</string>
+    <string name="history_filter_encode">Encode</string>
+    <string name="history_filter_decode">Decode</string>
+    <string name="history_today">Today</string>
+    <string name="history_yesterday">Yesterday</string>
+    <string name="history_mode_text_in_text">Text in Text</string>
+    <string name="history_status_success">Success</string>
+    <string name="history_status_failed">Failed</string>
+    <string name="history_detail_title">Operation Details</string>
+    <string name="history_detail_type">Operation Type</string>
+    <string name="history_detail_mode">Mode</string>
+    <string name="history_detail_input">Input</string>
+    <string name="history_detail_output">Output</string>
+    <string name="history_detail_date">Date</string>
+    <string name="history_detail_time">Time</string>
+    <string name="history_detail_status">Status</string>
+    <string name="history_delete_item">Delete this item</string>
+    <string name="history_clear_all">Clear History</string>
+    <string name="history_clear_title">Clear History</string>
+    <string name="history_clear_message">Are you sure?\n\nAll activity records will be deleted from this device.\nYour message content is not affected by this operation.</string>
+    <string name="history_clear_confirm">Clear</string>
+    <string name="history_clear_cancel">Cancel</string>
+    <string name="history_chars">%d characters</string>
+    <string name="history_arrow">→</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
@@ -101,6 +99,8 @@
     <string name="settings_language_en">English</string>
     <string name="settings_language_fa">فارسی</string>
     <string name="settings_data">Data</string>
+    <string name="settings_history_toggle">Save activity history</string>
+    <string name="settings_history_toggle_desc">Stores non-sensitive metadata about encode and decode operations on your device.</string>
     <string name="settings_clear_history">Clear History</string>
     <string name="settings_clear_title">Clear History</string>
     <string name="settings_clear_message">Are you sure you want to delete all history entries? This action cannot be undone.</string>
