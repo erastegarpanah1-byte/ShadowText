@@ -132,7 +132,7 @@ fun ShadowTextNavHost(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) ->
                 val text = remember { DecodeResultHolder.result }
                 val error = remember { DecodeResultHolder.error }
                 LaunchedEffect(Unit) { DecodeResultHolder.result = null; DecodeResultHolder.error = null }
-                DecodeResultScreen(decodedText = text, errorText = error, onBack = { navController.popBackStack(Routes.HOME, false) }, onNew = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } )
+                DecodeResultScreen(decodedText = text, errorText = error, onBack = { navController.popBackStack(Routes.HOME, false) }, onNew = { navController.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } } })
             }
             composable(Routes.HISTORY) { HistoryScreen() }
             composable(Routes.SETTINGS) { SettingsScreen(isDarkMode = isDarkMode, onToggleDarkMode = onToggleDarkMode, languageCode = languageCode, onChangeLanguage = onChangeLanguage, onNavigateToAbout = { navController.navigate(Routes.ABOUT) }) }
