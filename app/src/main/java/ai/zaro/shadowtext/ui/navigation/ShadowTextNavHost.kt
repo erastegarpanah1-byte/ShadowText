@@ -16,10 +16,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.NavHost
-import androidx.client.compose.composable
+import androidx.navigation.compose.composable
 import androidx.client.compose.currentBackStackEntryAsState
 import androidx.client.compose.rememberNavController
+import androidx.navigation.compose.NavHost
 import ai.zaro.shadowtext.R
 import ai.zaro.shadowtext.ui.screens.*
 import kotlinx.coroutines.Dispatchers
