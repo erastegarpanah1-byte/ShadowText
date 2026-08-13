@@ -53,7 +53,7 @@ jobs:
         run: gradle assembleRelease --no-daemon --stacktrace
 
       - name: Sign & verify release APK
-        if: github.event_name != 'pull_request' && secrets.MYKEYSTORE_BASE64 != ''
+        if: github.event_name != 'pull_request'
         env:
           MYKEYSTORE_BASE64: ${{ secrets.MYKEYSTORE_BASE64 }}
           MYKEYSTORE_PASSWORD: ${{ secrets.MYKEYSTORE_PASSWORD }}
@@ -61,18 +61,18 @@ jobs:
           MYKEY_PASSWORD: ${{ secrets.MYKEY_PASSWORD }}
         run: |
           set -euo pipefail
+          if [ -z "$MYKEYSTORE_BASE64" ]; then
+            echo "MYKEYSTORE_BASE64 secret not set; skipping signing (APK remains unsigned)."
+            exit 0
+          fi
           APK="app/build/outputs/apk/release/app-release-unsigned.apk"
           ALIGNED="app/build/outputs/apk/release/app-release-aligned.apk"
           FINAL="app/build/outputs/apk/release/app-release.apk"
           KS="$RUNNER_TEMP/release.jks"
 
-          # Decode keystore from secret
           echo "$MYKEYSTORE_BASE64" | base64 --decode > "$KS"
 
-          # zipalign
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/zipalign" -v -p 4 "$APK" "$ALIGNED"
-
-          # Sign with apksigner (keystore + passwords from command line args)
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" sign \
             --ks "$KS" \
             --ks-pass "pass:$MYKEYSTORE_PASSWORD" \
@@ -81,7 +81,6 @@ jobs:
             --out "$FINAL" \
             "$ALIGNED"
 
-          # Verify
           echo "=== apksigner verify ==="
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose "$FINAL"
 
@@ -92,17 +91,18 @@ jobs:
             echo "ERROR: APK is signed with the debug certificate!"; exit 1
           fi
           echo "OK: APK is release-signed (not debug)."
+          echo "SIGNED=true" >> "$GITHUB_ENV"
 
       - name: Upload signed release APK
-        if: github.event_name != 'pull_request' && secrets.MYKEYSTORE_BASE64 != ''
+        if: env.SIGNED == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ShadowText-release-signed-${{ github.run_number }}
           path: app/build/outputs/apk/release/app-release.apk
           retention-days: 90
 
-      - name: Upload unsigned APK (fallback when no signing secrets)
-        if: github.event_name == 'pull_request' || secrets.MYKEYSTORE_BASE64 == ''
+      - name: Upload unsigned APK (fallback)
+        if: env.SIGNED != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ShadowText-release-unsigned-${{ github.run_number }}
