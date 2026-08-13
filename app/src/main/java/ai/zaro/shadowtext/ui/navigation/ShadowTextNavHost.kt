@@ -1,7 +1,6 @@
 package ai.zaro.shadowtext.ui.navigation
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -86,13 +85,12 @@ fun ShadowTextNavHost(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) ->
                             val stego = encoder.embed(inputText, inv)
                             EncodeResultHolder.result = stego
                             EncodeResultHolder.error = null
-                            if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "encode", inputPreview = inputText.take(80), outputPreview = stego.take(80)))
+                            if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "encode", inputLength = inputText.length, outputLength = stego.length))
                             navController.navigate(Routes.ENCODE_RESULT) { popUpTo(Routes.HOME) { inclusive = false } }
                         } catch (e: Exception) {
-                            Log.e("ShadowText", "Encode failed", e)
                             EncodeResultHolder.result = null
                             EncodeResultHolder.error = e.message
-                            if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "encode", inputPreview = inputText.take(80), outputPreview = "", status = "failed"))
+                            if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "encode", inputLength = inputText.length, outputLength = 0, status = "failed"))
                             navController.navigate(Routes.ENCODE_RESULT) { popUpTo(Routes.HOME) { inclusive = false } }
                         }
                     }
@@ -116,13 +114,12 @@ fun ShadowTextNavHost(isDarkMode: Boolean = true, onToggleDarkMode: (Boolean) ->
                             val decodedStr = String(result.payload, Charsets.UTF_8)
                             DecodeResultHolder.result = decodedStr
                             DecodeResultHolder.error = null
-                            if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "decode", inputPreview = inputText.take(80), outputPreview = decodedStr.take(80)))
+                            if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "decode", inputLength = inputText.length, outputLength = decodedStr.length))
                             navController.navigate(Routes.DECODE_RESULT) { popUpTo(Routes.HOME) { inclusive = false } }
                         } catch (e: Exception) {
-                            Log.e("ShadowText", "Decode failed", e)
                             DecodeResultHolder.result = null
                             DecodeResultHolder.error = e.message
-                            if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "decode", inputPreview = inputText.take(80), outputPreview = "", status = "failed"))
+                            if (isHistoryEnabled(ctx)) HistoryStore.add(ctx, HistoryEntry(type = "decode", inputLength = inputText.length, outputLength = 0, status = "failed"))
                             navController.navigate(Routes.DECODE_RESULT) { popUpTo(Routes.HOME) { inclusive = false } }
                         }
                     }
