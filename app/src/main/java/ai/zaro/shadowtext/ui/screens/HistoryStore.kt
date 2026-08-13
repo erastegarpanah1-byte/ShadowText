@@ -4,11 +4,18 @@ import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
 
+/**
+ * Privacy-first history record.
+ *
+ * Stores ONLY non-sensitive metadata (operation type, input/output lengths,
+ * status, timestamp). No message content, carrier text, encoded text, or
+ * decoded text is ever written to disk.
+ */
 data class HistoryEntry(
     val id: Long = System.currentTimeMillis(),
     val type: String,
-    val inputPreview: String,
-    val outputPreview: String,
+    val inputLength: Int,
+    val outputLength: Int,
     val status: String = "success",
     val timestamp: Long = System.currentTimeMillis()
 )
@@ -35,8 +42,8 @@ object HistoryStore {
             list.add(HistoryEntry(
                 id = obj.optLong("id", 0),
                 type = obj.optString("type", ""),
-                inputPreview = obj.optString("inputPreview", ""),
-                outputPreview = obj.optString("outputPreview", ""),
+                inputLength = obj.optInt("inputLength", obj.optInt("inputPreview", -1)),
+                outputLength = obj.optInt("outputLength", obj.optInt("outputPreview", -1)),
                 status = obj.optString("status", "success"),
                 timestamp = obj.optLong("timestamp", 0)
             ))
@@ -60,8 +67,8 @@ object HistoryStore {
             arr.put(JSONObject().apply {
                 put("id", e.id)
                 put("type", e.type)
-                put("inputPreview", e.inputPreview)
-                put("outputPreview", e.outputPreview)
+                put("inputLength", e.inputLength)
+                put("outputLength", e.outputLength)
                 put("status", e.status)
                 put("timestamp", e.timestamp)
             })
