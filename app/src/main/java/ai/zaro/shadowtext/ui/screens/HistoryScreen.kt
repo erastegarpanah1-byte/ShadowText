@@ -40,7 +40,7 @@ fun HistoryScreen() {
     if (detailEntry != null) { HistoryDetailScreen(entry = detailEntry!!, onDelete = { HistoryStore.remove(context, detailEntry!!.id); detailEntry = null; refresh() }, onBack = { detailEntry = null }); return }
 
     val filtered = if (filter == "all") entries else entries.filter { it.type == filter }
-    val grouped = groupByDate(filtered)
+    val grouped = groupByDate(filtered, stringResource(R.string.history_today), stringResource(R.string.history_yesterday))
 
     Scaffold(containerColor = c.background, topBar = { TopAppBar(title = { Text(stringResource(R.string.history_title), fontWeight = FontWeight.SemiBold, color = c.onBackground) }, colors = TopAppBarDefaults.topAppBarColors(containerColor = c.background), actions = { if (entries.isNotEmpty()) { IconButton(onClick = { showClearDialog = true }) { Icon(Icons.Outlined.Delete, stringResource(R.string.history_clear_all), tint = c.onSurfaceVariant) } } }) }) { padding ->
         Column(Modifier.padding(padding)) {
@@ -82,7 +82,7 @@ private fun HistoryRow(entry: HistoryEntry, onClick: () -> Unit) {
                 Text(stringResource(if (isEncode) R.string.home_encode else R.string.home_decode), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium), color = c.onSurface)
                 Text(stringResource(R.string.history_mode_text_in_text), style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant.copy(alpha = 0.7f))
                 Spacer(Modifier.height(2.dp))
-                Text("${entry.inputPreview.length} \u2192 ${entry.outputPreview.length} chars", style = MaterialTheme.typography.labelSmall, color = c.onSurfaceVariant.copy(alpha = 0.5f))
+                Text("${entry.inputLength} \u2192 ${entry.outputLength} chars", style = MaterialTheme.typography.labelSmall, color = c.onSurfaceVariant.copy(alpha = 0.5f))
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(formatTime(entry.timestamp), style = MaterialTheme.typography.labelSmall, color = c.onSurfaceVariant.copy(alpha = 0.5f))
@@ -109,8 +109,8 @@ private fun HistoryDetailScreen(entry: HistoryEntry, onDelete: () -> Unit, onBac
                 Column(Modifier.padding(16.dp)) {
                     DetailRow(stringResource(R.string.history_detail_type), stringResource(if (isEncode) R.string.home_encode else R.string.home_decode), c.onSurfaceVariant.copy(alpha = 0.7f), c.onSurface, c.outline.copy(alpha = 0.08f))
                     DetailRow(stringResource(R.string.history_detail_mode), stringResource(R.string.history_mode_text_in_text), c.onSurfaceVariant.copy(alpha = 0.7f), c.onSurface, c.outline.copy(alpha = 0.08f))
-                    DetailRow(stringResource(R.string.history_detail_input), stringResource(R.string.history_chars, entry.inputPreview.length), c.onSurfaceVariant.copy(alpha = 0.7f), c.onSurface, c.outline.copy(alpha = 0.08f))
-                    DetailRow(stringResource(R.string.history_detail_output), stringResource(R.string.history_chars, entry.outputPreview.length), c.onSurfaceVariant.copy(alpha = 0.7f), c.onSurface, c.outline.copy(alpha = 0.08f))
+                    DetailRow(stringResource(R.string.history_detail_input), stringResource(R.string.history_chars, entry.inputLength), c.onSurfaceVariant.copy(alpha = 0.7f), c.onSurface, c.outline.copy(alpha = 0.08f))
+                    DetailRow(stringResource(R.string.history_detail_output), stringResource(R.string.history_chars, entry.outputLength), c.onSurfaceVariant.copy(alpha = 0.7f), c.onSurface, c.outline.copy(alpha = 0.08f))
                     DetailRow(stringResource(R.string.history_detail_date), dateFormat.format(Date(entry.timestamp)), c.onSurfaceVariant.copy(alpha = 0.7f), c.onSurface, c.outline.copy(alpha = 0.08f))
                     DetailRow(stringResource(R.string.history_detail_time), timeFormat.format(Date(entry.timestamp)), c.onSurfaceVariant.copy(alpha = 0.7f), c.onSurface, c.outline.copy(alpha = 0.08f), false)
                     Spacer(Modifier.height(8.dp))
@@ -138,12 +138,12 @@ private fun DetailRow(label: String, value: String, labelColor: Color, valueColo
     }
 }
 
-private fun groupByDate(entries: List<HistoryEntry>): List<Pair<String, List<HistoryEntry>>> {
+private fun groupByDate(entries: List<HistoryEntry>, todayLabel: String, yesterdayLabel: String): List<Pair<String, List<HistoryEntry>>> {
     val today = Calendar.getInstance(); val yesterday = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }
     val dateFormat = SimpleDateFormat("d MMM", Locale.getDefault()); val dayMap = LinkedHashMap<String, MutableList<HistoryEntry>>()
     for (entry in entries.sortedByDescending { it.timestamp }) {
         val cal = Calendar.getInstance().apply { timeInMillis = entry.timestamp }
-        val label = when { isSameDay(cal, today) -> "Today"; isSameDay(cal, yesterday) -> "Yesterday"; else -> dateFormat.format(Date(entry.timestamp)) }
+        val label = when { isSameDay(cal, today) -> todayLabel; isSameDay(cal, yesterday) -> yesterdayLabel; else -> dateFormat.format(Date(entry.timestamp)) }
         dayMap.getOrPut(label) { mutableListOf() }.add(entry)
     }
     return dayMap.toList()
