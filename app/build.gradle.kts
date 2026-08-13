@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -5,6 +7,13 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
     kotlin("kapt")
 }
+
+val localProps = Properties().apply {
+    val f = rootProject.file("gradle.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+fun prop(name: String, default: String = ""): String =
+    (localProps.getProperty(name) ?: System.getenv(name) ?: default)
 
 android {
     namespace = "ai.zaro.shadowtext"
@@ -14,12 +23,30 @@ android {
         applicationId = "ai.zaro.shadowtext"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0-alpha"
+        versionCode = prop("SHADOW_TEXT_VERSION_CODE", "1").toInt()
+        versionName = prop("SHADOW_TEXT_VERSION_NAME", "1.0.0")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+
+    val signingProps = hashMapOf<String, String>()
+    signingProps["MYKEYSTORE_PATH"] = System.getenv("MYKEYSTORE_PATH") ?: (project.findProperty("MYKEYSTORE_PATH") as String? ?: "")
+    signingProps["MYKEYSTORE_PASSWORD"] = System.getenv("MYKEYSTORE_PASSWORD") ?: (project.findProperty("MYKEYSTORE_PASSWORD") as String? ?: "")
+    signingProps["MYKEY_ALIAS"] = System.getenv("MYKEY_ALIAS") ?: (project.findProperty("MYKEY_ALIAS") as String? ?: "")
+    signingProps["MYKEY_PASSWORD"] = System.getenv("MYKEY_PASSWORD") ?: (project.findProperty("MYKEY_PASSWORD") as String? ?: "")
+
+    signingConfigs {
+        create("release") {
+            val ksPath = signingProps["MYKEYSTORE_PATH"].orEmpty()
+            if (ksPath.isNotEmpty()) {
+                storeFile = file(ksPath)
+                storePassword = signingProps["MYKEYSTORE_PASSWORD"]
+                keyAlias = signingProps["MYKEY_ALIAS"]
+                keyPassword = signingProps["MYKEY_PASSWORD"]
+            }
         }
     }
 
@@ -31,6 +58,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            if (signingProps["MYKEYSTORE_PATH"].orEmpty().isNotEmpty()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
         debug {
             isMinifyEnabled = false
