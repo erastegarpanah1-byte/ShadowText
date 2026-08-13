@@ -26,36 +26,17 @@
     <string name="nav_history">تاریخچه</string>
     <string name="nav_settings">تنظیمات</string>
 
-    <!-- Choose Input -->
-    <string name="choose_type">نوع ورودی را انتخاب کنید</string>
-    <string name="choose_what">از چه چیزی می‌خواهید استفاده کنید؟</string>
-    <string name="choose_text">متن</string>
-    <string name="choose_text_subtitle">استفاده از متن به عنوان پوشش</string>
-    <string name="choose_file">فایل</string>
-    <string name="choose_file_subtitle">در به‌روزرسانی‌های آینده اضافه می‌شود</string>
-    <string name="coming_soon">به زودی</string>
-
     <!-- Encode Input -->
     <string name="encode_title">رمزگذاری</string>
     <string name="encode_input_label">ورودی (متن)</string>
     <string name="encode_cover_placeholder">متن پوششی خود را اینجا تایپ یا جای‌گذاری کنید…</string>
     <string name="encode_secret_label">متن محرمانه</string>
     <string name="encode_secret_placeholder">متن محرمانه خود را اینجا بنویسید…</string>
-    <string name="encode_next">بعدی</string>
-
-    <!-- Encode Options -->
-    <string name="encode_options_title">تنظیمات</string>
-    <string name="encode_algorithm">الگوریتم</string>
-    <string name="encode_stego_method">روش استگانوگرافی</string>
-    <string name="encode_compression">فشرده‌سازی</string>
-    <string name="encode_password">رمز عبور (اختیاری)</string>
-    <string name="encode_password_set">تنظیم</string>
-    <string name="encode_password_hide">مخفی</string>
-    <string name="encode_password_placeholder">رمز عبور را وارد کنید</string>
     <string name="encode_encode_btn">رمزگذاری</string>
 
     <!-- Encode Result -->
     <string name="encode_success">رمزگذاری با موفقیت انجام شد!</string>
+    <string name="encode_failed">رمزگذاری ناموفق بود</string>
     <string name="encode_success_desc">داده محرمانه شما با امنیت پنهان شد.</string>
     <string name="encode_hidden_text">متن پنهان شده</string>
     <string name="encode_copy">کپی</string>
@@ -68,17 +49,12 @@
     <string name="decode_input_label">ورودی (متن)</string>
     <string name="decode_input_placeholder">متن کدگذاری شده را اینجا تایپ یا جای‌گذاری کنید…</string>
 
-    <!-- Decode Options -->
-    <string name="decode_options_title">تنظیمات</string>
-    <string name="decode_stego_method">روش استگانوگرافی</string>
-    <string name="decode_auto_detect">تشخیص خودکار</string>
-    <string name="decode_password">رمز عبور (اختیاری)</string>
-    <string name="decode_password_enter">وارد کردن</string>
-    <string name="decode_password_placeholder">رمز عبور را وارد کنید</string>
+    <!-- Decode -->
     <string name="decode_decode_btn">رمزگشایی</string>
 
     <!-- Decode Result -->
     <string name="decode_success">رمزگشایی با موفقیت انجام شد!</string>
+    <string name="decode_failed">رمزگشایی ناموفق بود</string>
     <string name="decode_success_desc">داده پنهان شما استخراج شد.</string>
     <string name="decode_decoded_text">متن رمزگشایی شده</string>
     <string name="decode_copy">کپی</string>
@@ -89,6 +65,30 @@
     <string name="history_title">تاریخچه</string>
     <string name="history_empty">هنوز تاریخچه‌ای وجود ندارد</string>
     <string name="history_empty_desc">تاریخچه رمزگذاری و رمزگشایی شما در اینجا نمایش داده می‌شود.</string>
+    <string name="history_filter_all">همه</string>
+    <string name="history_filter_encode">رمزگذاری</string>
+    <string name="history_filter_decode">رمزگشایی</string>
+    <string name="history_today">امروز</string>
+    <string name="history_yesterday">دیروز</string>
+    <string name="history_mode_text_in_text">متن در متن</string>
+    <string name="history_status_success">موفق</string>
+    <string name="history_status_failed">ناموفق</string>
+    <string name="history_detail_title">جزئیات عملیات</string>
+    <string name="history_detail_type">نوع عملیات</string>
+    <string name="history_detail_mode">حالت</string>
+    <string name="history_detail_input">ورودی</string>
+    <string name="history_detail_output">خروجی</string>
+    <string name="history_detail_date">تاریخ</string>
+    <string name="history_detail_time">زمان</string>
+    <string name="history_detail_status">وضعیت</string>
+    <string name="history_delete_item">حذف این مورد</string>
+    <string name="history_clear_all">پاک کردن تاریخچه</string>
+    <string name="history_clear_title">پاک کردن تاریخچه</string>
+    <string name="history_clear_message">آیا مطمئن هستید؟\n\nتمام سوابق فعالیت از این دستگاه حذف خواهند شد.\nمحتوای پیام شما تحت تأثیر این عملیات قرار نمی‌گیرد.</string>
+    <string name="history_clear_confirm">پاک کردن</string>
+    <string name="history_clear_cancel">لغو</string>
+    <string name="history_chars">%d نویسه</string>
+    <string name="history_arrow">←</string>
 
     <!-- Settings -->
     <string name="settings_title">تنظیمات</string>
@@ -101,6 +101,8 @@
     <string name="settings_language_en">English</string>
     <string name="settings_language_fa">فارسی</string>
     <string name="settings_data">داده‌ها</string>
+    <string name="settings_history_toggle">ذخیره تاریخچه فعالیت</string>
+    <string name="settings_history_toggle_desc">فقط فراداده‌های غیرحساس درباره عملیات رمزگذاری و رمزگشایی را روی دستگاه شما ذخیره می‌کند.</string>
     <string name="settings_clear_history">پاک کردن تاریخچه</string>
     <string name="settings_clear_title">پاک کردن تاریخچه</string>
     <string name="settings_clear_message">آیا مطمئن هستید که می‌خواهید تمام تاریخچه را حذف کنید؟ این عمل قابل بازگشت نیست.</string>
