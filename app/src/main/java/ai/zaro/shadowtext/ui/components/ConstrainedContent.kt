@@ -18,7 +18,7 @@ fun ConstrainedContent(
     innerPadding: Int = 24,
     content: @Composable BoxScope.() -> Unit
 ) {
-    BoxWithConstraints(
+    Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {

@@ -7,10 +7,10 @@ class ZeroWidthEncoder : InvisibleEncoder {
     override val bitsPerChar = 2
 
     companion object {
-        private const val ZWSP = '​'
-        private const val ZWNJ = '‌'
-        private const val ZWJ  = '‍'
-        private const val BOM  = '﻿'
+        private const val ZWSP = '\u200B'
+        private const val ZWNJ = '\u200C'
+        private const val ZWJ  = '\u200D'
+        private const val BOM  = '\uFEFF'
         val ALL_CHARS = setOf(ZWSP, ZWNJ, ZWJ, BOM)
     }
 
